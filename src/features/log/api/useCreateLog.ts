@@ -1,7 +1,7 @@
 import { NEXT_PUBLIC_BASE_URL } from '@/constants/constants';
 import { postRequest } from '@/lib/fetch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Log, LogWithId } from '../log/types/Log';
+import { Log, LogWithId } from '../types/Log';
 
 type RequestType = Log;
 type ResponseType = LogWithId;

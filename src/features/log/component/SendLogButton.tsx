@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useCreateLog } from '@/features/api/useCreateLog';
+import { useCreateLog } from '@/features/log/api/useCreateLog';
 import { Log } from '../types/Log';
 
 function SendLogButton() {
