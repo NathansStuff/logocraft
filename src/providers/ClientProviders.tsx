@@ -1,6 +1,7 @@
 'use client';
 
 import { AuthListener } from './AuthListener';
+import { QueryProvider } from './QueryProvider';
 import SheetProvider from './SheetProvider';
 import { ThemeProvider } from './ThemeProvider';
 
@@ -17,8 +18,10 @@ function ClientProviders({
         enableSystem
       >
         <AuthListener>
-          <SheetProvider />
-          {children}
+          <QueryProvider>
+            <SheetProvider />
+            {children}
+          </QueryProvider>
         </AuthListener>
       </ThemeProvider>
     </>
