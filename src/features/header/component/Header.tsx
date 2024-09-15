@@ -12,8 +12,8 @@ function Header() {
 
   return (
     <header className='sticky top-0 backdrop-blur-sm z-20'>
-      <div className='flex justify-center items-center py-3 bg-black text-white text-sm gap-3'>
-        <p className='text-white/60 hidden md:block'>
+      <div className='flex justify-center items-center py-3 bg-white text-black dark:bg-black dark:text-white text-sm gap-3'>
+        <p className='text-black/60 dark:text-white/60 hidden md:block'>
           Streamline your workflow and boost your productivity
         </p>
         <div className='inline-flex gap-1 items-center'>
@@ -30,8 +30,8 @@ function Header() {
               height={40}
               width={40}
             />
-            <MenuIcon className='size-5 md:hidden' />
-            <nav className='hidden md:flex gap-6 text-black/60 items-center'>
+            <MenuIcon className='size-5 md:hidden text-black dark:text-white' />
+            <nav className='hidden md:flex gap-6 text-black/60 dark:text-white/60 items-center'>
               <a href='#'>About</a>
               <a href='#'>Features</a>
               <a href='#'>Customers</a>
@@ -42,12 +42,7 @@ function Header() {
             <div className='flex items-end'>
               <ThemeButton />
             </div>
-            <Button
-              className=''
-              onClick={onOpen}
-            >
-              click me
-            </Button>
+            <Button onClick={onOpen}>click me</Button>
           </div>
         </div>
       </div>
