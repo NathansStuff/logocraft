@@ -31,9 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientProviders>
-          <body
-            className={clsx(geistSans.className, 'antialiased ')}
-          >
+          <body className={clsx(geistSans.className, 'antialiased ')}>
             {children}
           </body>
         </ClientProviders>

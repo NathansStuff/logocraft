@@ -2,7 +2,7 @@ import React from 'react';
 
 function PageLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='p-5 flex justify-center items-center w-full '>
+    <div className='p-5 flex justify-center items-center w-full md:px-20 lg:px-40'>
       <div className='container max-w-7xl'>{children}</div>
     </div>
   );

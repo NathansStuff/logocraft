@@ -9,7 +9,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useMobileNavigation } from '../hooks/useMobileNavigation';
 import Banner from './Banner';
-import ThemeButton from './ThemeButton';
 
 function Header() {
   const { onOpen } = useMobileNavigation();
@@ -58,7 +57,6 @@ function Header() {
                 {isLoggedIn ? 'Create Now' : 'Get Started for free'}
               </Link>
             </Button>
-            <ThemeButton />
           </div>
 
           {/* Mobile Menu Icon */}

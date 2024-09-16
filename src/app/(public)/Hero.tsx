@@ -4,6 +4,7 @@ import CogImage from '@/assets/cog.png';
 import CylinderImage from '@/assets/cylinder.png';
 import NoodleImage from '@/assets/noodle.png';
 import PageLayout from '@/components/container/PageLayout';
+import { Button } from '@/components/ui/button';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useRef } from 'react';
@@ -25,19 +26,22 @@ function Hero() {
           <div className='md:w-[478px]'>
             <div className='tag'>Version 2.0 is here</div>
             <h1 className='text-5xl font-bold tracking-tighter bg-gradient-to-b from-black to-[#001E80] text-transparent bg-clip-text mt-6'>
-              Pathway to productivity
+              Create Stunning Logos in Minutes
             </h1>
             <p className='text-xl text-[#010D3E] tracking-tight mt-6'>
-              Celebrate the joy of accomplishment with an app designed to track
-              your progress, motivate your efforts, and celebrate your
-              successes.
+              Unleash your creativity with our intuitive logo crafter. Customize
+              shapes, colors, and styles to design the perfect logo for your
+              brand.
             </p>
             <div className='flex gap-1 items-center mt-[30px]'>
-              <button className='btn btn-primary'>Get for free</button>
-              <button className='btn btn-text gap-1'>
+              <Button className=''>Get for free</Button>
+              <Button
+                variant='ghost'
+                className='btn btn-text gap-1'
+              >
                 <span>Learn more</span>
                 <ArrowRight className='size-4' />
-              </button>
+              </Button>
             </div>
           </div>
           <div className='mt-20 md:mt-0 md:h-[648px] md:flex-1 relative'>
