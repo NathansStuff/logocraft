@@ -19,7 +19,7 @@ function Header() {
     <header className='sticky top-0 backdrop-blur-sm z-20'>
       <Banner />
       <PageLayout>
-        <div className='flex items-center justify-between px-5'>
+        <div className='flex items-center justify-between'>
           {/* Left: Logo */}
           <div className='flex items-center'>
             <Image

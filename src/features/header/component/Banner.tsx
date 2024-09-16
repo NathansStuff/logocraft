@@ -9,7 +9,7 @@ function Banner() {
       </p>
       <div className='inline-flex gap-1 items-center dark:text-white'>
         <p className=''>Get started for free</p>
-        <ArrowRight className='w-4 h-4 inline-flex justify-center items-center' />
+        <ArrowRight className='size-4 inline-flex justify-center items-center' />
       </div>
     </div>
   );

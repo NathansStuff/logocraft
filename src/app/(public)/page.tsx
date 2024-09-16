@@ -1,11 +1,10 @@
-import SendLogButton from '@/features/log/component/SendLogButton';
+import Hero from './Hero';
 
 function HomePage() {
   return (
-    <div>
-      HomePage
-      <SendLogButton />
-    </div>
+    <>
+      <Hero />
+    </>
   );
 }
 

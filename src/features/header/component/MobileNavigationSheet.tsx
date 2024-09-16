@@ -23,7 +23,7 @@ function MobileNavigationSheet() {
       onOpenChange={onClose}
       direction='right'
     >
-      <DrawerContent className='dark:bg-black bg-white shadow-lg space-y-6 p-6 h-screen w-full sm:w-screen border-border'>
+      <DrawerContent className='bg-white shadow-lg space-y-6 p-6 h-screen w-full sm:w-screen border-border'>
         <div className='h-full flex flex-col gap-6 justify-center items-center'>
           <div className='w-full flex justify-center items-center'>
             <NavigationMenu>

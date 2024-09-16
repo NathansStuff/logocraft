@@ -1,4 +1,5 @@
 import ClientProviders from '@/providers/ClientProviders';
+import clsx from 'clsx';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
@@ -30,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientProviders>
-          <div className='bg-white text-black dark:bg-black dark:text-white dark:font-geist-sans dark:font-geist-mono min-h-screen'>
+          <body
+            className={clsx(geistSans.className, 'antialiased ')}
+          >
             {children}
-          </div>
+          </body>
         </ClientProviders>
       </body>
     </html>
