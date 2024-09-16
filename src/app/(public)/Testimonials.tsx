@@ -1,5 +1,6 @@
 'use client';
 
+import PageLayout from '@/components/container/PageLayout';
 import { testimonialData } from '@/data/testimonialsData';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -11,8 +12,8 @@ function Testimonials() {
   const thirdColumn = testimonialData.slice(6, 9);
 
   return (
-    <section className='bg-white'>
-      <div className='container'>
+    <section className='bg-white pt-5'>
+      <PageLayout>
         <div className='section-heading'>
           <div className='flex justify-center'>
             <div className='tag'>Testimonials</div>
@@ -40,7 +41,7 @@ function Testimonials() {
             duration={17}
           />
         </div>
-      </div>
+      </PageLayout>
     </section>
   );
 }

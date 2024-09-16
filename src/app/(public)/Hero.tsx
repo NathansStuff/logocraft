@@ -73,7 +73,7 @@ function Hero() {
               src={NoodleImage.src}
               width={220}
               alt='noodle'
-              className='hidden lg:block top-[564px] left-[448px] absolute rotate-[30deg]'
+              className='hidden xl:block top-[564px] left-[448px] 2xl:left-[548px] absolute rotate-[30deg]'
               style={{
                 rotate: 30,
                 translateY,

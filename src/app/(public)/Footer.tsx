@@ -1,4 +1,5 @@
 import Logo from '@/assets/logosaas.png';
+import PageLayout from '@/components/container/PageLayout';
 import { Instagram, Linkedin, Pin, X, Youtube } from 'lucide-react';
 
 import Image from 'next/image';
@@ -6,7 +7,7 @@ import Image from 'next/image';
 function Footer() {
   return (
     <footer className='bg-black text-[#BCBCBC] text-sm py-10 text-center'>
-      <div className='container'>
+      <PageLayout>
         <div className='inline-flex relative before:content-[""] before:h-full before:blur before:bottom-0 before:w-full before:bg-[linear-gradient(to_right,#F87BFF,#FB92CF,#FFDD9B,#C2F0B1,#2FD8FE)] before:absolute'>
           <Image
             src={Logo}
@@ -34,7 +35,7 @@ function Footer() {
         <p className='mt-6'>
           &copy; 2024 Your Company, Inc. All rights reserved.
         </p>
-      </div>
+      </PageLayout>
     </footer>
   );
 }

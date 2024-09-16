@@ -3,6 +3,7 @@
 import ProductImage from '@/assets/product-image.png';
 import PyramidImage from '@/assets/pyramid.png';
 import TubeImage from '@/assets/tube.png';
+import PageLayout from '@/components/container/PageLayout';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { useRef } from 'react';
@@ -19,7 +20,7 @@ function ProductShowcase() {
       ref={sectionRef}
       className='bg-gradient-to-b from-[#fff] to-[#d2dcff] overflow-x-clip'
     >
-      <div className='container'>
+      <PageLayout>
         <div className='section-heading'>
           <div className='flex justify-center'>
             <div className='tag'>Craft with Ease</div>
@@ -60,7 +61,7 @@ function ProductShowcase() {
             }}
           />
         </div>
-      </div>
+      </PageLayout>
     </section>
   );
 }

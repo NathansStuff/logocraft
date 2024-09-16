@@ -2,6 +2,7 @@
 
 import SpringImage from '@/assets/spring.png';
 import StarImage from '@/assets/star.png';
+import PageLayout from '@/components/container/PageLayout';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useRef } from 'react';
@@ -18,7 +19,7 @@ function CallToAction() {
       ref={sectionRef}
       className='bg-gradient-to-b from-white to-[#D2DCFF] py-24 overflow-x-clip'
     >
-      <div className='container'>
+      <PageLayout>
         <div className='section-heading relative'>
           <h2 className='section-title'>Sign up for free today</h2>
           <p className='section-description mt-5'>
@@ -51,7 +52,7 @@ function CallToAction() {
             <ArrowRight className='size-5' />
           </button>
         </div>
-      </div>
+      </PageLayout>
     </section>
   );
 }

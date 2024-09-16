@@ -1,5 +1,6 @@
 'use client';
 
+import PageLayout from '@/components/container/PageLayout';
 import { pricingTiers } from '@/data/pricingTiers';
 import { motion } from 'framer-motion';
 import { CheckIcon } from 'lucide-react';
@@ -8,7 +9,7 @@ import { twMerge } from 'tailwind-merge';
 function Pricing() {
   return (
     <section className='py-24'>
-      <div className='container'>
+      <PageLayout>
         <div className='section-heading'>
           <h2 className='section-title'>Pricing</h2>
           <p className='section-description mt-5'>
@@ -95,7 +96,7 @@ function Pricing() {
             );
           })}
         </div>
-      </div>
+      </PageLayout>
     </section>
   );
 }
