@@ -1,5 +1,5 @@
-import { Log, LogWithId } from '@/features/log/types/Log';
 import connectMongo from '@/lib/mongodb';
+import { Log, LogWithId } from '../types/Log';
 import { LogModel } from './logModel';
 
 // ***** Basic CRUD *****

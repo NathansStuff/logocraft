@@ -1,10 +1,15 @@
-import { Log } from '@/features/log/types/Log';
 import { Schema } from 'mongoose';
+import { Log } from '../types/Log';
 
 export const logSchema = new Schema<Log>(
   {
-    message: { type: String, required: true },
-    state: { type: Schema.Types.Mixed, required: true },
+    userId: { type: Schema.Types.ObjectId },
+    accountId: { type: Schema.Types.ObjectId },
+    action: { type: String, required: true },
+    ipAddress: { type: String },
+    status: { type: String, required: true },
+    details: { type: String },
+    additionalInfo: { type: Map },
   },
   { timestamps: true }
 );
