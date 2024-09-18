@@ -13,11 +13,11 @@ function Pricing() {
         <div className='section-heading'>
           <h2 className='section-title'>Pricing</h2>
           <p className='section-description mt-5'>
-            Free forever. Upgrade for unlimited tasks, better security and
+            Free forever. Upgrade for unlimited downloads, high quality images and
             exclusive features.
           </p>
         </div>
-        <div className='flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-end lg:justify-center'>
+        <div className='flex flex-col gap-6 items-center mt-10 lg:flex-row lg:items-start lg:justify-center'>
           {pricingTiers.map((tier, index) => {
             const {
               title,
@@ -31,14 +31,14 @@ function Pricing() {
               <div
                 key={index}
                 className={twMerge(
-                  'card',
+                  'card flex flex-col border-white bg-white h-full',
                   inverse && 'border-black bg-black text-white'
                 )}
               >
-                <div className='flex justify-between'>
+                <div className='flex justify-between h-[33px]'>
                   <h3
                     className={twMerge(
-                      'text-lg font-bold text-black/50',
+                      'text-lg font-bold text-black/50 ',
                       inverse && 'text-white/60'
                     )}
                   >
@@ -63,11 +63,16 @@ function Pricing() {
                     </div>
                   )}
                 </div>
-                <div className='flex items-baseline gap-1 mt-[30px]'>
+                <div className='flex items-baseline gap-1 mt-1'>
                   <span className='text-4xl font-bold tracking-tighter leading-none'>
                     ${monthlyPrice}
                   </span>
-                  <span className='tracking-tight font-bold text-black/50'>
+                  <span
+                    className={twMerge(
+                      'tracking-tight font-bold text-black/50',
+                      inverse && 'text-white/50'
+                    )}
+                  >
                     /month
                   </span>
                 </div>
@@ -79,14 +84,14 @@ function Pricing() {
                 >
                   {buttonText}
                 </button>
-                <ul className='flex flex-col gap-5 mt-8'>
+                <ul className='flex flex-col gap-3 mt-8 justify-start'>
                   {features.map((feature, index) => {
                     return (
                       <li
                         key={index}
-                        className='text-sm flex items-center gap-4'
+                        className='text-sm flex items-center gap-2'
                       >
-                        <CheckIcon className='size-6' />
+                        <CheckIcon className='size-4' />
                         <span>{feature}</span>
                       </li>
                     );
