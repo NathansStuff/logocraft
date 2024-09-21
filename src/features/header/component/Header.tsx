@@ -9,8 +9,11 @@ import Link from 'next/link';
 import Logo from '@/assets/logosaas.png';
 import PageLayout from '@/components/container/PageLayout';
 import { Button } from '@/components/ui/button';
-import { headerLinks } from '@/features/header/data/headerLinks';
-import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
+import { useAppSelector } from '@/contexts/storeHooks';
+import { selectIsAuthenticated } from '@/contexts/userSlice';
+
+import { useMobileNavigation } from '../hooks/useMobileNavigation';
+import { getHeaderLinks } from '../utils/getHeaderLinks';
 
 import Banner from './Banner';
 import { ProfileDropdown } from './ProfileDropdown';
@@ -18,7 +21,9 @@ import ThemeButton from './ThemeButton';
 
 function Header(): ReactNode {
   const { onOpen } = useMobileNavigation();
-  const isLoggedIn = true; //todo
+  const isLoggedIn = useAppSelector(selectIsAuthenticated);
+
+  const headerLinks = getHeaderLinks(isLoggedIn);
 
   return (
     <header className='sticky top-0 z-20 backdrop-blur-sm'>

@@ -13,12 +13,16 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Separator } from '@/components/ui/separator';
-import { headerLinks } from '@/features/header/data/headerLinks';
+import { useAppSelector } from '@/contexts/storeHooks';
+import { selectIsAuthenticated } from '@/contexts/userSlice';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
+
+import { getHeaderLinks } from '../utils/getHeaderLinks';
 
 function MobileNavigationSheet(): ReactNode {
   const { isOpen, onClose } = useMobileNavigation();
-  const isLoggedIn = true; //todo
+  const isLoggedIn = useAppSelector(selectIsAuthenticated);
+  const headerLinks = getHeaderLinks(isLoggedIn);
 
   return (
     <Drawer

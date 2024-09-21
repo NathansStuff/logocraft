@@ -19,12 +19,9 @@ export async function getUser(id: string): Promise<any> {
 }
 
 export async function loginUserAction(id: string): Promise<void> {
-  console.log('loginUserAction', id);
   try {
     const fetchedUser = await getUser(id);
-    console.log(' fetchedUser', fetchedUser);
     if (!fetchedUser) return;
-    console.log('setting user', fetchedUser);
     store.dispatch(
       setUser({
         ...fetchedUser,

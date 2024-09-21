@@ -1,14 +1,9 @@
 import { HeaderLink } from '@/features/header/types/HeaderLink';
 
-export const headerLinks: HeaderLink[] = [
+export const publicheaderLinks: HeaderLink[] = [
   {
-    title: 'Client',
-    href: '/clientPage',
-  },
-
-  {
-    title: 'Profile',
-    href: '/profile',
+    title: 'About',
+    href: '#',
   },
   {
     title: 'Updates',
@@ -17,5 +12,16 @@ export const headerLinks: HeaderLink[] = [
   {
     title: 'Help',
     href: '#',
+  },
+];
+
+export const privateheaderLinks: HeaderLink[] = [
+  {
+    title: 'Profile',
+    href: '/profile',
+  },
+  {
+    title: 'Guestbook',
+    href: '/guestbook',
   },
 ];
