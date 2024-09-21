@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
+import { Toaster } from 'sonner';
 
 import { store } from '@/contexts/store';
 
@@ -27,6 +28,7 @@ function ClientProviders({ children, session }: { children: ReactNode; session: 
             <AuthProvider>
               <AuthListener />
               <QueryProvider>
+                <Toaster position='top-right' />
                 <SheetProvider />
                 {children}
               </QueryProvider>

@@ -43,6 +43,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "simple-icons": "^13.10.0",
+    "sonner": "^1.5.0",
     "stripe": "^16.11.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
