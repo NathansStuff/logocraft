@@ -1,15 +1,14 @@
-import { NEXT_PUBLIC_BASE_URL } from '@/constants';
-import { getAccountByEmailService } from '@/features/account/server/accountService';
-import { verifyPassword } from '@/features/auth/utils/auth';
-import {
-  getUserByEmailService,
-  updateUserByIdService,
-} from '@/features/user/server/userService';
-import { createStripeCustomer } from '@/lib/stripe';
 import NextAuth, { Session } from 'next-auth';
 import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
+
+import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { getAccountByEmailService } from '@/features/account/server/accountService';
+import { verifyPassword } from '@/features/auth/utils/auth';
+import { getUserByEmailService, updateUserByIdService } from '@/features/user/server/userService';
+import { createStripeCustomer } from '@/lib/stripe';
+
 import { LoginRequest } from '../types/LoginRequest';
 
 declare module 'next-auth' {
@@ -63,10 +62,7 @@ export const authOptions = {
           throw new Error('Account is not a credentials account');
         }
 
-        const isValid = await verifyPassword(
-          credentials.password,
-          account.passwordHash
-        );
+        const isValid = await verifyPassword(credentials.password, account.passwordHash);
         if (!isValid) {
           throw new Error('Password is incorrect');
         }
@@ -85,13 +81,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({
-      user,
-      account,
-    }: {
-      user: any;
-      account: Account | null;
-    }): Promise<boolean> {
+    async signIn({ user, account }: { user: any; account: Account | null }): Promise<boolean> {
       console.log('signIn callback initiated');
 
       if (!account || !user.name || !user.email || !account.provider) {
@@ -100,11 +90,7 @@ export const authOptions = {
       }
 
       // Determine the provider ID
-      const providerId =
-        account.id ||
-        account.userId ||
-        account.sub ||
-        account.providerAccountId;
+      const providerId = account.id || account.userId || account.sub || account.providerAccountId;
       if (!providerId) {
         console.error('Provider ID is missing', { account });
         return false;
@@ -122,23 +108,16 @@ export const authOptions = {
 
       try {
         console.log('Calling login API', body);
-        const response = await fetch(
-          `${NEXT_PUBLIC_BASE_URL}/api/account/login`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-          }
-        );
+        const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/account/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
 
         if (!response.ok) {
-          console.error(
-            'Login API responded with an error',
-            response.status,
-            response.statusText
-          );
+          console.error('Login API responded with an error', response.status, response.statusText);
           return false;
         }
 
@@ -149,10 +128,7 @@ export const authOptions = {
 
         // Create Stripe customer if not exists
         if (!userData.stripeCustomerId) {
-          const stripeCustomer = await createStripeCustomer(
-            user.email,
-            user.name
-          );
+          const stripeCustomer = await createStripeCustomer(user.email, user.name);
           if (!stripeCustomer) {
             throw new Error('Stripe customer creation failed');
           }

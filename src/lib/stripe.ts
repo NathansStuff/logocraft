@@ -1,6 +1,7 @@
-import { NEXT_PUBLIC_STRIPE_PUBLIC_KEY } from '@/constants';
 import { loadStripe } from '@stripe/stripe-js';
 import { Stripe } from 'stripe';
+
+import { NEXT_PUBLIC_STRIPE_PUBLIC_KEY } from '@/constants';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 

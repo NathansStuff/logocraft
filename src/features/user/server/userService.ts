@@ -1,22 +1,11 @@
-import {
-  deleteAccountByIdService,
-  getAccountsByUserIdService,
-} from '@/features/account/server/accountService';
-import {
-  createUser,
-  deleteUserById,
-  getUserByEmail,
-  getUserById,
-  updateUserById,
-} from '../db/userDal';
+import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
+
+import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '../db/userDal';
 import { User, UserPartial, UserWithId } from '../types/User';
 
 // ***** Basic CRUD *****
 // Service to create a user
-export async function createUserService(
-  user: User,
-  ipAddress: string
-): Promise<UserWithId> {
+export async function createUserService(user: User, ipAddress: string): Promise<UserWithId> {
   const newUser = await createUser(user);
   // if (!user.isEmailVerified) {
   //   // Send verification email
@@ -39,9 +28,7 @@ export async function createUserService(
 }
 
 // Service to get a user by ID
-export async function getUserByIdService(
-  id: string
-): Promise<UserWithId | null> {
+export async function getUserByIdService(id: string): Promise<UserWithId | null> {
   return await getUserById(id);
 }
 
@@ -57,9 +44,7 @@ export async function updateUserByIdService(
   }
 
   // Check if there are new one-time purchases
-  const newPurchases = user.oneTimePurchases?.filter(
-    purchase => !existingUser.oneTimePurchases.includes(purchase)
-  );
+  const newPurchases = user.oneTimePurchases?.filter((purchase) => !existingUser.oneTimePurchases.includes(purchase));
 
   const updatedUser = await updateUserById(id, user, ipAddress);
 
@@ -95,11 +80,7 @@ export async function deleteUserByIdService(id: string): Promise<void> {
 
 // ***** Additional Functions *****
 // Service to find or create a user by email
-export async function findOrCreateUserByEmail(
-  email: string,
-  user: User,
-  ipAddress: string
-): Promise<UserWithId> {
+export async function findOrCreateUserByEmail(email: string, user: User, ipAddress: string): Promise<UserWithId> {
   let existingUser = await getUserByEmail(email);
   if (!existingUser) {
     existingUser = await createUserService(user, ipAddress);
@@ -108,9 +89,7 @@ export async function findOrCreateUserByEmail(
 }
 
 // Service to get a user by Email
-export async function getUserByEmailService(
-  email: string
-): Promise<UserWithId | null> {
+export async function getUserByEmailService(email: string): Promise<UserWithId | null> {
   return await getUserByEmail(email);
 }
 
@@ -129,20 +108,13 @@ export async function deleteUserAndAccounts(userId: string): Promise<void> {
 }
 
 // Service to validate a user's email
-export async function validateUserEmailService(
-  userId: string,
-  ipAddress: string | null
-): Promise<boolean> {
+export async function validateUserEmailService(userId: string, ipAddress: string | null): Promise<boolean> {
   const user = await getUserByIdService(userId);
   if (!user) {
     return false;
   }
 
-  const updatedUser = await updateUserByIdService(
-    userId,
-    { isEmailVerified: true },
-    ipAddress
-  );
+  const updatedUser = await updateUserByIdService(userId, { isEmailVerified: true }, ipAddress);
 
   return !!updatedUser;
 }

@@ -1,12 +1,10 @@
+import { ObjectId } from 'mongodb';
+
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
-import {
-  createUserService,
-  getUserByEmailService,
-  getUserByIdService,
-} from '@/features/user/server/userService';
+import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 import connectMongo from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+
 import {
   createAccount,
   deleteAccountById,
@@ -27,9 +25,7 @@ import { AccountPartial, AccountWithId } from '../types/Account';
 // }
 
 // Service to get a Account by ID
-export async function getAccountByIdService(
-  id: string
-): Promise<AccountWithId | null> {
+export async function getAccountByIdService(id: string): Promise<AccountWithId | null> {
   return await getAccountById(id);
 }
 
@@ -40,10 +36,7 @@ export async function getAccountByIdService(
 // }
 
 // Service to update a Account by ID
-export async function updateAccountByIdService(
-  id: string,
-  Account: AccountPartial
-): Promise<AccountWithId | null> {
+export async function updateAccountByIdService(id: string, Account: AccountPartial): Promise<AccountWithId | null> {
   return await updateAccountById(id, Account);
 }
 
@@ -54,15 +47,8 @@ export async function deleteAccountByIdService(id: string): Promise<void> {
 
 // ***** Additional Functions *****
 // Service to link account to a user
-export async function linkAccountToUser(
-  user: UserWithId,
-  provider: string,
-  providerId: string
-): Promise<void> {
-  const existingAccount = await getAccountByProviderAndProviderId(
-    provider,
-    providerId
-  );
+export async function linkAccountToUser(user: UserWithId, provider: string, providerId: string): Promise<void> {
+  const existingAccount = await getAccountByProviderAndProviderId(provider, providerId);
   if (!existingAccount) {
     await createAccount({
       userId: user._id,
@@ -74,15 +60,9 @@ export async function linkAccountToUser(
 }
 
 // Service to handle user login or account creation
-export async function handleUserLoginOrCreate(
-  request: LoginRequest,
-  ipAddress: string
-): Promise<UserWithId | null> {
+export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: string): Promise<UserWithId | null> {
   const { provider, providerId, name, email, imageUrl } = request;
-  const existingAccount = await getAccountByProviderAndProviderId(
-    provider,
-    providerId
-  );
+  const existingAccount = await getAccountByProviderAndProviderId(provider, providerId);
   console.log('existingAccount', existingAccount);
 
   // If account exists, return associated user

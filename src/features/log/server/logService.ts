@@ -1,4 +1,5 @@
 import { Log, LogWithId } from '@/features/log/types/Log';
+
 import { createLog, getAllLogs } from '../db/logDal';
 
 // ***** Basic CRUD *****

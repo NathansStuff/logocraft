@@ -1,11 +1,12 @@
+import React, { ReactNode } from 'react';
+
 import Header from '@/features/header/component/Header';
-import React from 'react';
 
 type Props = {
   children: React.ReactNode;
 };
 
-function PublicLayout({ children }: Props) {
+function PublicLayout({ children }: Props): ReactNode {
   return (
     <div className='bg-[#EAEEFE]'>
       <Header />

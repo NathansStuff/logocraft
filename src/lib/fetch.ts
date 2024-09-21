@@ -1,5 +1,6 @@
-import { ApiResponse } from '@/types/ApiResponse';
 import axios, { AxiosResponse } from 'axios';
+
+import { ApiResponse } from '@/types/ApiResponse';
 
 export async function getRequest<T>(url: string): Promise<ApiResponse<T>> {
   try {
@@ -16,10 +17,7 @@ export async function getRequest<T>(url: string): Promise<ApiResponse<T>> {
   }
 }
 
-export async function updateRequest<T>(
-  url: string,
-  data: any
-): Promise<ApiResponse<T>> {
+export async function updateRequest<T>(url: string, data: any): Promise<ApiResponse<T>> {
   try {
     const response: AxiosResponse<T> = await axios.put(url, data);
     return {
@@ -33,10 +31,7 @@ export async function updateRequest<T>(
   }
 }
 
-export async function postRequest<T>(
-  url: string,
-  data: any
-): Promise<ApiResponse<T>> {
+export async function postRequest<T>(url: string, data: any): Promise<ApiResponse<T>> {
   try {
     const response: AxiosResponse<T> = await axios.post(url, data);
     return {
@@ -50,10 +45,7 @@ export async function postRequest<T>(
   }
 }
 
-export async function deleteRequest<T>(
-  url: string,
-  apiKey?: string
-): Promise<ApiResponse<T>> {
+export async function deleteRequest<T>(url: string, apiKey?: string): Promise<ApiResponse<T>> {
   try {
     const headers = apiKey ? { 'x-api-key': apiKey } : undefined;
     const response: AxiosResponse<T> = await axios.delete(url, { headers });

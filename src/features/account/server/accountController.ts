@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { ResponseCode } from '@/types/ResponseCode';
+import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
 
-import { LoginRequest } from '@/features/auth/types/LoginRequest';
-import { getIpAddress } from '@/utils/getIpAddress';
 import { AccountPartial } from '../types/Account';
 import { ValidateTokenRequest } from '../types/ValidateTokenRequest';
+
 import {
   deleteAccountByIdService,
   getAccountByIdService,
@@ -31,54 +32,37 @@ import {
 // }
 
 // Handler to get a Account by ID
-export async function getAccountHandler(
-  req: NextRequest
-): Promise<NextResponse> {
+export async function getAccountHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
   const Account = await getAccountByIdService(id);
   if (!Account) {
-    return NextResponse.json(
-      { message: 'Account not found' },
-      { status: ResponseCode.NOT_FOUND }
-    );
+    return NextResponse.json({ message: 'Account not found' }, { status: ResponseCode.NOT_FOUND });
   }
   return NextResponse.json(Account, { status: ResponseCode.OK });
 }
 
 // Handler to update a Account by ID
-export async function updateAccountHandler(
-  req: NextRequest
-): Promise<NextResponse> {
+export async function updateAccountHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
   const data = await req.json();
   const safeBody = AccountPartial.parse(data);
   const updatedAccount = await updateAccountByIdService(id, safeBody);
   if (!updatedAccount) {
-    return NextResponse.json(
-      { message: 'Account not found' },
-      { status: ResponseCode.NOT_FOUND }
-    );
+    return NextResponse.json({ message: 'Account not found' }, { status: ResponseCode.NOT_FOUND });
   }
   return NextResponse.json(updatedAccount, { status: ResponseCode.OK });
 }
 
 // Handler to delete a Account by ID
-export async function deleteAccountHandler(
-  req: NextRequest
-): Promise<NextResponse> {
+export async function deleteAccountHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
   await deleteAccountByIdService(id);
-  return NextResponse.json(
-    { message: 'Account deleted successfully' },
-    { status: ResponseCode.OK }
-  );
+  return NextResponse.json({ message: 'Account deleted successfully' }, { status: ResponseCode.OK });
 }
 
 // ***** Additional Functions *****
 // Handler to handle user login or account creation
-export async function accountLoginHandler(
-  req: NextRequest
-): Promise<NextResponse> {
+export async function accountLoginHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
   const safeBody = LoginRequest.parse(data);
   const ipAddress = getIpAddress(req);
@@ -96,9 +80,7 @@ export async function accountLoginHandler(
 //   return NextResponse.json({ message: 'Password reset request received' }, { status: ResponseCode.OK });
 // }
 
-export async function validateTokenHandler(
-  req: NextRequest
-): Promise<NextResponse> {
+export async function validateTokenHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
   const safeBody = ValidateTokenRequest.parse(data);
   const valid = await validateToken(safeBody.token);

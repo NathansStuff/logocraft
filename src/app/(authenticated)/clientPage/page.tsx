@@ -1,11 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
-function ClientPage() {
+import { Button } from '@/components/ui/button';
+
+function ClientPage(): ReactNode {
   const [count, setCount] = useState(0);
-  function handleClick() {
+  function handleClick(): void {
     setCount(count + 1);
   }
   return (

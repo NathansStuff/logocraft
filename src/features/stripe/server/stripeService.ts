@@ -1,11 +1,11 @@
-import { stripe } from '@/lib/stripe';
 import Stripe from 'stripe';
+
+import { stripe } from '@/lib/stripe';
+
 import { products } from '../data/products';
 
 // Get customer by email
-export async function getStripeCustomerByEmail(
-  email: string
-): Promise<Stripe.Customer | null> {
+export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {
   const customers = await stripe.customers.list({
     email: email,
     limit: 1, // Assuming email is unique; adjust if needed
@@ -19,21 +19,17 @@ export async function getStripeCustomerByEmail(
 }
 
 // Get Successful Charges for a customer
-export async function getSuccessfulChargesForCustomer(
-  customerId: string
-): Promise<Stripe.Charge[]> {
+export async function getSuccessfulChargesForCustomer(customerId: string): Promise<Stripe.Charge[]> {
   const charges = await stripe.charges.list({
     customer: customerId,
     limit: 100, // Adjust the limit as needed
   });
 
-  return charges.data.filter(charge => charge.status === 'succeeded');
+  return charges.data.filter((charge) => charge.status === 'succeeded');
 }
 
 // Get all successful charges for a customer by email
-export async function getSuccessfulChargesByEmail(
-  email: string
-): Promise<Stripe.Charge[]> {
+export async function getSuccessfulChargesByEmail(email: string): Promise<Stripe.Charge[]> {
   const customer = await getStripeCustomerByEmail(email);
   if (!customer) {
     return [];
@@ -43,10 +39,7 @@ export async function getSuccessfulChargesByEmail(
 }
 
 // Retrieve or create a customer
-export async function getOrCreateStripeCustomer(
-  customerId: string | null,
-  email: string
-): Promise<Stripe.Customer> {
+export async function getOrCreateStripeCustomer(customerId: string | null, email: string): Promise<Stripe.Customer> {
   if (customerId) {
     const customer = await stripe.customers.retrieve(customerId);
     if (customer) return customer as Stripe.Customer;
@@ -68,7 +61,7 @@ export async function createPaymentIntent(
   userId: string
 ): Promise<Stripe.PaymentIntent> {
   // Find the product based on the priceId
-  const product = products.find(p => p.priceId === priceId);
+  const product = products.find((p) => p.priceId === priceId);
 
   if (!product) {
     throw new Error('Product not found');
@@ -137,11 +130,7 @@ export async function createSubscriptionIntent(
   // Check if the latest_invoice is an object and has a payment_intent
   const latestInvoice = subscription.latest_invoice;
 
-  if (
-    latestInvoice &&
-    typeof latestInvoice !== 'string' &&
-    latestInvoice.payment_intent
-  ) {
+  if (latestInvoice && typeof latestInvoice !== 'string' && latestInvoice.payment_intent) {
     const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent;
     if (paymentIntent.client_secret) {
       return paymentIntent.client_secret;

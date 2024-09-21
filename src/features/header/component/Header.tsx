@@ -1,13 +1,16 @@
 'use client';
 
+import { MenuIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import Logo from '@/assets/logosaas.png';
 import PageLayout from '@/components/container/PageLayout';
 import { Button } from '@/components/ui/button';
 import { headerLinks } from '@/features/header/data/headerLinks';
-import { MenuIcon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
+
 import { useMobileNavigation } from '../hooks/useMobileNavigation';
+
 import Banner from './Banner';
 
 function Header() {
@@ -15,7 +18,7 @@ function Header() {
   const isLoggedIn = true; //todo
 
   return (
-    <header className='sticky top-0 backdrop-blur-sm z-20'>
+    <header className='sticky top-0 z-20 backdrop-blur-sm'>
       <Banner />
       <PageLayout>
         <div className='flex items-center justify-between'>
@@ -30,13 +33,13 @@ function Header() {
           </div>
 
           {/* Middle: Navigation Links */}
-          <nav className='hidden md:flex flex-1 justify-center'>
-            <div className='flex gap-6 items-center'>
+          <nav className='hidden flex-1 justify-center md:flex'>
+            <div className='flex items-center gap-6'>
               {headerLinks.map((link, index) => (
                 <Link
                   href={link.href}
                   key={index}
-                  className='hover:text-primary/60 transition-colors duration-200'
+                  className='transition-colors duration-200 hover:text-primary/60'
                 >
                   {link.title}
                 </Link>
@@ -45,7 +48,7 @@ function Header() {
           </nav>
 
           {/* Right: Get Started Button + Theme Button */}
-          <div className='hidden md:flex items-end gap-4'>
+          <div className='hidden items-end gap-4 md:flex'>
             <Button
               asChild
               className='btn btn-primary'
@@ -61,7 +64,7 @@ function Header() {
 
           {/* Mobile Menu Icon */}
           <MenuIcon
-            className='size-5 md:hidden text-primary cursor-pointer hover:text-primary/60 transition-colors duration-200'
+            className='size-5 cursor-pointer text-primary transition-colors duration-200 hover:text-primary/60 md:hidden'
             onClick={onOpen}
           />
         </div>

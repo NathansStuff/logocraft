@@ -1,6 +1,7 @@
 import { getUser } from '@/apiCalls/user/getUser';
 import { store } from '@/contexts/store';
 import { setUser } from '@/contexts/userSlice';
+
 import { updateStripeCustomer } from '../stripe/updateStripeCustomer';
 
 export async function loginUserAction(id: string): Promise<void> {

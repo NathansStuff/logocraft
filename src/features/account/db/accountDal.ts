@@ -1,11 +1,11 @@
-import connectMongo from '@/lib/mongodb';
-
 import { TOKEN_EXPIRY_TIME } from '@/constants';
+import { Account, AccountPartial, AccountWithId } from '@/features/account/types/Account';
 import { createLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
 import { Log } from '@/features/log/types/Log';
-import { Account, AccountPartial, AccountWithId } from '../types/Account';
+import connectMongo from '@/lib/mongodb';
+
 import { AccountModel } from './accountModel';
 
 // ***** Basic CRUD *****
@@ -70,38 +70,26 @@ export async function getAccountByProviderAndProviderId(
   return result ? result.toObject() : null;
 }
 
-export async function getAccountByEmail(
-  email: string
-): Promise<AccountWithId | null> {
+export async function getAccountByEmail(email: string): Promise<AccountWithId | null> {
   await connectMongo();
   return await AccountModel.findOne({ email });
 }
 
-export async function getAccountsByUserId(
-  userId: string
-): Promise<AccountWithId[]> {
+export async function getAccountsByUserId(userId: string): Promise<AccountWithId[]> {
   await connectMongo();
   return await AccountModel.find({ userId });
 }
 
 // Save a reset token to the Account
-export async function saveResetTokenToAccount(
-  email: string,
-  resetToken: string
-): Promise<void> {
+export async function saveResetTokenToAccount(email: string, resetToken: string): Promise<void> {
   await connectMongo();
   const expirationTime = new Date(Date.now() + TOKEN_EXPIRY_TIME);
 
-  await AccountModel.updateOne(
-    { email },
-    { $set: { resetToken, resetTokenExpiry: expirationTime } }
-  );
+  await AccountModel.updateOne({ email }, { $set: { resetToken, resetTokenExpiry: expirationTime } });
 }
 
 // Check if a reset token is valid
-export async function getAccountByResetToken(
-  resetToken: string
-): Promise<AccountWithId | null> {
+export async function getAccountByResetToken(resetToken: string): Promise<AccountWithId | null> {
   await connectMongo();
   const account = await AccountModel.findOne({ resetToken });
   return account;

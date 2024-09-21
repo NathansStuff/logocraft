@@ -1,11 +1,12 @@
-import connectMongo from '@/lib/mongodb';
-
 import { Account } from '@/features/account/types/Account';
 import { createLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
 import { Log } from '@/features/log/types/Log';
+import connectMongo from '@/lib/mongodb';
+
 import { User, UserPartial, UserWithId } from '../types/User';
+
 import { UserModel } from './userModel';
 
 // ***** Basic CRUD *****
@@ -31,11 +32,7 @@ export async function getAllUsers(): Promise<UserWithId[]> {
 }
 
 // Update a User
-export async function updateUserById(
-  id: string,
-  User: UserPartial,
-  ipAddress?: string | null
-): Promise<UserWithId> {
+export async function updateUserById(id: string, User: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
   await connectMongo();
   const result = await UserModel.findByIdAndUpdate(id, User, { new: true });
   const log: Log = {
@@ -58,9 +55,7 @@ export async function deleteUserById(id: string): Promise<void> {
 
 // ***** Additional Functions *****
 // Get User by Email
-export async function getUserByEmail(
-  email: string
-): Promise<UserWithId | null> {
+export async function getUserByEmail(email: string): Promise<UserWithId | null> {
   await connectMongo();
   const result = await UserModel.findOne({ email });
   return result ? result.toObject() : null;

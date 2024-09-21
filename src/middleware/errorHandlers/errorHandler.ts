@@ -1,4 +1,5 @@
 import { ResponseCode } from '@/types/ResponseCode';
+
 import { returnErrorHandler } from './returnErrorHandler';
 
 export function errorHandler(error: Error) {

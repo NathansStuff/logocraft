@@ -1,25 +1,27 @@
 'use client';
 
+import { ReactNode } from 'react';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+
 import acmeLogo from '@/assets/logo-acme.png';
 import apexLogo from '@/assets/logo-apex.png';
 import celestialLogo from '@/assets/logo-celestial.png';
 import echoLogo from '@/assets/logo-echo.png';
 import pulseLogo from '@/assets/logo-pulse.png';
 import quantumLogo from '@/assets/logo-quantum.png';
-
 import PageLayout from '@/components/container/PageLayout';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
 
-function LogoTicker() {
+function LogoTicker(): ReactNode {
   return (
-    <div className='py-8 bg-white md:py-12'>
+    <div className='bg-white py-8 md:py-12'>
       {' '}
       <PageLayout>
         <div className='container'>
           <div className='flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black,transparent)]'>
             <motion.div
-              className='flex gap-14 flex-none pr-14'
+              className='flex flex-none gap-14 pr-14'
               animate={{
                 translateX: '-50%',
               }}

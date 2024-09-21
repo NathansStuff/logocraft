@@ -1,13 +1,15 @@
 'use client';
 
+import { ReactNode, useRef } from 'react';
+
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+
 import SpringImage from '@/assets/spring.png';
 import StarImage from '@/assets/star.png';
 import PageLayout from '@/components/container/PageLayout';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { useRef } from 'react';
 
-function CallToAction() {
+function CallToAction(): ReactNode {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -17,14 +19,14 @@ function CallToAction() {
   return (
     <section
       ref={sectionRef}
-      className='bg-gradient-to-b from-white to-[#D2DCFF] py-24 overflow-x-clip'
+      className='overflow-x-clip bg-sky-700 bg-gradient-to-b from-white to-[#D2DCFF] px-4 py-24 text-white'
     >
       <PageLayout>
         <div className='section-heading relative'>
           <h2 className='section-title'>Sign up for free today</h2>
           <p className='section-description mt-5'>
-            Celebrate your creativity with an app designed to craft unique logos
-            effortlessly and bring your brand to life.
+            Celebrate your creativity with an app designed to craft unique logos effortlessly and bring your brand to
+            life.
           </p>
           <motion.img
             src={StarImage.src}
@@ -45,7 +47,7 @@ function CallToAction() {
             }}
           />
         </div>
-        <div className='flex gap-2 mt-10 justify-center'>
+        <div className='mt-10 flex justify-center gap-2'>
           <button className='btn btn-primary'>Get for free</button>
           <button className='btn btn-text'>
             <span>Learn more</span>

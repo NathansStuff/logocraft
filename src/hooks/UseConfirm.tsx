@@ -1,25 +1,19 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from '@/components/ui/dialog';
-import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
-function UseConfirm(
-  title: string,
-  message: string
-): [() => JSX.Element, () => Promise<unknown>] {
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
+
+function UseConfirm(title: string, message: string): [() => JSX.Element, () => Promise<unknown>] {
   const [promise, setPromise] = useState<{
     resolve: (value: boolean) => void;
   } | null>(null);
 
   const confirm = () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       setPromise({ resolve });
     });
 

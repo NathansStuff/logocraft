@@ -1,7 +1,8 @@
-import { SheetState } from '@/types/SheetState';
 import { create } from 'zustand';
 
-export const useMobileNavigation = create<SheetState>(set => ({
+import { SheetState } from '@/types/SheetState';
+
+export const useMobileNavigation = create<SheetState>((set) => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

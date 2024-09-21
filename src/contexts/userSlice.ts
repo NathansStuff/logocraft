@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ETier } from '@/enums/ETiers';
-import { SubscriptionPlan } from '@/types/SubscriptionPlan';
+import { ETier } from '@/features/user/types/ETiers';
+import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
+
 import { RootState } from './store';
 
 export interface IUser {

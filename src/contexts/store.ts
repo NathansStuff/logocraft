@@ -4,6 +4,7 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
 import { NEXT_PUBLIC_ENVIRONMENT } from '@/constants';
+
 import { displayReducer } from './displaySlice';
 import { userReducer } from './userSlice';
 

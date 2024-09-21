@@ -6,7 +6,6 @@ export const LoginRequest = z.object({
   imageUrl: z.string().url().optional().nullable(),
   provider: z.string(),
   providerId: z.string(),
-  
 });
 
 export type LoginRequest = z.infer<typeof LoginRequest>;

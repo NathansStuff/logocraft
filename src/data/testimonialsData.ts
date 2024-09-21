@@ -16,7 +16,7 @@ export const testimonialData = [
     username: '@jamietechguru00',
   },
   {
-    text: "Our startup's branding looks so professional now, thanks to this logo crafter!",
+    text: 'Our startup\'s branding looks so professional now, thanks to this logo crafter!',
     imageSrc: avatar2.src,
     name: 'Josh Smith',
     username: '@jjsmith',

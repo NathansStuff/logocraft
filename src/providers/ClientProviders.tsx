@@ -1,15 +1,10 @@
 'use client';
 
-import { AuthListener } from './AuthListener';
 import { QueryProvider } from './QueryProvider';
 import SheetProvider from './SheetProvider';
 import { ThemeProvider } from './ThemeProvider';
 
-function ClientProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}): JSX.Element {
+function ClientProviders({ children }: { children: React.ReactNode }): JSX.Element {
   return (
     <>
       <ThemeProvider
@@ -17,12 +12,12 @@ function ClientProviders({
         defaultTheme='system'
         enableSystem
       >
-        <AuthListener>
-          <QueryProvider>
-            <SheetProvider />
-            {children}
-          </QueryProvider>
-        </AuthListener>
+        {/* <AuthListener> */}
+        <QueryProvider>
+          <SheetProvider />
+          {children}
+        </QueryProvider>
+        {/* </AuthListener> */}
       </ThemeProvider>
     </>
   );

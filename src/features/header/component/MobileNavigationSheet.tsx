@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import {
@@ -10,7 +12,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Separator } from '@/components/ui/separator';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
-import Link from 'next/link';
+
 import { headerLinks } from '../data/headerLinks';
 
 function MobileNavigationSheet() {
@@ -23,11 +25,11 @@ function MobileNavigationSheet() {
       onOpenChange={onClose}
       direction='right'
     >
-      <DrawerContent className='bg-white shadow-lg space-y-6 p-6 h-screen w-full sm:w-screen border-border'>
-        <div className='h-full flex flex-col gap-6 justify-center items-center'>
-          <div className='w-full flex justify-center items-center'>
+      <DrawerContent className='h-screen w-full space-y-6 border-border bg-white p-6 shadow-lg sm:w-screen'>
+        <div className='flex h-full flex-col items-center justify-center gap-6'>
+          <div className='flex w-full items-center justify-center'>
             <NavigationMenu>
-              <NavigationMenuList className='flex flex-col items-center w-full gap-3 text-primary'>
+              <NavigationMenuList className='flex w-full flex-col items-center gap-3 text-primary'>
                 {headerLinks.map((link, index) => (
                   <NavigationMenuItem
                     key={index}
@@ -38,7 +40,7 @@ function MobileNavigationSheet() {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink className='hover:text-primary-foreground transition-colors duration-200'>
+                      <NavigationMenuLink className='transition-colors duration-200 hover:text-primary-foreground'>
                         {link.title}
                       </NavigationMenuLink>
                     </Link>

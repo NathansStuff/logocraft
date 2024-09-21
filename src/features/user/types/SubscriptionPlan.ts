@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { ESubscriptionPlan } from './ESubscriptionPlan';
 
 export const SubscriptionPlan = z.object({

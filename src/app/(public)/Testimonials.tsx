@@ -1,12 +1,14 @@
 'use client';
 
-import PageLayout from '@/components/container/PageLayout';
-import { testimonialData } from '@/data/testimonialsData';
+import React, { ReactNode } from 'react';
+
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import React from 'react';
 
-function Testimonials() {
+import PageLayout from '@/components/container/PageLayout';
+import { testimonialData } from '@/data/testimonialsData';
+
+function Testimonials(): ReactNode {
   const firstColumn = testimonialData.slice(0, 3);
   const secondColumn = testimonialData.slice(3, 6);
   const thirdColumn = testimonialData.slice(6, 9);
@@ -20,12 +22,11 @@ function Testimonials() {
           </div>
           <h2 className='section-title mt-5'>What Our Users Are Crafting</h2>
           <p className='section-description mt-5'>
-            From effortless customization to stunning designs, our logo crafter
-            app has become an invaluable tool for creators and businesses
-            worldwide.
+            From effortless customization to stunning designs, our logo crafter app has become an invaluable tool for
+            creators and businesses worldwide.
           </p>
         </div>
-        <div className='flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] mt-10 max-h-[738px] overflow-hidden'>
+        <div className='mt-10 flex max-h-[738px] justify-center gap-6 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]'>
           <TestimonialsColumns
             testimonials={firstColumn}
             duration={15}
@@ -54,11 +55,11 @@ type Props = {
   duration?: number;
 };
 
-function TestimonialsColumns({ testimonials, className, duration }: Props) {
+function TestimonialsColumns({ testimonials, className, duration }: Props): ReactNode {
   return (
     <div className={className}>
       <motion.div
-        className='-translate-y-1/2 pb-6 flex flex-col gap-6'
+        className='flex -translate-y-1/2 flex-col gap-6 pb-6'
         animate={{ translateY: '-50%' }}
         transition={{
           repeat: Infinity,
@@ -77,7 +78,7 @@ function TestimonialsColumns({ testimonials, className, duration }: Props) {
                   className='card'
                 >
                   <div>{text}</div>
-                  <div className='flex items-center gap-2 mt-5'>
+                  <div className='mt-5 flex items-center gap-2'>
                     <Image
                       src={imageSrc}
                       alt={name}
@@ -86,12 +87,8 @@ function TestimonialsColumns({ testimonials, className, duration }: Props) {
                       className='h-10 w-10 rounded-full'
                     />
                     <div className='flex flex-col'>
-                      <div className='font-medium tracking-tight leading-5'>
-                        {name}
-                      </div>
-                      <div className='tracking-tighter leading-5'>
-                        {username}
-                      </div>
+                      <div className='font-medium leading-5 tracking-tight'>{name}</div>
+                      <div className='leading-5 tracking-tighter'>{username}</div>
                     </div>
                   </div>
                 </div>

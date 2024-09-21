@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useCreateLog } from '@/features/log/api/useCreateLog';
+
 import { Log } from '../types/Log';
 
 function SendLogButton() {
@@ -9,7 +10,7 @@ function SendLogButton() {
 
   function onClick() {
     const logToSave: Log = {
-      message: `Test log `,
+      message: 'Test log ',
       state: {},
     };
 

@@ -1,4 +1,5 @@
-import { Suspense, lazy } from 'react';
+import { lazy, ReactNode, Suspense } from 'react';
+
 import Hero from './Hero';
 import SkeletonHomePage from './SkeletonHomePage';
 
@@ -10,7 +11,7 @@ const Testimonials = lazy(() => import('./Testimonials'));
 const CallToAction = lazy(() => import('./CallToAction'));
 const Footer = lazy(() => import('./Footer'));
 
-function HomePage() {
+function HomePage(): ReactNode {
   return (
     <>
       <Hero />

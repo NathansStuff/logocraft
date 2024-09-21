@@ -1,13 +1,14 @@
-import { ResponseCode } from '@/types/ResponseCode';
 import { NextRequest, NextResponse } from 'next/server';
+
+import { ResponseCode } from '@/types/ResponseCode';
+
 import { CreateLogResponse } from '../types/CreateLogResponse';
 import { Log } from '../types/Log';
+
 import { createLogService } from './logService';
 
 // Handler to create a new Log
-export async function createLogHandler(
-  req: NextRequest
-): Promise<NextResponse<CreateLogResponse>> {
+export async function createLogHandler(req: NextRequest): Promise<NextResponse<CreateLogResponse>> {
   const data = await req.json();
   const safeBody = Log.parse(data);
   await createLogService(safeBody);
