@@ -1,12 +1,20 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { Provider } from 'react-redux';
 
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+
+import { store } from '@/contexts/store';
+
+import { AuthListener } from './AuthListener';
+import { AuthProvider } from './AuthProvider';
 import { QueryProvider } from './QueryProvider';
 import SheetProvider from './SheetProvider';
 import { ThemeProvider } from './ThemeProvider';
 
-function ClientProviders({ children }: { children: ReactNode }): ReactNode {
+function ClientProviders({ children, session }: { children: ReactNode; session: Session | null }): ReactNode {
   return (
     <>
       <ThemeProvider
@@ -14,12 +22,17 @@ function ClientProviders({ children }: { children: ReactNode }): ReactNode {
         defaultTheme='system'
         enableSystem
       >
-        {/* <AuthListener> */}
-        <QueryProvider>
-          <SheetProvider />
-          {children}
-        </QueryProvider>
-        {/* </AuthListener> */}
+        <Provider store={store}>
+          <SessionProvider session={session}>
+            <AuthProvider>
+              <AuthListener />
+              <QueryProvider>
+                <SheetProvider />
+                {children}
+              </QueryProvider>
+            </AuthProvider>
+          </SessionProvider>
+        </Provider>
       </ThemeProvider>
     </>
   );

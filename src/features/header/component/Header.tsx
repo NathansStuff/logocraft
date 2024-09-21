@@ -13,6 +13,8 @@ import { headerLinks } from '@/features/header/data/headerLinks';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
 
 import Banner from './Banner';
+import { ProfileDropdown } from './ProfileDropdown';
+import ThemeButton from './ThemeButton';
 
 function Header(): ReactNode {
   const { onOpen } = useMobileNavigation();
@@ -47,7 +49,6 @@ function Header(): ReactNode {
               ))}
             </div>
           </nav>
-
           {/* Right: Get Started Button + Theme Button */}
           <div className='hidden items-end gap-4 md:flex'>
             <Button
@@ -55,14 +56,15 @@ function Header(): ReactNode {
               className='btn btn-primary'
             >
               <Link
-                href={isLoggedIn ? '/app' : '/signup'}
+                href={isLoggedIn ? '/' : '/'}
                 passHref
               >
                 {isLoggedIn ? 'Create Now' : 'Get Started for free'}
               </Link>
             </Button>
+            <ThemeButton />
+            <ProfileDropdown />
           </div>
-
           {/* Mobile Menu Icon */}
           <MenuIcon
             className='size-5 cursor-pointer text-primary transition-colors duration-200 hover:text-primary/60 md:hidden'

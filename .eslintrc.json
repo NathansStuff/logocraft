@@ -1,9 +1,10 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
-      "plugins": ["unused-imports", "simple-import-sort"],
+      "plugins": ["unused-imports", "simple-import-sort", "n"],
   "rules":{
     "prefer-arrow-callback": ["error"],
     "prefer-template": ["error"],
+    "n/no-process-env": ["error"],
     "quotes": ["error", "single"],
         "unused-imports/no-unused-imports": "error",
         "no-restricted-imports": [
