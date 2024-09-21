@@ -1,37 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog';
 
-function UseConfirm(title: string, message: string): [() => JSX.Element, () => Promise<unknown>] {
+function UseConfirm(title: string, message: string): [() => ReactNode, () => Promise<unknown>] {
   const [promise, setPromise] = useState<{
     resolve: (value: boolean) => void;
   } | null>(null);
 
-  const confirm = () =>
+  const confirm = (): Promise<unknown> =>
     new Promise((resolve) => {
       setPromise({ resolve });
     });
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setPromise(null);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = (): void => {
     promise?.resolve(true);
     handleClose();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     promise?.resolve(false);
     handleClose();
   };
 
-  function ConfirmationDialog(): JSX.Element {
+  function ConfirmationDialog(): ReactNode {
     return (
       <Dialog open={promise !== null}>
         <DialogContent>

@@ -3,7 +3,7 @@ import logger from 'redux-logger';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 
-import { NEXT_PUBLIC_ENVIRONMENT } from '@/constants';
+import { env } from '@/constants';
 
 import { displayReducer } from './displaySlice';
 import { userReducer } from './userSlice';
@@ -27,7 +27,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export function setupStore() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const middleware: any[] = [];
-  if (NEXT_PUBLIC_ENVIRONMENT !== 'production' && NEXT_PUBLIC_ENVIRONMENT !== 'test') {
+  if (env.NEXT_PUBLIC_ENVIRONMENT !== 'production' && env.NEXT_PUBLIC_ENVIRONMENT !== 'test') {
     middleware.push(logger);
   }
 
@@ -45,7 +45,7 @@ export function setupStore() {
   const persistor = persistStore(store);
 
   // Purge persisted state in development mode to avoid hydration issues
-  if (NEXT_PUBLIC_ENVIRONMENT === 'development') {
+  if (env.NEXT_PUBLIC_ENVIRONMENT === 'development') {
     persistor.purge();
   }
 

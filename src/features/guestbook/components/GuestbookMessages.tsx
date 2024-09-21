@@ -1,11 +1,13 @@
-import { GuestbookMessageWithUser } from '../types/GuestbookMessageWithUser';
-
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import Image from 'next/image';
-import { FaUserCircle } from 'react-icons/fa';
-import { formatDateRange } from '@/utils/formatDate';
 import { ReactNode } from 'react';
+import { FaUserCircle } from 'react-icons/fa';
+
+import Image from 'next/image';
+
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { formatDateRange } from '@/utils/formatDate';
+
+import { GuestbookMessageWithUser } from '../types/GuestbookMessageWithUser';
 
 type Props = {
   messages: GuestbookMessageWithUser[];
@@ -13,7 +15,7 @@ type Props = {
 
 function GuestbookMessages({ messages }: Props): ReactNode {
   return (
-    <div className='hover:scrollbar-thumb-sky-500 active:scrollbar-thumb-sky-400 scrollbar-corner-rounded-full scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thin scrollbar-thumb-primary-muted scrollbar-track-primary-muted h-[500px] overflow-y-auto'>
+    <div className='scrollbar-thumb-primary-muted scrollbar-track-primary-muted h-[500px] overflow-y-auto scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-corner-rounded-full hover:scrollbar-thumb-sky-500 active:scrollbar-thumb-sky-400'>
       {messages.map((entry: GuestbookMessageWithUser, i) => (
         <Card
           key={i}

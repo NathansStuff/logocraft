@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+import { env } from '@/constants';
+
+const MONGODB_URI = env.MONGODB_URI;
 const cached: { connection?: typeof mongoose; promise?: Promise<typeof mongoose> } = {};
 async function connectMongo(): Promise<typeof mongoose> {
   if (!MONGODB_URI) {

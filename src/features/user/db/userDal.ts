@@ -1,5 +1,5 @@
 import { Account } from '@/features/account/types/Account';
-import { createLogService } from '@/features/log/server/logService';
+import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
 import { Log } from '@/features/log/types/Log';
@@ -35,14 +35,13 @@ export async function updateUserById(id: string, User: UserPartial, ipAddress?: 
   await connectMongo();
   const result = await UserModel.findByIdAndUpdate(id, User, { new: true });
   const log: Log = {
-    accountId: null,
     userId: result._id,
     action: ELogType.USER_UPDATE,
     status: ELogStatus.SUCCESS,
     additionalInfo: { updatedFields: Object.keys(Account) },
     ipAddress: ipAddress ?? null,
   };
-  await createLogService(log);
+  await createServerLogService(log);
   return result;
 }
 

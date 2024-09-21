@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { ResponseCode } from '@/types/ResponseCode';
 
-import { createguestbookMessageService, getAllGuestbookMessagesService } from './guestbookMessageService';
 import { GuestbookMessageRequest } from '../types/GuestbookMessageRequest';
-import { GuestbookMessage } from '../types/GuestbookMessage';
-import { ObjectId } from 'mongodb';
+
+import { createguestbookMessageService, getAllGuestbookMessagesService } from './guestbookMessageService';
 
 export async function createGuestbookMessageHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();

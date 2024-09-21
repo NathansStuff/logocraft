@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { env } from '@/constants';
 import { getRequest } from '@/lib/fetch';
 
 import { GuestbookMessageWithUser } from '../types/GuestbookMessageWithUser';
@@ -12,7 +12,7 @@ export function useGetGuestbookMessages() {
   const query = useQuery({
     queryKey: ['guestbookMessages'],
     queryFn: async () => {
-      const response = await getRequest<ResponseType>(`${NEXT_PUBLIC_BASE_URL}/api/guestbook-message`);
+      const response = await getRequest<ResponseType>(`${env.NEXT_PUBLIC_BASE_URL}/api/guestbook-message`);
       return response.data;
     },
   });

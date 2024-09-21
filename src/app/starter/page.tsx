@@ -1,10 +1,8 @@
 import { ReactNode } from 'react';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { env } from '@/constants/serverEnv';
 
 function StarterPage(): ReactNode {
-  console.log(env.NODE_ENV);
   return (
     <Card className='mx-auto mt-4 max-w-md'>
       <CardHeader>

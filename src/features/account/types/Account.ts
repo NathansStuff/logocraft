@@ -14,5 +14,9 @@ export const Account = z.object({
 export const AccountPartial = Account.partial();
 
 export type Account = z.infer<typeof Account>;
-export type AccountWithId = WithId<Account>;
+export type AccountWithId = WithId<Account> & {
+  _id: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+};
 export type AccountPartial = z.infer<typeof AccountPartial>;

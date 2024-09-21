@@ -1,6 +1,6 @@
 import { TOKEN_EXPIRY_TIME } from '@/constants';
 import { Account, AccountPartial, AccountWithId } from '@/features/account/types/Account';
-import { createLogService } from '@/features/log/server/logService';
+import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
 import { Log } from '@/features/log/types/Log';
@@ -41,14 +41,13 @@ export async function updateAccountById(
     new: true,
   });
   const log: Log = {
-    accountId: result._id,
     userId: null,
     action: ELogType.ACCOUNT_UPDATE,
     status: ELogStatus.SUCCESS,
     additionalInfo: { updatedFields: Object.keys(Account) },
     ipAddress: ipAddress ?? null,
   };
-  await createLogService(log);
+  await createServerLogService(log);
 
   return result;
 }

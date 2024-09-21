@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { env } from '@/constants';
 import { postRequest } from '@/lib/fetch';
 
 import { GuestbookMessageWithId } from '../types/GuestbookMessage';
@@ -15,7 +15,7 @@ export const useCreateGuestbookMessage = () => {
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await postRequest<ResponseType>(`${NEXT_PUBLIC_BASE_URL}/api/guestbook-message`, json);
+      const response = await postRequest<ResponseType>(`${env.NEXT_PUBLIC_BASE_URL}/api/guestbook-message`, json);
       return response.data;
     },
     onSuccess: () => {

@@ -7,4 +7,3 @@ export const MAX_LOGIN_ATTEMPTS = 5;
 // ***** Services *****
 export const EMAIL_PROVIDER: string = 'node';
 export const NEXT_PUBLIC_API_CLIENT: string = 'axios';
-export const REDIS_ENABLED: string = 'false';

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 
-function getOrdinalSuffix(day: number) {
+function getOrdinalSuffix(day: number): 'th' | 'st' | 'nd' | 'rd' {
   if (day > 3 && day < 21) return 'th'; // catch 11th, 12th, 13th
   switch (day % 10) {
     case 1:
@@ -14,7 +14,7 @@ function getOrdinalSuffix(day: number) {
   }
 }
 
-export function formatDateRange(date: Date) {
+export function formatDateRange(date: Date): string {
   const day = format(date, 'd');
   const monthYear = format(date, 'MMMM yyyy');
   const dayWithSuffix = `${day}${getOrdinalSuffix(Number(day))}`;

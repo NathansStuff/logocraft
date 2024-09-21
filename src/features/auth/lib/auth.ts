@@ -3,7 +3,7 @@ import { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
-import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { env } from '@/constants';
 import { getAccountByEmailService } from '@/features/account/server/accountService';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { verifyPassword } from '@/features/auth/utils/auth';
@@ -38,8 +38,8 @@ interface Account {
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -108,7 +108,7 @@ export const authOptions = {
 
       try {
         console.log('Calling login API', body);
-        const response = await fetch(`${NEXT_PUBLIC_BASE_URL}/api/account/login`, {
+        const response = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/account/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

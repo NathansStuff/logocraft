@@ -60,7 +60,7 @@ export async function linkAccountToUser(user: UserWithId, provider: string, prov
 
 // Service to handle user login or account creation
 export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: string): Promise<UserWithId | null> {
-  const { provider, providerId, name, email, imageUrl } = request;
+  const { provider, providerId, name, email } = request;
   const existingAccount = await getAccountByProviderAndProviderId(provider, providerId);
   console.log('existingAccount', existingAccount);
 
@@ -87,9 +87,10 @@ export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: 
     {
       name,
       email,
-      imageUrl: imageUrl ?? undefined,
-      accountActive: false,
-      isEmailVerified: provider !== 'credentials', // If not credentials, assume email is verified as this will be handled by the provider (eg Google)
+      activeSubscription: false,
+      isEmailVerified: true,
+      oneTimePurchases: [],
+      currentPlan: null,
     },
     ipAddress
   );
@@ -98,7 +99,7 @@ export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: 
   return newUser;
 }
 
-export async function getAccountByEmailService(email: string) {
+export async function getAccountByEmailService(email: string): Promise<AccountWithId | null> {
   return await getAccountByEmail(email);
 }
 
@@ -108,7 +109,7 @@ export async function createAccountService(
   providerId: string,
   email: string,
   passwordHash: string
-) {
+): Promise<AccountWithId> {
   await connectMongo();
   const account = await createAccount({
     userId,
@@ -120,7 +121,7 @@ export async function createAccountService(
   return account;
 }
 
-export async function getAccountsByUserIdService(userId: string) {
+export async function getAccountsByUserIdService(userId: string): Promise<AccountWithId[]> {
   return await getAccountsByUserId(userId);
 }
 
@@ -158,7 +159,7 @@ export async function getAccountsByUserIdService(userId: string) {
 //   await sendEmail(emailTemplate);
 // }
 
-export async function validateToken(token: string) {
+export async function validateToken(token: string): Promise<boolean> {
   const account = await getAccountByResetToken(token);
   if (!account || !account.resetTokenExpiry) {
     return false;

@@ -1,4 +1,4 @@
-import { GuestbookMessage, GuestbookMessageWithId } from './GuestbookMessage';
+import { GuestbookMessageWithId } from './GuestbookMessage';
 
 export interface GuestbookMessageWithUser extends Omit<GuestbookMessageWithId, 'userId'> {
   userId: {

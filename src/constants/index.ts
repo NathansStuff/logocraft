@@ -1,3 +1,2 @@
-export * from './clientConstants';
-export * from './configConstants';
-export * from './serverConstants';
+export * from './config';
+export * from './env';

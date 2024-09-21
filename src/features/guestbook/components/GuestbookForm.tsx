@@ -8,10 +8,10 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUserId } from '@/contexts/userSlice';
 
-import { Textarea } from '@/components/ui/textarea';
 import { useCreateGuestbookMessage } from '../api/useCreateGuestbookMessage';
 import { GuestbookMessageRequest } from '../types/GuestbookMessageRequest';
 
@@ -51,7 +51,7 @@ function GuestbookForm(): ReactNode {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className='flex w-full pt-5 flex-col items-center justify-center space-y-8'
+        className='flex w-full flex-col items-center justify-center space-y-8 pt-5'
       >
         <div className='w-full'>
           <FormField

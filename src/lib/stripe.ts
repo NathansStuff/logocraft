@@ -1,11 +1,11 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { Stripe } from 'stripe';
 
-import { NEXT_PUBLIC_STRIPE_PUBLIC_KEY } from '@/constants';
+import { env } from '@/constants';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY!);
 
-export const createStripeCustomer = async (email: string, name: string) => {
+export const createStripeCustomer = async (email: string, name: string): Promise<Stripe.Response<Stripe.Customer> | null> => {
   try {
     const customer = await stripe.customers.create({
       email,
@@ -18,6 +18,7 @@ export const createStripeCustomer = async (email: string, name: string) => {
   }
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function getStripeCustomer(customerId: string | undefined, email: string) {
   let customer;
   if (customerId) {
@@ -38,4 +39,4 @@ export async function getStripeCustomer(customerId: string | undefined, email: s
   return customer;
 }
 
-export const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+export const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);

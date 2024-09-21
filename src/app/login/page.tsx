@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BiLogoGoogle } from 'react-icons/bi';
 
 import { useRouter } from 'next/navigation';
@@ -8,7 +8,7 @@ import { signIn, useSession } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button'; // Assuming you have a Button component
 
-const SignIn = () => {
+const SignIn = (): React.JSX.Element => {
   const router = useRouter();
   const { data: session } = useSession();
 

@@ -6,6 +6,7 @@ import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 // Service to create a user
 export async function createUserService(user: User, ipAddress: string): Promise<UserWithId> {
   const newUser = await createUser(user);
+  console.log(ipAddress);
   // if (!user.isEmailVerified) {
   //   // Send verification email
   //   const { subject, body } = verifyEmailTemplate(

@@ -1,14 +1,15 @@
 //todo
 
-import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { env } from '@/constants';
 import { store } from '@/contexts/store';
 import { setUser } from '@/contexts/userSlice';
 import { UserWithId } from '@/features/user/types/User';
 import { getRequest } from '@/lib/fetch';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getUser(id: string): Promise<any> {
   try {
-    const url = `${NEXT_PUBLIC_BASE_URL}/api/user/${id}`;
+    const url = `${env.NEXT_PUBLIC_BASE_URL}/api/user/${id}`;
     const response = await getRequest<UserWithId>(url);
 
     return response.data;

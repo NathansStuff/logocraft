@@ -7,7 +7,6 @@ import { ELogType } from './ELogType';
 // Define the Log schema
 export const Log = z.object({
   userId: z.instanceof(ObjectId).nullable(),
-  accountId: z.instanceof(ObjectId).nullable(),
   action: z.nativeEnum(ELogType),
   ipAddress: z.string().nullable(),
   status: z.nativeEnum(ELogStatus),
