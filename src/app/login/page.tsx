@@ -23,7 +23,7 @@ function SignInPage(): React.JSX.Element {
             Forgot your password?{' '}
             <Link
               href='/reset-password'
-              className='text-primary underline'
+              className='text-link'
             >
               Reset it here
             </Link>
@@ -32,7 +32,7 @@ function SignInPage(): React.JSX.Element {
             Don&apos;t have an account?{' '}
             <Link
               href='/signup'
-              className='text-primary underline'
+              className='text-link'
             >
               Sign up
             </Link>

@@ -1,6 +1,10 @@
+import { env } from '@/constants';
 import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
+import { sendEmail } from '@/features/email';
+import { Email } from '@/features/email/Email';
 import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
+import { resendEmailVerificationTemplate } from '@/templates/email/resendEmailVerificationTemplate';
 
 // ***** Basic CRUD *****
 // Service to create a user
@@ -120,26 +124,23 @@ export async function validateUserEmailService(userId: string, ipAddress: string
 }
 
 // Service to resend email verification
-// export async function resendEmailVerificationService(
-//   userId: string,
-//   ipAddress: string
-// ): Promise<void> {
-//   const user = await getUserByIdService(userId);
-//   if (!user) {
-//     return;
-//   }
+export async function resendEmailVerificationService(userId: string, ipAddress: string): Promise<void> {
+  const user = await getUserByIdService(userId);
+  if (!user) {
+    return;
+  }
 
-//   const { subject, body } = resendEmailVerificationTemplate(
-//     user.name,
-//     `${NEXT_PUBLIC_BASE_URL}/verify-email/${userId}`
-//   );
-//   const emailTemplate: Email = {
-//     to: user.email,
-//     subject,
-//     body,
-//     userId: user._id,
-//     accountId: null,
-//     ipAddress,
-//   };
-//   await sendEmail(emailTemplate);
-// }
+  const { subject, body } = resendEmailVerificationTemplate(
+    user.name,
+    `${env.NEXT_PUBLIC_BASE_URL}/verify-email/${userId}`
+  );
+  const emailTemplate: Email = {
+    to: user.email,
+    subject,
+    body,
+    userId: user._id,
+    accountId: null,
+    ipAddress,
+  };
+  await sendEmail(emailTemplate);
+}

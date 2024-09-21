@@ -5,16 +5,16 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
-function LoggedOutOnly(): React.JSX.Element {
+function LoggedInOnly(): React.JSX.Element {
   const router = useRouter();
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user) {
+    if (!session?.user) {
       router.push('/');
     }
   }, [session, router]);
   return <></>;
 }
 
-export default LoggedOutOnly;
+export default LoggedInOnly;

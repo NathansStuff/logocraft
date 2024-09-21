@@ -95,4 +95,8 @@
   .card {
     @apply p-10 rounded-3xl border border-[#F1F1F1] shadow-[0_7px_14px_#EAEAEA] max-w-xs w-full;
   }
+
+  .text-link {
+    @apply text-primary underline hover:text-primary/80
+  }
 }

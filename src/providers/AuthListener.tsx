@@ -19,8 +19,6 @@ export function AuthListener(): null {
 
   // Sync authentication between NextAuth and Redux
   useEffect(() => {
-    console.log('Authentication sync started');
-    console.log('user', user, 'stateUser', stateUser);
     if (!user && stateUser.email) {
       dispatch(logout());
     } else if (user?.email && user.email !== stateUser.email) {
@@ -58,10 +56,8 @@ export function AuthListener(): null {
       const isLoggedIn = stateUser?.isAuthenticated;
 
       if (isLoggedIn && !isLoaded) {
-        console.log('User is authenticated');
         dispatch(setIsLoaded(true));
       } else if (!isLoggedIn && isLoaded) {
-        console.log('User is authenticated, but state does not reflect this');
         dispatch(setIsLoaded(false));
       }
     }

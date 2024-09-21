@@ -23,7 +23,7 @@ function SignUpPage(): React.JSX.Element {
             Already have an account?{' '}
             <Link
               href='/login'
-              className='text-primary underline'
+              className='text-link'
             >
               Log In
             </Link>

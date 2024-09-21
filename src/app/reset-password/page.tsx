@@ -1,9 +1,15 @@
-import React from 'react'
+import React from 'react';
+
+import LoggedOutOnly from '@/components/container/LoggedOutOnly';
 
 function ResetPasswordPage(): React.JSX.Element {
   return (
-    <div>ResetPasswordPage</div>
-  )
+    <>
+      <LoggedOutOnly />
+
+      <div>ResetPasswordPage</div>
+    </>
+  );
 }
 
-export default ResetPasswordPage
+export default ResetPasswordPage;

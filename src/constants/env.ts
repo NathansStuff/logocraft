@@ -16,6 +16,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     NEXTAUTH_URL: z.string().url(),
+    REDIS_HOST: z.string(),
+    REDIS_PORT: z.string(),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.nativeEnum(Environment),
@@ -39,6 +41,8 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
   },
   emptyStringAsUndefined: true,
 });

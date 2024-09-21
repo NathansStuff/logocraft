@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 
+import VerifedOnly from '@/components/container/VerifiedOnly';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardHeader } from '@/components/ui/card';
 import { selectEmail, selectName, selectProfilePicture } from '@/contexts/userSlice';
@@ -25,6 +26,7 @@ function ProfilePage(): ReactNode {
 
   return (
     <>
+      <VerifedOnly />
       <Card className='mx-auto mt-10 max-w-lg text-center'>
         <CardHeader className='flex flex-row items-center justify-center gap-2'>
           <Avatar>
