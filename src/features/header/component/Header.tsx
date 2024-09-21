@@ -9,6 +9,8 @@ import Link from 'next/link';
 import Logo from '@/assets/logosaas.png';
 import PageLayout from '@/components/container/PageLayout';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { selectIsLoaded } from '@/contexts/displaySlice';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectIsAuthenticated } from '@/contexts/userSlice';
 
@@ -19,9 +21,14 @@ import Banner from './Banner';
 import { ProfileDropdown } from './ProfileDropdown';
 import ThemeButton from './ThemeButton';
 
+function HeaderSkeleton(): ReactNode {
+  return <Skeleton className='h-8 w-[90%]' />;
+}
+
 function Header(): ReactNode {
   const { onOpen } = useMobileNavigation();
   const isLoggedIn = useAppSelector(selectIsAuthenticated);
+  const isLoaded = useAppSelector(selectIsLoaded);
 
   const headerLinks = getHeaderLinks(isLoggedIn);
 
@@ -41,42 +48,50 @@ function Header(): ReactNode {
               />
             </Link>
           </div>
+          {!isLoaded ? (
+            <HeaderSkeleton />
+          ) : (
+            <>
+              {/* Middle: Navigation Links */}
+              <nav className='hidden flex-1 justify-center md:flex'>
+                <div className='flex items-center gap-6'>
+                  {headerLinks.map((link, index) => (
+                    <Link
+                      href={link.href}
+                      key={index}
+                      className='transition-colors duration-200 hover:text-primary/60'
+                    >
+                      {link.title}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+              {/* Right: Get Started Button + Theme Button */}
 
-          {/* Middle: Navigation Links */}
-          <nav className='hidden flex-1 justify-center md:flex'>
-            <div className='flex items-center gap-6'>
-              {headerLinks.map((link, index) => (
-                <Link
-                  href={link.href}
-                  key={index}
-                  className='transition-colors duration-200 hover:text-primary/60'
+              <div className='hidden items-end gap-4 md:flex'>
+                <Button
+                  asChild
+                  className='btn btn-primary'
                 >
-                  {link.title}
-                </Link>
-              ))}
-            </div>
-          </nav>
-          {/* Right: Get Started Button + Theme Button */}
-          <div className='hidden items-end gap-4 md:flex'>
-            <Button
-              asChild
-              className='btn btn-primary'
-            >
-              <Link
-                href={isLoggedIn ? '/' : '/'}
-                passHref
-              >
-                {isLoggedIn ? 'Create Now' : 'Get Started for free'}
-              </Link>
-            </Button>
-            <ThemeButton />
-            <ProfileDropdown />
-          </div>
-          {/* Mobile Menu Icon */}
-          <MenuIcon
-            className='size-5 cursor-pointer text-primary transition-colors duration-200 hover:text-primary/60 md:hidden'
-            onClick={onOpen}
-          />
+                  <Link
+                    href={isLoggedIn ? '/' : '/'}
+                    passHref
+                  >
+                    {isLoggedIn ? 'Create Now' : 'Get Started for free'}
+                  </Link>
+                </Button>
+                <div className='flex gap-1'>
+                  <ThemeButton />
+                  <ProfileDropdown />
+                </div>
+              </div>
+              {/* Mobile Menu Icon */}
+              <MenuIcon
+                className='size-5 cursor-pointer text-primary transition-colors duration-200 hover:text-primary/60 md:hidden'
+                onClick={onOpen}
+              />
+            </>
+          )}
         </div>
       </PageLayout>
     </header>

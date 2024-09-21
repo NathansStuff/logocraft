@@ -2,25 +2,25 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { RootState } from './store';
 export interface DisplaySlice {
-  isModalOpen: boolean;
+  isLoaded: boolean;
 }
 
 const initialDisplayState: DisplaySlice = {
-  isModalOpen: false,
+  isLoaded: true,
 };
 
 const displaySlice = createSlice({
   name: 'display',
   initialState: initialDisplayState,
   reducers: {
-    setIsModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isModalOpen = action.payload;
+    setIsLoaded: (state, action: PayloadAction<boolean>) => {
+      state.isLoaded = action.payload;
     },
   },
 });
 
-export const { setIsModalOpen } = displaySlice.actions;
+export const { setIsLoaded } = displaySlice.actions;
 
-export const selectIsModalOpen = (state: RootState): boolean => state.display.isModalOpen;
+export const selectIsLoaded = (state: RootState): boolean => state.display.isLoaded;
 
 export const displayReducer = displaySlice.reducer;
