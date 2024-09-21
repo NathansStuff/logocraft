@@ -1,10 +1,12 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 import { QueryProvider } from './QueryProvider';
 import SheetProvider from './SheetProvider';
 import { ThemeProvider } from './ThemeProvider';
 
-function ClientProviders({ children }: { children: React.ReactNode }): JSX.Element {
+function ClientProviders({ children }: { children: ReactNode }): ReactNode {
   return (
     <>
       <ThemeProvider

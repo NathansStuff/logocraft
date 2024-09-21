@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
 import { ResponseCode } from '@/types/ResponseCode';
@@ -8,7 +9,7 @@ import { errorHandler } from './errorHandlers/errorHandler';
 import { returnErrorHandler } from './errorHandlers/returnErrorHandler';
 import { zodErrorHandler } from './errorHandlers/zodErrorHandler';
 
-export async function TryCatchMiddleware<T>(asyncFunction: () => Promise<T>) {
+export async function TryCatchMiddleware<T>(asyncFunction: () => Promise<T>): Promise<T | NextResponse<object>> {
   try {
     return await asyncFunction();
   } catch (error: unknown) {

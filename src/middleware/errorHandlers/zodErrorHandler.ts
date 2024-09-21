@@ -1,10 +1,11 @@
+import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
 import { ResponseCode } from '@/types/ResponseCode';
 
 import { returnErrorHandler } from './returnErrorHandler';
 
-export function zodErrorHandler(error: ZodError) {
+export function zodErrorHandler(error: ZodError): NextResponse<object> {
   const parsedErrors = JSON.parse(error.message);
   // Map over the parsed errors and create a formatted string for each
   const formattedErrors = parsedErrors.map(

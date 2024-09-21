@@ -1,11 +1,13 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 
-function ThemeButton(): JSX.Element {
+function ThemeButton(): ReactNode {
   const { theme, setTheme } = useTheme();
   return (
     <Button

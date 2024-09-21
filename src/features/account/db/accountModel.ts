@@ -1,6 +1,6 @@
 import { model, models } from 'mongoose';
 
-import { Account } from '../types/Account';
+import { Account } from '@/features/account/types/Account';
 
 import { accountSchema } from './accountSchema';
 

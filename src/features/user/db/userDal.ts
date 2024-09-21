@@ -3,9 +3,8 @@ import { createLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
 import { Log } from '@/features/log/types/Log';
+import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 import connectMongo from '@/lib/mongodb';
-
-import { User, UserPartial, UserWithId } from '../types/User';
 
 import { UserModel } from './userModel';
 

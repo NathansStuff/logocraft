@@ -4,6 +4,6 @@ import { SheetState } from '@/types/SheetState';
 
 export const useMobileNavigation = create<SheetState>((set) => ({
   isOpen: false,
-  onOpen: () => set({ isOpen: true }),
-  onClose: () => set({ isOpen: false }),
+  onOpen: (): void => set({ isOpen: true }),
+  onClose: (): void => set({ isOpen: false }),
 }));

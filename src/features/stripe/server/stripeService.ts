@@ -1,8 +1,7 @@
 import Stripe from 'stripe';
 
+import { products } from '@/features/stripe/data/products';
 import { stripe } from '@/lib/stripe';
-
-import { products } from '../data/products';
 
 // Get customer by email
 export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {

@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-import { Log } from '../types/Log';
+import { Log } from '@/features/log/types/Log';
 
 export const logSchema = new Schema<Log>(
   {

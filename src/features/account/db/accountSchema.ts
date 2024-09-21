@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-import { Account } from '../types/Account';
+import { Account } from '@/features/account/types/Account';
 
 export const accountSchema = new Schema<Account>(
   {

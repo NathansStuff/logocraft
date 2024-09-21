@@ -5,11 +5,10 @@ import GoogleProvider from 'next-auth/providers/google';
 
 import { NEXT_PUBLIC_BASE_URL } from '@/constants';
 import { getAccountByEmailService } from '@/features/account/server/accountService';
+import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { verifyPassword } from '@/features/auth/utils/auth';
 import { getUserByEmailService, updateUserByIdService } from '@/features/user/server/userService';
 import { createStripeCustomer } from '@/lib/stripe';
-
-import { LoginRequest } from '../types/LoginRequest';
 
 declare module 'next-auth' {
   interface Session {
@@ -81,6 +80,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, account }: { user: any; account: Account | null }): Promise<boolean> {
       console.log('signIn callback initiated');
 
@@ -143,7 +143,7 @@ export const authOptions = {
         return false;
       }
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }): Promise<string> {
       console.log('Redirecting to', url);
       // If the URL contains the plan parameters, use it
 
@@ -153,7 +153,7 @@ export const authOptions = {
       console.log('Redirecting to', redirectUrl);
       return redirectUrl;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
       console.log('Session callback initiated');
       if (session.user) {
         session.user.id = token.id as string;
@@ -162,7 +162,8 @@ export const authOptions = {
       }
       return session;
     },
-    async jwt({ token, user }: { token: JWT; user: any }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async jwt({ token, user }: { token: JWT; user: any }): Promise<JWT> {
       console.log('JWT callback initiated');
       if (user) {
         token.id = user.id;

@@ -1,14 +1,15 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useCreateLog } from '@/features/log/api/useCreateLog';
+import { Log } from '@/features/log/types/Log';
 
-import { Log } from '../types/Log';
-
-function SendLogButton() {
+function SendLogButton(): ReactNode {
   const mutation = useCreateLog();
 
-  function onClick() {
+  function onClick(): void {
     const logToSave: Log = {
       message: 'Test log ',
       state: {},

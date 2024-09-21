@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { User, UserPartial } from '@/features/user/types/User';
 import { ResponseCode } from '@/types/ResponseCode';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
-
-import { User, UserPartial } from '../types/User';
 
 import {
   createUserService,
@@ -12,7 +11,6 @@ import {
   deleteUserByIdService,
   findOrCreateUserByEmail,
   getUserByIdService,
-  resendEmailVerificationService,
   updateUserByIdService,
   validateUserEmailService,
 } from './userService';
@@ -91,9 +89,9 @@ export async function validateUserEmailHandler(req: NextRequest): Promise<NextRe
 }
 
 // Handler to resend a verification email
-export async function resendVerificationEmailHandler(req: NextRequest): Promise<NextResponse> {
-  const userId = getLastSegment(req.nextUrl.pathname);
-  const ipAddress = getIpAddress(req);
-  await resendEmailVerificationService(userId, ipAddress);
-  return NextResponse.json({ message: 'Verification email sent' }, { status: ResponseCode.OK });
-}
+// export async function resendVerificationEmailHandler(req: NextRequest): Promise<NextResponse> {
+//   const userId = getLastSegment(req.nextUrl.pathname);
+//   const ipAddress = getIpAddress(req);
+//   await resendEmailVerificationService(userId, ipAddress);
+//   return NextResponse.json({ message: 'Verification email sent' }, { status: ResponseCode.OK });
+// }

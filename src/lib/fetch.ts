@@ -17,6 +17,7 @@ export async function getRequest<T>(url: string): Promise<ApiResponse<T>> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateRequest<T>(url: string, data: any): Promise<ApiResponse<T>> {
   try {
     const response: AxiosResponse<T> = await axios.put(url, data);
@@ -31,6 +32,7 @@ export async function updateRequest<T>(url: string, data: any): Promise<ApiRespo
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postRequest<T>(url: string, data: any): Promise<ApiResponse<T>> {
   try {
     const response: AxiosResponse<T> = await axios.post(url, data);

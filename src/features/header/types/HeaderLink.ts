@@ -1,4 +1,6 @@
+import { Route } from 'next';
+
 export interface HeaderLink {
   title: string;
-  href: string;
+  href: Route;
 }

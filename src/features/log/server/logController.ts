@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { CreateLogResponse } from '@/features/log/types/CreateLogResponse';
+import { Log } from '@/features/log/types/Log';
 import { ResponseCode } from '@/types/ResponseCode';
-
-import { CreateLogResponse } from '../types/CreateLogResponse';
-import { Log } from '../types/Log';
 
 import { createLogService } from './logService';
 

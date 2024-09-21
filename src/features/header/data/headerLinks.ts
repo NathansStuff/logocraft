@@ -1,13 +1,13 @@
-import { HeaderLink } from '../types/HeaderLink';
+import { HeaderLink } from '@/features/header/types/HeaderLink';
 
 export const headerLinks: HeaderLink[] = [
   {
     title: 'About',
-    href: '#',
+    href: '/logout',
   },
   {
     title: 'Features',
-    href: '#',
+    href: '/#',
   },
   {
     title: 'Customers',

@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { NEXT_PUBLIC_BASE_URL } from '@/constants/constants';
+import { NEXT_PUBLIC_BASE_URL } from '@/constants';
+import { Log, LogWithId } from '@/features/log/types/Log';
 import { postRequest } from '@/lib/fetch';
-
-import { Log, LogWithId } from '../types/Log';
 
 type RequestType = Log;
 type ResponseType = LogWithId;
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useCreateLog = () => {
   const queryClient = useQueryClient();
 

@@ -1,6 +1,6 @@
 import { model, models } from 'mongoose';
 
-import { Log } from '../types/Log';
+import { Log } from '@/features/log/types/Log';
 
 import { logSchema } from './logSchema';
 

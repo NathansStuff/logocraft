@@ -1,5 +1,7 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 import { MenuIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,12 +10,11 @@ import Logo from '@/assets/logosaas.png';
 import PageLayout from '@/components/container/PageLayout';
 import { Button } from '@/components/ui/button';
 import { headerLinks } from '@/features/header/data/headerLinks';
-
-import { useMobileNavigation } from '../hooks/useMobileNavigation';
+import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
 
 import Banner from './Banner';
 
-function Header() {
+function Header(): ReactNode {
   const { onOpen } = useMobileNavigation();
   const isLoggedIn = true; //todo
 

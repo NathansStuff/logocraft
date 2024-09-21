@@ -1,7 +1,6 @@
 import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
-
-import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '../db/userDal';
-import { User, UserPartial, UserWithId } from '../types/User';
+import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '@/features/user/db/userDal';
+import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 
 // ***** Basic CRUD *****
 // Service to create a user

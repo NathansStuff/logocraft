@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { AccountPartial } from '@/features/account/types/Account';
+import { ValidateTokenRequest } from '@/features/account/types/ValidateTokenRequest';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { ResponseCode } from '@/types/ResponseCode';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
-
-import { AccountPartial } from '../types/Account';
-import { ValidateTokenRequest } from '../types/ValidateTokenRequest';
 
 import {
   deleteAccountByIdService,

@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-import { User } from '../types/User';
+import { User } from '@/features/user/types/User';
 
 export const userSchema = new Schema<User>(
   {

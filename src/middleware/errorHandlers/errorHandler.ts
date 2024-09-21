@@ -1,8 +1,10 @@
+import { NextResponse } from 'next/server';
+
 import { ResponseCode } from '@/types/ResponseCode';
 
 import { returnErrorHandler } from './returnErrorHandler';
 
-export function errorHandler(error: Error) {
+export function errorHandler(error: Error): NextResponse<object> {
   if (error.message) {
     if (error.message.includes('E11000')) {
       console.log(error.message);

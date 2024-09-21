@@ -1,6 +1,5 @@
+import { createLog, getAllLogs } from '@/features/log/db/logDal';
 import { Log, LogWithId } from '@/features/log/types/Log';
-
-import { createLog, getAllLogs } from '../db/logDal';
 
 // ***** Basic CRUD *****
 // Service to create a Log

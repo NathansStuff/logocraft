@@ -1,6 +1,6 @@
 import { model, models } from 'mongoose';
 
-import { User } from '../types/User';
+import { User } from '@/features/user/types/User';
 
 import { userSchema } from './userSchema';
 

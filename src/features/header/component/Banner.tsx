@@ -1,8 +1,8 @@
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { ArrowRight } from 'lucide-react';
 
-function Banner() {
+function Banner(): ReactNode {
   return (
     <div className='flex items-center justify-center gap-3 bg-black py-3 text-sm text-white dark:bg-white/10 dark:text-black'>
       <p className='hidden text-white/60 dark:text-white/60 md:block'>

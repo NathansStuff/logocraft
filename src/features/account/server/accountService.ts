@@ -1,10 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-import { LoginRequest } from '@/features/auth/types/LoginRequest';
-import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
-import { UserWithId } from '@/features/user/types/User';
-import connectMongo from '@/lib/mongodb';
-
 import {
   createAccount,
   deleteAccountById,
@@ -14,8 +9,12 @@ import {
   getAccountByResetToken,
   getAccountsByUserId,
   updateAccountById,
-} from '../db/accountDal';
-import { AccountPartial, AccountWithId } from '../types/Account';
+} from '@/features/account/db/accountDal';
+import { AccountPartial, AccountWithId } from '@/features/account/types/Account';
+import { LoginRequest } from '@/features/auth/types/LoginRequest';
+import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
+import { UserWithId } from '@/features/user/types/User';
+import connectMongo from '@/lib/mongodb';
 
 // ***** Basic CRUD *****
 // This basic create is replaced with a more sophisticated one below

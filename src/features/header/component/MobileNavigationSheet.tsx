@@ -1,5 +1,7 @@
 'use client';
 
+import { ReactNode } from 'react';
+
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -11,11 +13,10 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Separator } from '@/components/ui/separator';
+import { headerLinks } from '@/features/header/data/headerLinks';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
 
-import { headerLinks } from '../data/headerLinks';
-
-function MobileNavigationSheet() {
+function MobileNavigationSheet(): ReactNode {
   const { isOpen, onClose } = useMobileNavigation();
   const isLoggedIn = true; //todo
 
@@ -53,12 +54,6 @@ function MobileNavigationSheet() {
           {/* Conditional rendering based on login state */}
           {isLoggedIn ? (
             <>
-              <Button
-                asChild
-                className='w-full'
-              >
-                <Link href='/dashboard'>Dashboard</Link>
-              </Button>
               <Button
                 asChild
                 className='w-full'
