@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { NEXT_PUBLIC_ENVIRONMENT } from '@/constants/constants';
+import { NEXT_PUBLIC_ENVIRONMENT } from '@/constants';
 
 import { AuthenticationError } from './AuthenticationError';
 import { BadRequestError } from './BadRequestError';

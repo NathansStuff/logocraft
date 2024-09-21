@@ -1,4 +1,3 @@
-// components/ProfileDropdown.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,20 +5,21 @@ import { FaUserCircle } from 'react-icons/fa';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { UserWithId } from '@/features/user/types/User';
+import { useAppSelector } from '@/contexts/storeHooks';
+import { selectUser } from '@/contexts/userSlice';
 import { cn } from '@/lib/utils';
 
 export function ProfileDropdown(): React.JSX.Element {
-  const { data } = useSession();
-  const user = data?.user as UserWithId | undefined;
+  const user = useAppSelector(selectUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const image = user?.imageUrl;
+  const isLoggedIn = user?.isAuthenticated;
+  const image = user?.profilePicture;
 
   const handleMouseEnter = (): void => setDropdownOpen(true);
   const handleMouseLeave = (): void => setDropdownOpen(false);
@@ -29,7 +29,7 @@ export function ProfileDropdown(): React.JSX.Element {
       className='relative'
       onMouseLeave={handleMouseLeave}
     >
-      {user ? (
+      {isLoggedIn ? (
         <>
           <div
             onMouseEnter={handleMouseEnter}
@@ -52,18 +52,32 @@ export function ProfileDropdown(): React.JSX.Element {
             </Avatar>
           </div>
           {dropdownOpen && (
-            <Card
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className={cn('absolute right-0 w-48 rounded-lg border-none')}
-            >
-              <button
-                onClick={() => signOut()}
-                className='block w-full rounded-b-lg px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground'
+            <>
+              <Card
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                className={cn('absolute right-0 w-48 rounded-lg border-none')}
               >
-                Logout
-              </button>
-            </Card>
+                <Button
+                  variant={'ghost'}
+                  asChild
+                  className='block w-full rounded-b-lg px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground'
+                >
+                  <Link href='/profile'>Profile</Link>
+                </Button>
+                <Button
+                  variant={'ghost'}
+                  onClick={() =>
+                    signOut({
+                      callbackUrl: '/',
+                    })
+                  }
+                  className='block w-full rounded-b-lg px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground'
+                >
+                  Logout
+                </Button>
+              </Card>
+            </>
           )}
         </>
       ) : (

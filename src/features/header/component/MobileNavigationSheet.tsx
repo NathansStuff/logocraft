@@ -57,6 +57,13 @@ function MobileNavigationSheet(): ReactNode {
               <Button
                 asChild
                 className='w-full'
+                variant={'secondary'}
+              >
+                <Link href='/profile'>Profile</Link>
+              </Button>
+              <Button
+                asChild
+                className='w-full'
               >
                 <Link href='/logout'>Logout</Link>
               </Button>

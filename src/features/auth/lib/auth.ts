@@ -143,16 +143,16 @@ export const authOptions = {
         return false;
       }
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }): Promise<string> {
-      console.log('Redirecting to', url);
-      // If the URL contains the plan parameters, use it
+    // async redirect({ url, baseUrl }: { url: string; baseUrl: string }): Promise<string> {
+    //   console.log('Redirecting to', url);
+    //   // If the URL contains the plan parameters, use it
 
-      // Extract query string
-      const queryString = url.split('?')[1] ?? '';
-      const redirectUrl = `${baseUrl}/?${queryString}`;
-      console.log('Redirecting to', redirectUrl);
-      return redirectUrl;
-    },
+    //   // Extract query string
+    //   const queryString = url.split('?')[1] ?? '';
+    //   const redirectUrl = `${baseUrl}/?${queryString}`;
+    //   console.log('Redirecting to', redirectUrl);
+    //   return redirectUrl;
+    // },
     async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
       console.log('Session callback initiated');
       if (session.user) {

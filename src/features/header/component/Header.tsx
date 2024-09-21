@@ -27,12 +27,14 @@ function Header(): ReactNode {
         <div className='flex items-center justify-between'>
           {/* Left: Logo */}
           <div className='flex items-center'>
-            <Image
-              src={Logo.src}
-              alt='logo'
-              height={40}
-              width={40}
-            />
+            <Link href='/'>
+              <Image
+                src={Logo.src}
+                alt='logo'
+                height={40}
+                width={40}
+              />
+            </Link>
           </div>
 
           {/* Middle: Navigation Links */}
