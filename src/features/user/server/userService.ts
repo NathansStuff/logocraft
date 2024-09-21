@@ -5,28 +5,26 @@ import { Email } from '@/features/email/Email';
 import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 import { resendEmailVerificationTemplate } from '@/templates/email/resendEmailVerificationTemplate';
+import { verifyEmailTemplate } from '@/templates/email/verifyEmailTemplate';
 
 // ***** Basic CRUD *****
 // Service to create a user
 export async function createUserService(user: User, ipAddress: string): Promise<UserWithId> {
   const newUser = await createUser(user);
   console.log(ipAddress);
-  // if (!user.isEmailVerified) {
-  //   // Send verification email
-  //   const { subject, body } = verifyEmailTemplate(
-  //     user.name,
-  //     `${NEXT_PUBLIC_BASE_URL}/verify-email/${newUser._id}`
-  //   );
-  //   const emailTemplate: Email = {
-  //     to: user.email,
-  //     subject,
-  //     body,
-  //     userId: newUser._id,
-  //     accountId: null,
-  //     ipAddress,
-  //   };
-  //   await sendEmail(emailTemplate);
-  // }
+  if (!user.isEmailVerified) {
+    // Send verification email
+    const { subject, body } = verifyEmailTemplate(user.name, `${env.NEXT_PUBLIC_BASE_URL}/verify-email/${newUser._id}`);
+    const emailTemplate: Email = {
+      to: user.email,
+      subject,
+      body,
+      userId: newUser._id,
+      accountId: null,
+      ipAddress,
+    };
+    await sendEmail(emailTemplate);
+  }
 
   return newUser;
 }

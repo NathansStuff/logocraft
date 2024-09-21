@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AccountPartial } from '@/features/account/types/Account';
 import { ValidateTokenRequest } from '@/features/account/types/ValidateTokenRequest';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
+import { ResetPasswordFormRequest } from '@/features/auth/types/ResetPasswordFormRequest';
+import { ResetPasswordRequest } from '@/features/auth/types/ResetPasswordRequest';
 import { ResponseCode } from '@/types/ResponseCode';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
@@ -11,24 +13,11 @@ import {
   deleteAccountByIdService,
   getAccountByIdService,
   handleUserLoginOrCreate,
+  resetPasswordAction,
+  resetPasswordRequestAction,
   updateAccountByIdService,
   validateToken,
 } from './accountService';
-
-// ***** Basic CRUD *****
-// Handler to create a new Account
-// export async function createAccountHandler(req: NextRequest): Promise<NextResponse> {
-//   const data = await req.json();
-//   const safeBody = Account.parse(data);
-//   const result = await createAccountService(safeBody);
-//   return NextResponse.json(result, { status: ResponseCode.CREATED });
-// }
-
-// Handler to get all Accounts
-// export async function getAllAccountsHandler(): Promise<NextResponse> {
-//   const Accounts = await getAllAccountsService();
-//   return NextResponse.json(Accounts, { status: ResponseCode.OK });
-// }
 
 // Handler to get a Account by ID
 export async function getAccountHandler(req: NextRequest): Promise<NextResponse> {
@@ -71,13 +60,13 @@ export async function accountLoginHandler(req: NextRequest): Promise<NextRespons
 }
 
 // Handler to handle reset password request
-// export async function resetPasswordRequestHandler(req: NextRequest): Promise<NextResponse> {
-//   const data = await req.json();
-//   const safeBody = ResetPasswordFormRequest.parse(data);
-//   const ipAddress = getIpAddress(req);
-//   await resetPasswordRequestAction(safeBody.email, ipAddress);
-//   return NextResponse.json({ message: 'Password reset request received' }, { status: ResponseCode.OK });
-// }
+export async function resetPasswordRequestHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = ResetPasswordFormRequest.parse(data);
+  const ipAddress = getIpAddress(req);
+  await resetPasswordRequestAction(safeBody.email, ipAddress);
+  return NextResponse.json({ message: 'Password reset request received' }, { status: ResponseCode.OK });
+}
 
 export async function validateTokenHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
@@ -86,10 +75,10 @@ export async function validateTokenHandler(req: NextRequest): Promise<NextRespon
   return NextResponse.json({ isValid: valid }, { status: ResponseCode.OK });
 }
 
-// export async function resetPasswordActionHandler(req: NextRequest): Promise<NextResponse> {
-//   const data = await req.json();
-//   const safeBody = ResetPasswordRequest.parse(data);
-//   const ipAddress = getIpAddress(req);
-//   const valid = await resetPasswordAction(safeBody.token, safeBody.password, ipAddress);
-//   return NextResponse.json({ isValid: valid }, { status: ResponseCode.OK });
-// }
+export async function resetPasswordActionHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = ResetPasswordRequest.parse(data);
+  const ipAddress = getIpAddress(req);
+  const valid = await resetPasswordAction(safeBody.token, safeBody.password, ipAddress);
+  return NextResponse.json({ isValid: valid }, { status: ResponseCode.OK });
+}

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 
+import { env } from '@/constants';
 import {
   createAccount,
   deleteAccountById,
@@ -8,31 +9,26 @@ import {
   getAccountByProviderAndProviderId,
   getAccountByResetToken,
   getAccountsByUserId,
+  saveResetTokenToAccount,
   updateAccountById,
 } from '@/features/account/db/accountDal';
 import { AccountPartial, AccountWithId } from '@/features/account/types/Account';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
+import { hashPassword } from '@/features/auth/utils/auth';
+import { sendEmail } from '@/features/email';
+import { Email } from '@/features/email/Email';
 import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 import connectMongo from '@/lib/mongodb';
+import { passwordResetConfirmationEmailTemplate } from '@/templates/email/passwordResetConfirmationEmailTemplate';
+import { resetPasswordEmailTemplate } from '@/templates/email/resetPasswordEmailTemplate';
+import { generateRandomToken } from '@/utils/generateRandomToken';
 
 // ***** Basic CRUD *****
-// This basic create is replaced with a more sophisticated one below
-// Service to create a Account
-// export async function createAccountService(Account: Account): Promise<AccountWithId> {
-//   return await createAccount(Account);
-// }
-
 // Service to get a Account by ID
 export async function getAccountByIdService(id: string): Promise<AccountWithId | null> {
   return await getAccountById(id);
 }
-
-// Service to get all Accounts
-// Removed for security
-// export async function getAllAccountsService(): Promise<AccountWithId[]> {
-//   return await getAllAccounts();
-// }
 
 // Service to update a Account by ID
 export async function updateAccountByIdService(id: string, Account: AccountPartial): Promise<AccountWithId | null> {
@@ -125,39 +121,36 @@ export async function getAccountsByUserIdService(userId: string): Promise<Accoun
   return await getAccountsByUserId(userId);
 }
 
-// export async function resetPasswordRequestAction(
-//   email: string,
-//   ipAddress: string
-// ) {
-//   const account = await getAccountByEmailService(email);
-//   if (!account) {
-//     return; // We don't want to reveal if an email is in the system or not
-//   }
+export async function resetPasswordRequestAction(email: string, ipAddress: string): Promise<void> {
+  const account = await getAccountByEmailService(email);
+  if (!account) {
+    return; // We don't want to reveal if an email is in the system or not
+  }
 
-//   const token = generateRandomToken();
-//   await saveResetTokenToAccount(email, token);
+  const token = generateRandomToken();
+  await saveResetTokenToAccount(email, token);
 
-//   const user = await getUserByEmailService(email);
-//   if (!user) {
-//     return;
-//   }
+  const user = await getUserByEmailService(email);
+  if (!user) {
+    return;
+  }
 
-//   // Send email
-//   const { body, subject } = resetPasswordEmailTemplate(
-//     user.name,
-//     `${NEXT_PUBLIC_BASE_URL}/reset-password/${token}`
-//   );
-//   const emailTemplate: Email = {
-//     to: email,
-//     subject,
-//     body,
-//     accountId: account._id,
-//     userId: user._id,
-//     ipAddress,
-//   };
+  // Send email
+  const { body, subject } = resetPasswordEmailTemplate(
+    user.name,
+    `${env.NEXT_PUBLIC_BASE_URL}/reset-password/${token}`
+  );
+  const emailTemplate: Email = {
+    to: email,
+    subject,
+    body,
+    accountId: account._id,
+    userId: user._id,
+    ipAddress,
+  };
 
-//   await sendEmail(emailTemplate);
-// }
+  await sendEmail(emailTemplate);
+}
 
 export async function validateToken(token: string): Promise<boolean> {
   const account = await getAccountByResetToken(token);
@@ -174,52 +167,48 @@ export async function validateToken(token: string): Promise<boolean> {
   return account.resetToken === token;
 }
 
-// export async function resetPasswordAction(
-//   token: string,
-//   password: string,
-//   ipAddress: string
-// ): Promise<boolean> {
-//   const account = await getAccountByResetToken(token);
-//   if (!account || !account.resetTokenExpiry) {
-//     return false; // We don't want to reveal if an email is in the system or not
-//   }
+export async function resetPasswordAction(token: string, password: string, ipAddress: string): Promise<boolean> {
+  const account = await getAccountByResetToken(token);
+  if (!account || !account.resetTokenExpiry) {
+    return false; // We don't want to reveal if an email is in the system or not
+  }
 
-//   // Check if the token has expired
-//   const currentTime = new Date();
-//   if (currentTime > account.resetTokenExpiry) {
-//     return false;
-//   }
+  // Check if the token has expired
+  const currentTime = new Date();
+  if (currentTime > account.resetTokenExpiry) {
+    return false;
+  }
 
-//   const passwordHash = await hashPassword(password);
+  const passwordHash = await hashPassword(password);
 
-//   // Save new password
-//   await updateAccountById(
-//     account._id.toHexString(),
-//     {
-//       passwordHash,
-//       resetToken: null,
-//       resetTokenExpiry: null,
-//     },
-//     ipAddress
-//   );
+  // Save new password
+  await updateAccountById(
+    account._id.toHexString(),
+    {
+      passwordHash,
+      resetToken: null,
+      resetTokenExpiry: null,
+    },
+    ipAddress
+  );
 
-//   const user = await getUserByEmailService(account.email);
-//   if (!user) {
-//     return false;
-//   }
+  const user = await getUserByEmailService(account.email);
+  if (!user) {
+    return false;
+  }
 
-//   // Send email
-//   const { body, subject } = passwordResetConfirmationEmailTemplate(user.name);
-//   const emailTemplate: Email = {
-//     to: account.email,
-//     subject,
-//     body,
-//     accountId: account._id,
-//     userId: user._id,
-//     ipAddress,
-//   };
+  // Send email
+  const { body, subject } = passwordResetConfirmationEmailTemplate(user.name);
+  const emailTemplate: Email = {
+    to: account.email,
+    subject,
+    body,
+    accountId: account._id,
+    userId: user._id,
+    ipAddress,
+  };
 
-//   await sendEmail(emailTemplate);
+  await sendEmail(emailTemplate);
 
-//   return true;
-// }
+  return true;
+}

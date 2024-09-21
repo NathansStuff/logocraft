@@ -18,6 +18,8 @@ export const env = createEnv({
     NEXTAUTH_URL: z.string().url(),
     REDIS_HOST: z.string(),
     REDIS_PORT: z.string(),
+    SENDGRID_EMAIL: z.string().email(),
+    SENDGRID_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.nativeEnum(Environment),
@@ -43,6 +45,8 @@ export const env = createEnv({
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     REDIS_HOST: process.env.REDIS_HOST,
     REDIS_PORT: process.env.REDIS_PORT,
+    SENDGRID_EMAIL: process.env.SENDGRID_EMAIL,
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
   },
   emptyStringAsUndefined: true,
 });

@@ -26,12 +26,6 @@ export async function createUserHandler(req: NextRequest): Promise<NextResponse>
   return NextResponse.json(result, { status: ResponseCode.CREATED });
 }
 
-// Handler to get all users
-// export async function getAllUsersHandler(): Promise<NextResponse> {
-//   const users = await getAllUsersService();
-//   return NextResponse.json(users, { status: ResponseCode.OK });
-// }
-
 // Handler to get a user by ID
 export async function getUserHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
