@@ -10,9 +10,12 @@ function LoggedOutOnly(): React.JSX.Element {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user) {
-      router.push('/');
-    }
+    // if (session?.user) {
+    //   router.push('/');
+    // }
+
+    console.log('logged out only');
+    console.log(window.location.href);
   }, [session, router]);
   return <></>;
 }

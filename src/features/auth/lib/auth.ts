@@ -148,6 +148,7 @@ export const authOptions = {
     //   // If the URL contains the plan parameters, use it
 
     //   // Extract query string
+    //   console.log('url:', url);
     //   const queryString = url.split('?')[1] ?? '';
     //   const redirectUrl = `${baseUrl}/?${queryString}`;
     //   console.log('Redirecting to', redirectUrl);

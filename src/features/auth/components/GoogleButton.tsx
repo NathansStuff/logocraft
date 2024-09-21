@@ -7,7 +7,7 @@ import { signIn } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 
-import { signInCallback } from '../utils/signInCallback';
+import { signInCallback } from '../data/signInCallback';
 
 interface Props {
   formType: 'signup' | 'login';

@@ -10,7 +10,6 @@ import { Toaster } from 'sonner';
 import { store } from '@/contexts/store';
 
 import { AuthListener } from './AuthListener';
-import { AuthProvider } from './AuthProvider';
 import { QueryProvider } from './QueryProvider';
 import SheetProvider from './SheetProvider';
 import { ThemeProvider } from './ThemeProvider';
@@ -23,18 +22,16 @@ function ClientProviders({ children, session }: { children: ReactNode; session: 
         defaultTheme='system'
         enableSystem
       >
-        <Provider store={store}>
-          <SessionProvider session={session}>
-            <AuthProvider>
-              <AuthListener />
-              <QueryProvider>
-                <Toaster position='top-right' />
-                <SheetProvider />
-                {children}
-              </QueryProvider>
-            </AuthProvider>
-          </SessionProvider>
-        </Provider>
+        <SessionProvider session={session}>
+          <Provider store={store}>
+            <AuthListener />
+            <QueryProvider>
+              <Toaster position='top-right' />
+              <SheetProvider />
+              {children}
+            </QueryProvider>
+          </Provider>
+        </SessionProvider>
       </ThemeProvider>
     </>
   );

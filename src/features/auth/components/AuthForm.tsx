@@ -4,6 +4,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { getSession } from 'next-auth/react';
 import { z } from 'zod';
 
 import { LabeledInput } from '@/components/form/LabeledInput';
@@ -23,6 +25,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ formType }: AuthFormProps): React.JSX.Element {
   const isSignup = formType === 'signup';
+  const router = useRouter();
 
   const formSchema = isSignup ? SignupFormRequest : LoginFormRequest;
 
@@ -36,7 +39,11 @@ export default function AuthForm({ formType }: AuthFormProps): React.JSX.Element
 
   async function onSubmit(values: z.infer<typeof formSchema>): Promise<void> {
     if (isSignup) {
-      await signupUserAction(values);
+      const success = await signupUserAction(values);
+      if (success) {
+        await getSession();
+        router.push('/profile');
+      }
     } else {
       await signinUserAction(values);
     }
