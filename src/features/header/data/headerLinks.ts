@@ -6,8 +6,8 @@ export const publicheaderLinks: HeaderLink[] = [
     href: '#',
   },
   {
-    title: 'Updates',
-    href: '#',
+    title: 'Products',
+    href: '/products',
   },
   {
     title: 'Contact',

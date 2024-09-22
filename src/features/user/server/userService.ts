@@ -1,9 +1,11 @@
 import { env } from '@/constants';
 import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
+import { purchaseConfirmationEmailTemplate } from '@/features/email/templates/purchaseConfirmationEmailTemplate';
 import { resendEmailVerificationTemplate } from '@/features/email/templates/resendEmailVerificationTemplate';
 import { verifyEmailTemplate } from '@/features/email/templates/verifyEmailTemplate';
 import { Email } from '@/features/email/types/Email';
 import { sendEmail } from '@/features/email/utils/sendEmail';
+import { products } from '@/features/product/products';
 import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 
@@ -20,7 +22,6 @@ export async function createUserService(user: User, ipAddress: string): Promise<
       subject,
       body,
       userId: newUser._id,
-      accountId: null,
       ipAddress,
     };
     await sendEmail(emailTemplate);
@@ -52,25 +53,24 @@ export async function updateUserByIdService(
 
   // If there are new purchases, send the confirmation email
   if (newPurchases && newPurchases.length > 0) {
-    // for (const purchase of newPurchases) {
-    //   const product = products.find(prod => prod.productId === purchase);
-    //   if (product) {
-    //     const { subject, body } = purchaseConfirmationEmailTemplate(
-    //       existingUser.name,
-    //       product.name,
-    //       `${NEXT_PUBLIC_BASE_URL}/view-product/${product.productId}`
-    //     );
-    //     const emailTemplate: Email = {
-    //       to: existingUser.email,
-    //       subject,
-    //       body,
-    //       userId: updatedUser._id,
-    //       accountId: null,
-    //       ipAddress: ipAddress ?? null,
-    //     };
-    //     await sendEmail(emailTemplate);
-    //   }
-    // }
+    for (const purchase of newPurchases) {
+      const product = products.find((prod) => prod.productId === purchase);
+      if (product) {
+        const { subject, body } = purchaseConfirmationEmailTemplate(
+          existingUser.name,
+          product.name,
+          `${env.NEXT_PUBLIC_BASE_URL}/view-product/${product.productId}`
+        );
+        const emailTemplate: Email = {
+          to: existingUser.email,
+          subject,
+          body,
+          userId: updatedUser._id,
+          ipAddress: ipAddress ?? null,
+        };
+        await sendEmail(emailTemplate);
+      }
+    }
   }
 
   return updatedUser;
@@ -137,7 +137,6 @@ export async function resendEmailVerificationService(userId: string, ipAddress: 
     subject,
     body,
     userId: user._id,
-    accountId: null,
     ipAddress,
   };
   await sendEmail(emailTemplate);

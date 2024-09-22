@@ -144,7 +144,6 @@ export async function resetPasswordRequestAction(email: string, ipAddress: strin
     to: email,
     subject,
     body,
-    accountId: account._id,
     userId: user._id,
     ipAddress,
   };
@@ -203,7 +202,6 @@ export async function resetPasswordAction(token: string, password: string, ipAdd
     to: account.email,
     subject,
     body,
-    accountId: account._id,
     userId: user._id,
     ipAddress,
   };

@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 
-import { products } from '@/features/stripe/data/products';
+import { products } from '@/features/product/products';
 import { stripe } from '@/lib/stripe';
 
 // Get customer by email

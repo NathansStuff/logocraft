@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';

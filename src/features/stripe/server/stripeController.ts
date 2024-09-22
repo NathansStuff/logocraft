@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { GetPurchasesRequest } from '@/features/product/data/GetPurchasesRequest';
 import { CreatePurchaseRequest } from '@/features/stripe/types/CreatePurchaseRequest';
 import { CreateSubscriptionRequest } from '@/features/stripe/types/CreateSubscriptionRequest';
-import { GetPurchasesRequest } from '@/features/stripe/types/GetPurchasesRequest';
 import { ResponseCode } from '@/types/ResponseCode';
 
 import { createPaymentIntent, createSubscriptionIntent, getSuccessfulChargesByEmail } from './stripeService';
