@@ -1,6 +1,7 @@
 import React from 'react';
 
-import NewPasswordForm from '../Forms/NewPasswordForm';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import NewPasswordForm from '@/features/auth/components/NewPasswordForm';
 
 interface Props {
   token: string;
@@ -8,13 +9,17 @@ interface Props {
 
 function ValidTokenPageSection({ token }: Props): React.JSX.Element {
   return (
-    <main className='flex w-full items-center justify-center p-8'>
-      <div className='max-w-lg text-center'>
-        <h1 className='pb-4 pt-20 text-3xl font-bold lg:text-[40px]'>Reset your password</h1>
-        <p className='text-concrete text-md pb-10'>Please enter your new password below.</p>
-        <NewPasswordForm token={token} />
-      </div>
-    </main>
+    <section className='flex w-full items-center justify-center p-8'>
+      <Card className='max-w-lg text-center'>
+        <CardHeader>
+          <CardTitle>Reset Your Password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className='text-concrete pb-10'>Please enter your new password below.</p>
+          <NewPasswordForm token={token} />
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 

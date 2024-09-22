@@ -5,7 +5,10 @@ import { env } from '@/constants';
 
 export const stripe = new Stripe(env.STRIPE_SECRET_KEY!);
 
-export const createStripeCustomer = async (email: string, name: string): Promise<Stripe.Response<Stripe.Customer> | null> => {
+export const createStripeCustomer = async (
+  email: string,
+  name: string
+): Promise<Stripe.Response<Stripe.Customer> | null> => {
   try {
     const customer = await stripe.customers.create({
       email,

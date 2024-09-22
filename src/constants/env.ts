@@ -20,6 +20,8 @@ export const env = createEnv({
     REDIS_PORT: z.string(),
     SENDGRID_EMAIL: z.string().email(),
     SENDGRID_API_KEY: z.string(),
+    GMAIL_EMAIL: z.string().email(),
+    GMAIL_PASS: z.string(),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.nativeEnum(Environment),
@@ -47,6 +49,8 @@ export const env = createEnv({
     REDIS_PORT: process.env.REDIS_PORT,
     SENDGRID_EMAIL: process.env.SENDGRID_EMAIL,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+    GMAIL_EMAIL: process.env.GMAIL_EMAIL,
+    GMAIL_PASS: process.env.GMAIL_PASS,
   },
   emptyStringAsUndefined: true,
 });

@@ -1,5 +1,7 @@
-import { GMAIL_EMAIL, GMAIL_PASS } from '@/constants';
 import nodemailer from 'nodemailer';
+
+import { env } from '@/constants';
+
 import { Email } from './Email';
 import { EmailService } from './EmailService';
 
@@ -9,13 +11,13 @@ const nodemailerService: EmailService = {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: GMAIL_EMAIL,
-        pass: GMAIL_PASS,
+        user: env.GMAIL_EMAIL,
+        pass: env.GMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: GMAIL_EMAIL,
+      from: env.GMAIL_EMAIL,
       to,
       subject,
       html: body,

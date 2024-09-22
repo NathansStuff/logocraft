@@ -1,13 +1,22 @@
-import RedirectToLogin from '@/components/Sections/RedirectToLogin';
+import React from 'react';
 
-export default function SuccessPage() {
+import RedirectToLogin from '@/components/container/RedirectToLogin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+export default function SuccessPage(): React.JSX.Element {
   return (
-    <div className='flex h-screen items-center justify-center bg-gray-100'>
-      <div className='rounded-lg bg-white p-6 text-center shadow-lg'>
-        <h1 className='text-2xl font-bold text-green-600'>Password Reset Successful</h1>
-        <p className='mt-4 text-gray-600'>You will be redirected to the login page shortly.</p>
-      </div>
-      <RedirectToLogin /> {/* Client-side redirect logic */}
-    </div>
+    <>
+      <RedirectToLogin />
+      <section className='flex h-screen items-center justify-center bg-gray-100'>
+        <Card className='text-center'>
+          <CardHeader>
+            <CardTitle>Password Reset Successful</CardTitle>
+          </CardHeader>
+          <CardContent className='text-gray-600'>
+            <p>You will be redirected to the login page shortly.</p>
+          </CardContent>
+        </Card>
+      </section>
+    </>
   );
 }
