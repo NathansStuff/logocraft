@@ -2,35 +2,36 @@
 
 import { useState } from 'react';
 import React from 'react';
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useAppSelector } from '@/contexts/storeHooks';
+import { selectUser } from '@/contexts/userSlice';
 import { sendContactForm } from '@/features/contactForm/api/sendContactForm';
 import { ContactEmailRequest } from '@/features/contactForm/types/ContactEmailRequest';
 
 function ContactForm(): React.JSX.Element {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const user = useAppSelector(selectUser);
   const form = useForm<z.infer<typeof ContactEmailRequest>>({
     resolver: zodResolver(ContactEmailRequest),
     defaultValues: {
-      name: '',
-      email: '',
+      name: user?.name || '',
+      email: user?.email || '',
       subject: '',
       message: '',
+      userId: user?._id || undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof ContactEmailRequest>): Promise<void> {
-    console.log(values);
-    console.log('submitting');
-
     const success = await sendContactForm(values);
     if (!success) return;
 
