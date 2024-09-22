@@ -8,7 +8,8 @@ import { getAccountByEmailService } from '@/features/account/server/accountServi
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { verifyPassword } from '@/features/auth/utils/auth';
 import { getUserByEmailService, updateUserByIdService } from '@/features/user/server/userService';
-import { createStripeCustomer } from '@/lib/stripe';
+
+import { createStripeCustomer } from './serverStripe';
 
 declare module 'next-auth' {
   interface Session {

@@ -1,9 +1,8 @@
-import { loadStripe } from '@stripe/stripe-js';
 import { Stripe } from 'stripe';
 
 import { env } from '@/constants';
 
-export const stripe = new Stripe(env.STRIPE_SECRET_KEY!);
+export const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
 export const createStripeCustomer = async (
   email: string,
@@ -41,5 +40,3 @@ export async function getStripeCustomer(customerId: string | undefined, email: s
 
   return customer;
 }
-
-export const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);

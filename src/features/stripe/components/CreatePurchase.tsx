@@ -8,7 +8,7 @@ import Redirect from '@/components/container/Redirect';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { products } from '@/features/product/products';
-import { stripePromise } from '@/lib/stripe';
+import { stripePromise } from '@/lib/clientStripe';
 
 import { createPurchase } from '../api/createPurchase';
 
