@@ -15,13 +15,13 @@ import {
 import { AccountPartial, AccountWithId } from '@/features/account/types/Account';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { hashPassword } from '@/features/auth/utils/auth';
-import { sendEmail } from '@/features/email';
-import { Email } from '@/features/email/Email';
+import { passwordResetConfirmationEmailTemplate } from '@/features/email/templates/passwordResetConfirmationEmailTemplate';
+import { resetPasswordEmailTemplate } from '@/features/email/templates/resetPasswordEmailTemplate';
+import { Email } from '@/features/email/types/Email';
+import { sendEmail } from '@/features/email/utils/sendEmail';
 import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 import connectMongo from '@/lib/mongodb';
-import { passwordResetConfirmationEmailTemplate } from '@/templates/email/passwordResetConfirmationEmailTemplate';
-import { resetPasswordEmailTemplate } from '@/templates/email/resetPasswordEmailTemplate';
 import { generateRandomToken } from '@/utils/generateRandomToken';
 
 // ***** Basic CRUD *****

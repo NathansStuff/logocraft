@@ -2,8 +2,8 @@ import nodemailer from 'nodemailer';
 
 import { env } from '@/constants';
 
-import { Email } from './Email';
-import { EmailService } from './EmailService';
+import { Email } from '../types/Email';
+import { EmailService } from '../types/EmailService';
 
 const nodemailerService: EmailService = {
   sendEmail: async (email: Email): Promise<void> => {

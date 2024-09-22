@@ -1,55 +1,24 @@
-'use client';
-
 import { ReactNode } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
 
-import Image from 'next/image';
-import { useSession } from 'next-auth/react';
+import { Metadata } from 'next';
 
 import VerifedOnly from '@/components/container/VerifiedOnly';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Card, CardHeader } from '@/components/ui/card';
-import { selectEmail, selectName, selectProfilePicture } from '@/contexts/userSlice';
 
-import ProfilePageClient from './ProfilePageClient';
+import ProfileCard from './ProfileCard';
+
+export const metadata: Metadata = {
+  title: 'Contact Us - UltimateVanGuide.com',
+  description: 'Contact UltimateVanGuide.com with questions, comments, or suggestions.',
+  alternates: {
+    canonical: '/contact',
+  },
+};
 
 function ProfilePage(): ReactNode {
-  const { status } = useSession();
-  const userName = useSelector(selectName);
-  const profilePicture = useSelector(selectProfilePicture);
-  const email = useSelector(selectEmail);
-
-  if (status === 'unauthenticated' || !userName) {
-    return <ProfilePageClient />;
-  }
-
   return (
     <>
       <VerifedOnly />
-      <Card className='mx-auto mt-10 max-w-lg text-center'>
-        <CardHeader className='flex flex-row items-center justify-center gap-2'>
-          <Avatar>
-            {profilePicture ? (
-              <Image
-                src={profilePicture || '/default-avatar.png'}
-                alt={`${userName}'s profile`}
-                width={40}
-                height={40}
-                className='rounded-full'
-              />
-            ) : (
-              <AvatarFallback>
-                <FaUserCircle className='h-8 w-8 text-gray-700 dark:text-gray-300' />
-              </AvatarFallback>
-            )}
-          </Avatar>
-          <div className='flex flex-col justify-center gap-0 text-sm'>
-            <p className=''>{userName || 'Anonymous User'}</p>
-            <p className='text-muted-foreground'>{email}</p>
-          </div>
-        </CardHeader>
-      </Card>
+      <ProfileCard />
     </>
   );
 }

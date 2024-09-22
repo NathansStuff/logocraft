@@ -5,6 +5,5 @@ export interface Email {
   subject: string;
   body: string;
   userId: ObjectId | null;
-  accountId: ObjectId | null;
   ipAddress: string | null;
 }

@@ -1,9 +1,9 @@
 import { EMAIL_PROVIDER } from '@/constants';
 import { emailLoggingMiddleware } from '@/middleware/emailLoggingMiddleware';
 
-import { EmailService } from './EmailService';
-import nodemailerService from './nodemailerService';
-import sendGridService from './sendgridService';
+import nodemailerService from '../server/nodemailerService';
+import sendGridService from '../server/sendgridService';
+import { EmailService } from '../types/EmailService';
 
 let emailService: EmailService;
 

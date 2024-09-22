@@ -8,7 +8,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function ProfilePageClient(): ReactNode {
+function ProfilePageLoading(): ReactNode {
   const router = useRouter();
 
   useEffect(() => {
@@ -35,4 +35,4 @@ function ProfilePageClient(): ReactNode {
   );
 }
 
-export default ProfilePageClient;
+export default ProfilePageLoading;

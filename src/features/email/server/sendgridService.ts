@@ -2,8 +2,8 @@ import sgMail from '@sendgrid/mail';
 
 import { env } from '@/constants';
 
-import { Email } from './Email';
-import { EmailService } from './EmailService';
+import { Email } from '../types/Email';
+import { EmailService } from '../types/EmailService';
 
 const sendGridService: EmailService = {
   sendEmail: async (email: Email): Promise<void> => {

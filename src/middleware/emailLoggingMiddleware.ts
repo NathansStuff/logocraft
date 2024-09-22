@@ -1,6 +1,6 @@
-import { Email } from '@/features/email/Email';
-import { EmailService } from '@/features/email/EmailService';
-import nodemailerService from '@/features/email/nodemailerService';
+import nodemailerService from '@/features/email/server/nodemailerService';
+import { Email } from '@/features/email/types/Email';
+import { EmailService } from '@/features/email/types/EmailService';
 import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';

@@ -1,11 +1,11 @@
 import { env } from '@/constants';
 import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
-import { sendEmail } from '@/features/email';
-import { Email } from '@/features/email/Email';
+import { resendEmailVerificationTemplate } from '@/features/email/templates/resendEmailVerificationTemplate';
+import { verifyEmailTemplate } from '@/features/email/templates/verifyEmailTemplate';
+import { Email } from '@/features/email/types/Email';
+import { sendEmail } from '@/features/email/utils/sendEmail';
 import { createUser, deleteUserById, getUserByEmail, getUserById, updateUserById } from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
-import { resendEmailVerificationTemplate } from '@/templates/email/resendEmailVerificationTemplate';
-import { verifyEmailTemplate } from '@/templates/email/verifyEmailTemplate';
 
 // ***** Basic CRUD *****
 // Service to create a user

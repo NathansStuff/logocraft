@@ -22,6 +22,7 @@ export const env = createEnv({
     SENDGRID_API_KEY: z.string(),
     GMAIL_EMAIL: z.string().email(),
     GMAIL_PASS: z.string(),
+    CONTACT_EMAIL_ADDRESS: z.string().email(),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.nativeEnum(Environment),
@@ -51,6 +52,7 @@ export const env = createEnv({
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     GMAIL_EMAIL: process.env.GMAIL_EMAIL,
     GMAIL_PASS: process.env.GMAIL_PASS,
+    CONTACT_EMAIL_ADDRESS: process.env.CONTACT_EMAIL_ADDRESS,
   },
   emptyStringAsUndefined: true,
 });
