@@ -58,3 +58,12 @@ export async function getUserByEmail(email: string): Promise<UserWithId | null> 
   const result = await UserModel.findOne({ email });
   return result ? result.toObject() : null;
 }
+
+// Get Users With Most Sparks
+export async function getTopUsersWithSparks(): Promise<UserWithId[]> {
+  await connectMongo();
+  const result = await UserModel.find({ sparksUsed: { $gt: 0 } })
+    .sort({ sparksUsed: -1 })
+    .limit(3);
+  return result;
+}

@@ -16,6 +16,10 @@ export const User = z.object({
   isEmailVerified: z.boolean().default(false),
   oneTimePurchases: z.array(z.string()).default([]), // stripe productIds
   currentPlan: SubscriptionPlan.nullable(),
+  sparksUsed: z.number().default(0),
+  credits: z.object({
+    sparks: z.number().default(0),
+  }),
 });
 
 export const UserPartial = User.partial();

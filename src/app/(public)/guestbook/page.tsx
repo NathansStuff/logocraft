@@ -7,6 +7,8 @@ import { useGetGuestbookMessages } from '@/features/guestbook/api/useGetGuestboo
 import GuestbookForm from '@/features/guestbook/components/GuestbookForm';
 import GuestbookMessages from '@/features/guestbook/components/GuestbookMessages';
 
+import GuestbookLoadingPage from './GuestbookLoadingPage';
+
 function GuestbookPage(): ReactNode {
   const guestbookMessageQuery = useGetGuestbookMessages();
 
@@ -15,7 +17,7 @@ function GuestbookPage(): ReactNode {
   const messages = guestbookMessageQuery.data?.messages ?? [];
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <GuestbookLoadingPage />;
   }
 
   return (

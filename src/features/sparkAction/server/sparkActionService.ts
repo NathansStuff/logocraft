@@ -1,8 +1,12 @@
 import { ObjectId } from 'mongodb';
 
-import { createSparkAction, getAllSparkActionsWithUser } from '../db/sparkActionDal';
+import { BadRequestError } from '@/exceptions';
+import { getTopUsersWithSparks } from '@/features/user/db/userDal';
+import { getUserByIdService, updateUserSparkAction } from '@/features/user/server/userService';
+import { UserWithId } from '@/features/user/types/User';
+
+import { createSparkAction } from '../db/sparkActionDal';
 import { SparkActionRequest } from '../types/SparkActionRequest';
-import { SparkActionWithUser } from '../types/SparkActionWithUser';
 import { SparkAction, SparkActionWithId } from '../types/SparkMeter';
 
 // ***** Basic CRUD *****
@@ -13,10 +17,26 @@ export async function createSparkActionService(spark: SparkActionRequest): Promi
     sparksUsed: spark.sparksUsed,
   };
   const valid = SparkAction.parse(newSparkAction);
-  return await createSparkAction(valid);
+
+  // Check user has enough credit
+  const user = await getUserByIdService(spark.userId);
+  if (!user) {
+    throw new BadRequestError('User not found');
+  }
+
+  if (user.credits.sparks < spark.sparksUsed) {
+    throw new BadRequestError('Not enough sparks');
+  }
+
+  const action = await createSparkAction(valid);
+
+  // No need to await this
+  void updateUserSparkAction(user._id.toString(), spark.sparksUsed);
+
+  return action;
 }
 
 // Service to get all Logs
-export async function getAllSparkActionsService(): Promise<SparkActionWithUser[]> {
-  return await getAllSparkActionsWithUser();
+export async function getMostSparkActionsService(): Promise<UserWithId[]> {
+  return await getTopUsersWithSparks();
 }

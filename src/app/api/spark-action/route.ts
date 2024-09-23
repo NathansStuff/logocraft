@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import {
   createSparkActionHandler,
-  getAllSparkActionsHandler,
+  getMostSparkActionsHandler,
 } from '@/features/sparkAction/server/sparkActionController';
 import { TryCatchMiddleware } from '@/middleware/tryCatchMiddleware';
 
@@ -11,5 +11,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 export async function GET(): Promise<NextResponse> {
-  return await TryCatchMiddleware(() => getAllSparkActionsHandler());
+  return await TryCatchMiddleware(() => getMostSparkActionsHandler());
 }

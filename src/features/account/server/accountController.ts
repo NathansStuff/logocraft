@@ -54,6 +54,7 @@ export async function accountLoginHandler(req: NextRequest): Promise<NextRespons
   const data = await req.json();
   const safeBody = LoginRequest.parse(data);
   const ipAddress = getIpAddress(req);
+  console.log('accountLoginHandler');
   const user = await handleUserLoginOrCreate(safeBody, ipAddress);
   console.log('accountLoginHandler user', user);
   return NextResponse.json(user, { status: 200 });

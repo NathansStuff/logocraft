@@ -19,6 +19,10 @@ export interface IUser {
   subscriptionCancelDate?: string | null;
   stripeSubscriptionId?: string | null;
   oneTimePurchases?: string[];
+  credits: {
+    sparks: number;
+  };
+  sparksUsed: number;
   sid?: string;
   _id: string;
   currentPlan: SubscriptionPlan | null;
@@ -41,6 +45,10 @@ export const initialUserState: IUserSlice = {
   sid: '',
   _id: '',
   currentPlan: null,
+  credits: {
+    sparks: 0,
+  },
+  sparksUsed: 0,
 };
 
 export const userSlice = createSlice({
@@ -60,10 +68,14 @@ export const userSlice = createSlice({
     setOneTimePurchases(state, action: PayloadAction<string[]>) {
       state.oneTimePurchases = action.payload;
     },
+    setSparkCredit(state, action: PayloadAction<number>) {
+      state.credits.sparks += action.payload;
+    },
   },
 });
 
-export const { setUser, logout, setSubscriptionCancelDate, setSubscriptionId, setOneTimePurchases } = userSlice.actions;
+export const { setUser, logout, setSubscriptionCancelDate, setSparkCredit, setSubscriptionId, setOneTimePurchases } =
+  userSlice.actions;
 
 export const selectUser = (state: RootState): IUserSlice => state.user;
 export const selectIsAuthenticated = (state: RootState): boolean => state.user.isAuthenticated;

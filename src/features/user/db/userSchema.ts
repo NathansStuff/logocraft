@@ -25,6 +25,13 @@ export const userSchema = new Schema<User>(
       required: false,
       nullable: true,
     },
+    sparksUsed: { type: Number, required: true, default: 0 },
+    credits: {
+      type: {
+        sparks: { type: Number, required: true, default: 0 },
+      },
+      required: true,
+    },
   },
   { timestamps: true }
 );

@@ -141,3 +141,17 @@ export async function resendEmailVerificationService(userId: string, ipAddress: 
   };
   await sendEmail(emailTemplate);
 }
+
+export async function updateUserSparkAction(userId: string, sparksUsed: number): Promise<void> {
+  const user = await getUserByIdService(userId);
+  if (!user) {
+    return;
+  }
+
+  await updateUserByIdService(userId, {
+    sparksUsed: user.sparksUsed + sparksUsed,
+    credits: {
+      sparks: user.credits.sparks - sparksUsed,
+    },
+  });
+}

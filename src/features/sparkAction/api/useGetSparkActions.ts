@@ -1,11 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { env } from '@/constants';
+import { UserWithId } from '@/features/user/types/User';
 import { getRequest } from '@/lib/fetch';
 
-import { SparkActionWithUser } from '../types/SparkActionWithUser';
-
-type ResponseType = { actions: SparkActionWithUser[] };
+type ResponseType = { users: UserWithId[] };
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function useGetSparkActions() {

@@ -4,7 +4,7 @@ import { ResponseCode } from '@/types/ResponseCode';
 
 import { SparkActionRequest } from '../types/SparkActionRequest';
 
-import { createSparkActionService, getAllSparkActionsService } from './sparkActionService';
+import { createSparkActionService, getMostSparkActionsService } from './sparkActionService';
 
 export async function createSparkActionHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
@@ -13,7 +13,7 @@ export async function createSparkActionHandler(req: NextRequest): Promise<NextRe
   return NextResponse.json({ spark }, { status: ResponseCode.OK });
 }
 
-export async function getAllSparkActionsHandler(): Promise<NextResponse> {
-  const sparks = await getAllSparkActionsService();
-  return NextResponse.json({ sparks }, { status: ResponseCode.OK });
+export async function getMostSparkActionsHandler(): Promise<NextResponse> {
+  const users = await getMostSparkActionsService();
+  return NextResponse.json({ users }, { status: ResponseCode.OK });
 }

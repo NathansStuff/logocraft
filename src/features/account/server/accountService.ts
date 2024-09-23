@@ -87,6 +87,10 @@ export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: 
       isEmailVerified: true,
       oneTimePurchases: [],
       currentPlan: null,
+      sparksUsed: 0,
+      credits: {
+        sparks: 2,
+      },
     },
     ipAddress
   );
