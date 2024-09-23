@@ -5,6 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { Route } from 'next';
 import { useRouter } from 'next/navigation';
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+
+import PageLayout from './PageLayout';
+
 interface Props {
   message: string;
   href: Route;
@@ -30,14 +34,18 @@ function Redirect({ message, href }: Props): React.JSX.Element {
   }, [router, href]);
 
   return (
-    <div className='flex w-full items-center justify-center bg-gray-100 p-4'>
-      <div className='w-full max-w-lg rounded-lg bg-white p-8 shadow-md'>
-        <h1 className='mb-4 text-center text-2xl font-bold text-gray-800'>{message}</h1>
-        <p className='text-center text-gray-600'>
+    <PageLayout>
+      <Card className='mx-auto mt-10 max-w-lg text-center'>
+        <CardHeader>
+          <CardTitle>Redirect</CardTitle>
+          <CardDescription>{message}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {' '}
           Redirecting in {countdown} second{countdown !== 1 ? 's' : ''}...
-        </p>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </PageLayout>
   );
 }
 

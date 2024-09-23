@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import Redirect from '@/components/container/Redirect';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { products } from '@/features/product/products';
@@ -71,9 +72,11 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
   }
 
   return (
-    <div className='flex w-full items-center justify-center bg-gray-100 p-4'>
-      <div className='w-full max-w-lg rounded-lg bg-white p-8 shadow-md'>
-        <h1 className='mb-4 text-center text-2xl font-bold text-gray-800'>Complete Your Purchase</h1>
+    <Card className='mx-auto max-w-md px-4'>
+      <CardHeader className='flex flex-col items-center'>
+        <CardTitle className='text-center text-xl text-gray-800 md:text-2xl'>Complete Your Purchase</CardTitle>
+      </CardHeader>
+      <CardContent>
         {selectedProduct && (
           <p className='mb-4 text-center'>
             {selectedProduct.name} - ${selectedProduct.amount}
@@ -91,8 +94,8 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
             <ProductPaymentForm clientSecret={clientSecret} />
           </Elements>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

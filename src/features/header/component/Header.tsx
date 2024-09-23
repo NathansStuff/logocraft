@@ -64,22 +64,22 @@ function Header(): ReactNode {
                       {link.title}
                     </Link>
                   ))}
+                  <Button
+                    asChild
+                    className='btn btn-primary'
+                  >
+                    <Link
+                      href={isLoggedIn ? '/' : '/'}
+                      passHref
+                    >
+                      {isLoggedIn ? 'Create Now' : 'Get Started for free'}
+                    </Link>
+                  </Button>
                 </div>
               </nav>
               {/* Right: Get Started Button + Theme Button */}
 
               <div className='hidden items-end gap-4 md:flex'>
-                <Button
-                  asChild
-                  className='btn btn-primary'
-                >
-                  <Link
-                    href={isLoggedIn ? '/' : '/'}
-                    passHref
-                  >
-                    {isLoggedIn ? 'Create Now' : 'Get Started for free'}
-                  </Link>
-                </Button>
                 <div className='flex gap-1'>
                   <ThemeButton />
                   <ProfileDropdown />

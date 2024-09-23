@@ -4,6 +4,7 @@ import React from 'react';
 
 import { Route } from 'next';
 
+import PageLayout from '@/components/container/PageLayout';
 import Redirect from '@/components/container/Redirect';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
@@ -24,11 +25,10 @@ export default function ProductPage({ params }: PageProps): React.JSX.Element {
   if (!product) {
     return (
       <>
-        <main className='flex-center w-full flex-grow'>
-          <div className='w-full max-w-md rounded-lg bg-white p-6 text-center shadow-md'>
-            <p className='text-lg'>Error: Product not found.</p>
-          </div>
-        </main>
+        <Redirect
+          message='This product does not exist.'
+          href='/'
+        />
       </>
     );
   }
@@ -47,8 +47,8 @@ export default function ProductPage({ params }: PageProps): React.JSX.Element {
   }
 
   return (
-    <>
+    <PageLayout>
       <ProductSection product={product} />
-    </>
+    </PageLayout>
   );
 }

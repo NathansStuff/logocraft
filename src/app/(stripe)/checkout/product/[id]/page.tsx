@@ -1,5 +1,6 @@
 import React from 'react';
 
+import PageLayout from '@/components/container/PageLayout';
 import CreatePurchase from '@/features/stripe/components/CreatePurchase';
 
 interface PageProps {
@@ -13,9 +14,9 @@ function ProductPage({ params }: PageProps): React.JSX.Element {
   const stripeProductId = id;
 
   return (
-    <>
+    <PageLayout>
       <CreatePurchase productId={stripeProductId} />
-    </>
+    </PageLayout>
   );
 }
 
