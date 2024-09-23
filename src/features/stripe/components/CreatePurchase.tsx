@@ -74,7 +74,7 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
   return (
     <Card className='mx-auto max-w-md px-4'>
       <CardHeader className='flex flex-col items-center'>
-        <CardTitle className='text-center text-xl text-gray-800 md:text-2xl'>Complete Your Purchase</CardTitle>
+        <CardTitle className='text-center text-xl md:text-2xl'>Complete Your Purchase</CardTitle>
       </CardHeader>
       <CardContent>
         {selectedProduct && (

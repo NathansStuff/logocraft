@@ -11,7 +11,7 @@ export default function InvalidTokenPageSection(): React.JSX.Element {
         <CardHeader>
           <CardTitle className='text-red-600'>Invalid Token</CardTitle>
         </CardHeader>
-        <CardContent className='text-gray-600'>
+        <CardContent className=''>
           <p>The reset password token you provided is either invalid or has expired.</p>
           <p className='mt-4'>Please request a new password reset link.</p>
         </CardContent>

@@ -54,7 +54,7 @@ function Header(): ReactNode {
             <>
               {/* Middle: Navigation Links */}
               <nav className='hidden flex-1 justify-center md:flex'>
-                <div className='flex items-center gap-6'>
+                <div className='flex items-center gap-4 xl:gap-6'>
                   {headerLinks.map((link, index) => (
                     <Link
                       href={link.href}
@@ -66,7 +66,7 @@ function Header(): ReactNode {
                   ))}
                   <Button
                     asChild
-                    className='btn btn-primary'
+                    className='btn btn-primary hidden lg:block'
                   >
                     <Link
                       href={isLoggedIn ? '/' : '/'}

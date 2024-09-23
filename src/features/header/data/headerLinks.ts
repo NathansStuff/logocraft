@@ -2,12 +2,16 @@ import { HeaderLink } from '@/features/header/types/HeaderLink';
 
 export const publicheaderLinks: HeaderLink[] = [
   {
-    title: 'About',
-    href: '#',
-  },
-  {
     title: 'Products',
     href: '/products',
+  },
+  {
+    title: 'Credits',
+    href: '/credits',
+  },
+  {
+    title: 'Subscriptions',
+    href: '/subscriptions',
   },
   {
     title: 'Contact',

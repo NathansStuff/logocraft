@@ -10,7 +10,7 @@ export default function ProductsList(): React.JSX.Element {
   return (
     <Card className=''>
       <CardHeader className='flex flex-col items-center'>
-        <CardTitle className='text-center text-xl text-gray-800 md:text-2xl'>Products for Purchase</CardTitle>
+        <CardTitle className='text-center text-xl md:text-2xl'>Products for Purchase</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col items-center'>
         <div className='grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2'>
@@ -18,10 +18,10 @@ export default function ProductsList(): React.JSX.Element {
             return (
               <Card key={index}>
                 <CardHeader className='flex flex-col items-center'>
-                  <CardTitle className='text-center text-xl text-gray-800 md:text-2xl'>{product.name}</CardTitle>
+                  <CardTitle className='text-center text-xl md:text-2xl'>{product.name}</CardTitle>
                 </CardHeader>
                 <CardContent className='flex flex-col items-center'>
-                  <CardDescription className='text-center text-gray-600'>{product.description}</CardDescription>
+                  <CardDescription className='text-center'>{product.description}</CardDescription>
                   <div className='mt-4 text-2xl font-bold text-blue-600'>${parseInt(product.amount) / 100}</div>
                 </CardContent>
                 <CardFooter className='flex justify-center'>

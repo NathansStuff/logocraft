@@ -12,7 +12,7 @@ export default function SuccessPage(): React.JSX.Element {
           <CardHeader>
             <CardTitle>Password Reset Successful</CardTitle>
           </CardHeader>
-          <CardContent className='text-gray-600'>
+          <CardContent className=''>
             <p>You will be redirected to the login page shortly.</p>
           </CardContent>
         </Card>

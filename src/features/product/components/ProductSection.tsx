@@ -13,10 +13,10 @@ export default function ProductSection({ product }: Props): React.JSX.Element {
     <>
       <Card className='mx-auto max-w-md'>
         <CardHeader className='flex flex-col items-center'>
-          <CardTitle className='text-center text-xl text-gray-800 md:text-2xl'>{product.name}</CardTitle>
+          <CardTitle className='text-center text-xl md:text-2xl'>{product.name}</CardTitle>
         </CardHeader>
         <CardContent className='flex flex-col items-center'>
-          <CardDescription className='text-center text-gray-600'>{product.description}</CardDescription>
+          <CardDescription className='text-center'>{product.description}</CardDescription>
         </CardContent>{' '}
         <CardFooter className='flex justify-center'>${parseInt(product.amount) / 100}</CardFooter>
       </Card>
