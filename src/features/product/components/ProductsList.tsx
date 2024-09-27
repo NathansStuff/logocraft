@@ -8,7 +8,7 @@ import ProductButtonText from './ProductButtonText';
 
 export default function ProductsList(): React.JSX.Element {
   return (
-    <Card className=''>
+    <Card className='mx-auto max-w-4xl'>
       <CardHeader className='flex flex-col items-center'>
         <CardTitle className='text-center text-xl md:text-2xl'>Products for Purchase</CardTitle>
       </CardHeader>
