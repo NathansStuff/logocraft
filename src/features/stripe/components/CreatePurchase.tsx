@@ -24,6 +24,7 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
   const [errorMessage, setErrorMessage] = useState(''); // State to manage the error message
   const user = useAppSelector(selectUser);
   const { email, stripeCustomerId } = user;
+  const product = products.find((product) => product.productId === productId);
 
   const selectedProduct = products.find((p) => p.productId === productId);
   const purchasedProducts = user.oneTimePurchases;
@@ -53,7 +54,7 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
     fetchClientSecret();
   }, [selectedProduct, email, stripeCustomerId, user._id]);
 
-  if (purchasedProducts?.includes(productId)) {
+  if (purchasedProducts?.includes(productId) && !product?.repurchasable) {
     return (
       <Redirect
         message='You have already purchased this product.'

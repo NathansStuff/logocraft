@@ -4,4 +4,6 @@ export interface Product {
   priceId: string;
   amount: string;
   productId: string;
+  repurchasable?: boolean;
+  tokens?: number;
 }

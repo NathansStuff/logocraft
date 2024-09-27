@@ -8,6 +8,7 @@ import { CardContent, CardDescription } from '@/components/ui/card';
 import { useAppDispatch, useAppSelector } from '@/contexts/storeHooks';
 import { selectUser, setSparkCredit } from '@/contexts/userSlice';
 
+import Link from 'next/link';
 import { useCreateSparkAction } from '../api/useCreateSparkAction';
 
 function SparkButton(): React.JSX.Element {
@@ -55,17 +56,22 @@ function SparkButton(): React.JSX.Element {
           You have {credits} credits left. <br />
           🎯 Every click costs one credit! 💸
         </p>
-        {!user.isAuthenticated && (
-          <span>
-            <br />
-            ⚠️ Please log in to use the Button!
-          </span>
+        {user.isAuthenticated && (
+          <div className='flex w-full flex-col items-center justify-center gap-1 py-2 md:flex-row'>
+            <Button className='w-[250px]'>
+              <Link href='/checkout/product/prod_Qu1gT1TEHPz6Kl'>Purchase 5 more credits</Link>
+            </Button>
+            <Button
+              asChild
+              className='w-[250px]'
+            >
+              <Link href='/checkout/product/prod_Qu1eq5NGBGS0A7'>Purchase 10 more credits</Link>
+            </Button>
+          </div>
         )}
+        {!user.isAuthenticated && <span>⚠️ Please log in to use the Button!</span>}
         {user.isAuthenticated && credits <= 0 && (
-          <span>
-            <br />
-            😢 You have no more credits left. Please purchase more to continue using the Spark Button!
-          </span>
+          <span>😢 You have no more credits left. Please purchase more to continue using the Spark Button!</span>
         )}
       </CardDescription>
       <CardContent>

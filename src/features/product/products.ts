@@ -15,4 +15,22 @@ export const products: Product[] = [
     productId: 'prod_QdhfR1hszyp5lW',
     amount: '4999', // $49.99
   },
+  {
+    name: 'Awesome Credits x 5',
+    description: '500 credits to use on our platform.',
+    priceId: 'price_1Q2DcpJt0BdRfTXvPQ2cHe3X',
+    productId: 'prod_Qu1gT1TEHPz6Kl',
+    amount: '3000',
+    repurchasable: true,
+    tokens: 5,
+  },
+  {
+    name: 'Awesome Credits x 10',
+    description: '500 credits to use on our platform.',
+    priceId: 'price_1Q2DbVJt0BdRfTXv2IinfxIv',
+    productId: 'prod_Qu1eq5NGBGS0A7',
+    amount: '5000',
+    repurchasable: true,
+    tokens: 10,
+  },
 ];
