@@ -12,7 +12,6 @@ import { ReEnableSubscriptionRequest } from '../types/ReEnableSubscriptionReques
 import { UpdateSubscriptionRequest } from '../types/UpdateSubscriptionRequest';
 
 import {
-  cancelSubscription,
   cancelSubscriptionImmediately,
   createPaymentIntent,
   createSubscriptionIntent,
@@ -45,15 +44,8 @@ export async function createOneTimePurchaseHandler(req: NextRequest): Promise<Ne
 export async function createSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
   const safeBody = CreateSubscriptionRequest.parse(data);
-  const response = await createSubscriptionIntent(safeBody.email, safeBody.priceId, safeBody.customerId);
-  return NextResponse.json({ response }, { status: ResponseCode.OK });
-}
-
-export async function createCancelSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
-  const data = await req.json();
-  const safeBody = CancelSubscriptionRequest.parse(data);
-  const response = await cancelSubscription(safeBody.priceId, safeBody.customerId);
-  return NextResponse.json({ response }, { status: ResponseCode.OK });
+  const clientSecret = await createSubscriptionIntent(safeBody.email, safeBody.priceId, safeBody.customerId);
+  return NextResponse.json({ clientSecret }, { status: ResponseCode.OK });
 }
 
 export async function createCancelSubscriptionImmediateHandler(req: NextRequest): Promise<NextResponse> {

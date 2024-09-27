@@ -1,4 +1,6 @@
 import { Product } from '@/features/product/types/Product';
+import { EPaymentFrequency } from '../user/types/EPaymentFrequency';
+import { ESubscriptionPlan } from '../user/types/ESubscriptionPlan';
 
 export const products: Product[] = [
   {
@@ -7,6 +9,7 @@ export const products: Product[] = [
     priceId: 'price_1PmQFQJt0BdRfTXvOr29mm6d',
     productId: 'prod_QdheVGXMjZOnMp',
     amount: '1999', // $19.99
+    oneTimePurchase: true,
   },
   {
     name: 'Online Course',
@@ -14,6 +17,7 @@ export const products: Product[] = [
     priceId: 'price_1PmQG6Jt0BdRfTXvbKY0WmjV',
     productId: 'prod_QdhfR1hszyp5lW',
     amount: '4999', // $49.99
+    oneTimePurchase: true,
   },
   {
     name: 'Awesome Credits x 5',
@@ -32,5 +36,49 @@ export const products: Product[] = [
     amount: '5000',
     repurchasable: true,
     tokens: 10,
+  },
+  {
+    name: 'Free Tier',
+    description: 'Access to our platform with limited features.',
+    priceId: 'price_1PhUNJJt0BdRfTXvdPt3LnJc',
+    productId: 'prod_QYbafraBYafBHC',
+    amount: '0',
+    subscription: ESubscriptionPlan.FREE,
+  },
+  {
+    name: 'Standard Tier',
+    description: 'Access to our platform with limited features.',
+    priceId: 'price_1PhUQ9Jt0BdRfTXvlnTQRKWN',
+    productId: 'prod_QYbdL4oSbVBaFz',
+    amount: '0',
+    subscription: ESubscriptionPlan.STANDARD_MONTHLY,
+    paymentFrequency: EPaymentFrequency.MONTHLY,
+  },
+  {
+    name: 'Premium Tier',
+    description: 'Premium access to our platform.',
+    priceId: 'price_1PhUQNJt0BdRfTXvgLspt35c',
+    productId: 'prod_QYbd7FN2qnPyOW',
+    amount: '0',
+    subscription: ESubscriptionPlan.PREMIUM_MONTHLY,
+    paymentFrequency: EPaymentFrequency.MONTHLY,
+  },
+  {
+    name: 'Standard Tier',
+    description: 'Access to our platform with limited features.',
+    priceId: 'price_1PhUQ9Jt0BdRfTXv3EXUmwRI',
+    productId: 'prod_QYbdL4oSbVBaFz',
+    amount: '0',
+    subscription: ESubscriptionPlan.STANDARD_ANNUAL,
+    paymentFrequency: EPaymentFrequency.ANNUAL,
+  },
+  {
+    name: 'Premium Tier',
+    description: 'Premium access to our platform.',
+    priceId: 'price_1PhUQdJt0BdRfTXvmcB4Hhgw',
+    productId: 'prod_QYbd7FN2qnPyOW',
+    amount: '0',
+    subscription: ESubscriptionPlan.PREMIUM_ANNUAL,
+    paymentFrequency: EPaymentFrequency.ANNUAL,
   },
 ];
