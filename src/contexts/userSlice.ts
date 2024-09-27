@@ -71,11 +71,21 @@ export const userSlice = createSlice({
     setSparkCredit(state, action: PayloadAction<number>) {
       state.credits.sparks += action.payload;
     },
+    setNewTokens(state, action: PayloadAction<number>) {
+      state.credits.sparks += action.payload;
+    },
   },
 });
 
-export const { setUser, logout, setSubscriptionCancelDate, setSparkCredit, setSubscriptionId, setOneTimePurchases } =
-  userSlice.actions;
+export const {
+  setUser,
+  logout,
+  setSubscriptionCancelDate,
+  setSparkCredit,
+  setSubscriptionId,
+  setOneTimePurchases,
+  setNewTokens,
+} = userSlice.actions;
 
 export const selectUser = (state: RootState): IUserSlice => state.user;
 export const selectIsAuthenticated = (state: RootState): boolean => state.user.isAuthenticated;

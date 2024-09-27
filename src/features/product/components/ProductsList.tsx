@@ -15,6 +15,9 @@ export default function ProductsList(): React.JSX.Element {
       <CardContent className='flex flex-col items-center'>
         <div className='grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2'>
           {products.map((product, index) => {
+            if (!product.oneTimePurchase) {
+              return null;
+            }
             return (
               <Card key={index}>
                 <CardHeader className='flex flex-col items-center'>
