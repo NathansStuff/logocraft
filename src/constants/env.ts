@@ -23,6 +23,7 @@ export const env = createEnv({
     GMAIL_EMAIL: z.string().email(),
     GMAIL_PASS: z.string(),
     CONTACT_EMAIL_ADDRESS: z.string().email(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_ENVIRONMENT: z.nativeEnum(Environment),
@@ -53,6 +54,7 @@ export const env = createEnv({
     GMAIL_EMAIL: process.env.GMAIL_EMAIL,
     GMAIL_PASS: process.env.GMAIL_PASS,
     CONTACT_EMAIL_ADDRESS: process.env.CONTACT_EMAIL_ADDRESS,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   },
   emptyStringAsUndefined: true,
 });

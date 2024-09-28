@@ -91,8 +91,16 @@ export async function createPaymentIntent(
 export async function createSubscriptionIntent(
   email: string,
   priceId: string,
-  customerId: string | null
+  customerId: string | null,
+  userId: string
 ): Promise<string> {
+  // Find the product based on the priceId
+  const product = products.find((p) => p.priceId === priceId);
+
+  if (!product) {
+    throw new Error('Product not found');
+  }
+
   // Retrieve or create the customer
   const customer = await getOrCreateStripeCustomer(customerId, email);
 
@@ -111,6 +119,10 @@ export async function createSubscriptionIntent(
       items: [{ price: priceId }],
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'],
+      metadata: {
+        productId: product.productId,
+        userId: userId,
+      },
     });
   } else {
     // Update the existing subscription with the new price

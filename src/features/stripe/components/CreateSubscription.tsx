@@ -1,18 +1,22 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
+
+import { Elements } from '@stripe/react-stripe-js';
+
 import Redirect from '@/components/container/Redirect';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { stripePromise } from '@/lib/clientStripe';
 import { convertToSubcurrency } from '@/utils/convertToSubcurrency';
-import { Elements } from '@stripe/react-stripe-js';
-import { useEffect, useState } from 'react';
+
 import { createSubscription } from '../api/createSubscription';
 import { subscriptionPlans } from '../data/subscriptionPlans';
+
 import ProductPaymentForm from './ProductPaymentForm';
 
-const CreateSubscription = () => {
+const CreateSubscription = (): React.JSX.Element => {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [clientSecret, setClientSecret] = useState('');
   const user = useAppSelector(selectUser);
@@ -21,12 +25,13 @@ const CreateSubscription = () => {
 
   useEffect(() => {
     if (!selectedPlan || !stripeCustomerId || !email) return;
-    const fetchClientSecret = async () => {
+    const fetchClientSecret = async (): Promise<void> => {
       try {
         const response = await createSubscription({
           email,
           priceId: selectedPlan.priceId,
           customerId: stripeCustomerId,
+          userId: user._id.toString(),
         });
 
         if (response.clientSecret) {
@@ -41,9 +46,9 @@ const CreateSubscription = () => {
     };
 
     fetchClientSecret();
-  }, [selectedPlan, email, stripeCustomerId]);
+  }, [selectedPlan, email, stripeCustomerId, user._id]);
 
-  const handlePlanSelect = (plan: SubscriptionPlan) => {
+  const handlePlanSelect = (plan: SubscriptionPlan): void => {
     setSelectedPlan(plan);
   };
 

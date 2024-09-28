@@ -44,7 +44,12 @@ export async function createOneTimePurchaseHandler(req: NextRequest): Promise<Ne
 export async function createSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
   const data = await req.json();
   const safeBody = CreateSubscriptionRequest.parse(data);
-  const clientSecret = await createSubscriptionIntent(safeBody.email, safeBody.priceId, safeBody.customerId);
+  const clientSecret = await createSubscriptionIntent(
+    safeBody.email,
+    safeBody.priceId,
+    safeBody.customerId,
+    safeBody.userId
+  );
   return NextResponse.json({ clientSecret }, { status: ResponseCode.OK });
 }
 

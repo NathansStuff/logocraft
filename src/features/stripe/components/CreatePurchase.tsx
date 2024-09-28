@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { products } from '@/features/product/products';
+import { EProductType } from '@/features/product/types/EProductType';
 import { stripePromise } from '@/lib/clientStripe';
 
 import { createPurchase } from '../api/createPurchase';
@@ -54,7 +55,7 @@ const CreatePurchase = ({ productId }: CreatePurchaseProps): React.JSX.Element =
     fetchClientSecret();
   }, [selectedProduct, email, stripeCustomerId, user._id]);
 
-  if (purchasedProducts?.includes(productId) && !product?.repurchasable) {
+  if (purchasedProducts?.includes(productId) && product?.type === EProductType.ONE_TIME_PURCHASE) {
     return (
       <Redirect
         message='You have already purchased this product.'

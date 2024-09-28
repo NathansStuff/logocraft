@@ -1,9 +1,9 @@
 import { store } from '@/contexts/store';
 import { setNewTokens, setOneTimePurchases } from '@/contexts/userSlice';
-import { updateUser } from '@/features/user/api/updateUser';
-
 import { products } from '@/features/product/products';
+import { updateUser } from '@/features/user/api/updateUser';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
+
 import { getPurchases } from './getPurchases';
 
 export async function updateStripePurchases(email: string): Promise<void> {
