@@ -2,17 +2,18 @@
 
 import React, { useEffect } from 'react';
 
-import { useAppSelector } from '@/contexts/storeHooks';
-import { selectEmail } from '@/contexts/userSlice';
+import { useSession } from 'next-auth/react';
 
-import { updateStripeCustomer } from '../api/updateStripeCustomer';
+import { loginUserAction } from '@/features/user/hooks/loginUserAction';
 
 function CheckStripe(): React.JSX.Element {
-  const email = useAppSelector(selectEmail);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   useEffect(() => {
-    void updateStripeCustomer(email);
-  }, [email]);
+    if (!user) return;
+    void loginUserAction(user.id);
+  }, [user]);
 
   return <></>;
 }

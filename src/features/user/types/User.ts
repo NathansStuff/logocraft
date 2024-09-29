@@ -20,6 +20,7 @@ export const User = z.object({
   credits: z.object({
     sparks: z.number().default(0),
   }),
+  receiptUrls: z.array(z.string()).default([]).optional(),
 });
 
 export const UserPartial = User.partial();

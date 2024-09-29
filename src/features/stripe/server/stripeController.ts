@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { BadRequestError } from '@/exceptions';
@@ -16,8 +17,10 @@ import {
   createPaymentIntent,
   createSubscriptionIntent,
   getCurrentPlanService,
+  getStripeEvent,
   getSubscruiptionIdService,
   getSuccessfulChargesByEmail,
+  handleStripeEventService,
   reenableSubscriptionIdService,
   updateSubscriptionService,
 } from './stripeService';
@@ -88,4 +91,12 @@ export async function updateSubscriptionHandler(req: NextRequest): Promise<NextR
   const safeBody = UpdateSubscriptionRequest.parse(data);
   const response = await updateSubscriptionService(safeBody.userId, safeBody.priceId, safeBody.subscriptionId);
   return NextResponse.json({ response }, { status: ResponseCode.OK });
+}
+
+export async function stripeWebhookHandler(req: NextRequest): Promise<NextResponse> {
+  const body = await req.text();
+  const signature = headers().get('stripe-signature');
+  const event = getStripeEvent(signature, body);
+  await handleStripeEventService(event);
+  return NextResponse.json({ received: true }, { status: ResponseCode.OK });
 }

@@ -1,8 +1,11 @@
 import Stripe from 'stripe';
 
+import { env } from '@/constants';
+import { BadRequestError } from '@/exceptions';
 import { products } from '@/features/product/products';
-import { updateUserByIdService } from '@/features/user/server/userService';
-import { UserWithId } from '@/features/user/types/User';
+import { EProductType } from '@/features/product/types/EProductType';
+import { getUserByIdService, updateUserByIdService } from '@/features/user/server/userService';
+import { UserPartial, UserWithId } from '@/features/user/types/User';
 import { stripe } from '@/lib/serverStripe';
 
 // Get customer by email
@@ -298,4 +301,133 @@ export async function updateSubscriptionService(
   }
 
   return updatedUser;
+}
+
+export function getStripeEvent(signature: string | null, body: string): Stripe.Event {
+  if (!signature) {
+    throw new BadRequestError('Stripe signature is missing');
+  }
+
+  try {
+    return stripe.webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new BadRequestError(`Webhook signature verification failed. ${err.message}`);
+    } else {
+      throw new BadRequestError('Webhook signature verification failed');
+    }
+  }
+}
+
+export async function handleStripeEventService(event: Stripe.Event): Promise<void> {
+  switch (event.type) {
+    case 'payment_intent.created': {
+      // ✅ Product ❌ Subscription
+      // Logic for when a payment intent is created
+      // Do nothing
+      break;
+    }
+    case 'payment_intent.succeeded': {
+      // ✅ Product ✅ Subscription
+      // Logic for handling successful payments
+      // Do nothing => (success is handled by `charge.succeeded` or `invoice.payment_succeeded`)
+      break;
+    }
+    case 'payment_intent.payment_failed': {
+      // ✅ Product ✅ Subscription
+      // Logic for when the payment fails
+      // Do nothing
+      break;
+    }
+    case 'charge.succeeded': {
+      // ✅ Product ✅ Subscription
+      // Logic for successful charge
+      const isSubscription = event.data.object.invoice !== null;
+      if (isSubscription) break;
+      const { userId, productId } = event.data.object.metadata;
+      const receiptUrl = event.data.object.receipt_url;
+      await handleProductPurchase(userId, productId, receiptUrl);
+      break;
+    }
+    case 'charge.failed': {
+      // ✅ Product ✅ Subscription
+      // Logic for failed charge
+      // Do nothing => Failure is handled by stripe dashboard settings
+      break;
+    }
+    case 'charge.updated': {
+      // ✅ Product ✅ Subscription
+      // Logic for when a charge is updated
+      // Generally used for dispute or payment method updates
+      // You can log the update or notify the user of any critical charge changes
+      // todo: Log this event
+      break;
+    }
+    case 'payment_method.attached': {
+      // ❌Product ✅ Subscription
+      // Logic to handle when a payment method is attached to a customer
+      // Do nothing
+      break;
+    }
+    case 'customer.subscription.updated': {
+      // ❌Product ✅ Subscription
+      // Handle non-payment subscription updates, like plan changes or cancellations
+      const subscription = event.data.object;
+      console.log(`Subscription updated: ${subscription.id}, new status: ${subscription.status}`);
+      // todo: Update DB if there are changes in plan, status, or similar
+      break;
+    }
+    case 'invoice.updated': {
+      // ❌Product ✅ Subscription
+      // Logic to handle updates to invoices, such as new charges or adjustments.
+      // Do nothing
+      break;
+    }
+    case 'invoice.paid': {
+      // ❌Product ✅ Subscription
+      // Logic to handle fully paid invoices, such as activating or extending subscriptions.
+      // Do nothing => Handled in `invoice.payment_succeeded`
+      break;
+    }
+    case 'invoice.payment_succeeded': {
+      // ❌Product ✅ Subscription
+      // Logic for successful invoice payment, updating the subscription status accordingly.
+      // This is the place to handle subscription payments and update user status
+      const invoice = event.data.object;
+      const { subscription, customer } = invoice;
+      console.log(`Invoice paid successfully for subscription ${subscription}, customer: ${customer}`);
+      break;
+    }
+
+    default:
+    // Unhandled event type
+  }
+}
+
+async function handleProductPurchase(userId: string, productId: string, receiptUrl: string | null): Promise<void> {
+  const user = await getUserByIdService(userId);
+  // Identify if new purchase includes tokens
+  const product = products.find((prod) => prod.productId === productId);
+  if (!user || !product) {
+    // todo: Log
+    console.log('User or product not found', { userId, productId });
+    throw new BadRequestError('User or product not found');
+  }
+  const tokenAmount = product.tokens || 0;
+  const currentTokens = user.credits.sparks;
+  const newTokens = currentTokens + tokenAmount;
+  const wasOneTimePurchase = product.type === EProductType.ONE_TIME_PURCHASE;
+  const oneTimePurchases = user.oneTimePurchases || [];
+  if (wasOneTimePurchase) {
+    oneTimePurchases.push(productId);
+  }
+
+  const newUser: UserPartial = {
+    oneTimePurchases,
+    receiptUrls: receiptUrl ? [...(user.receiptUrls || []), receiptUrl] : user.receiptUrls,
+    credits: {
+      sparks: newTokens,
+    },
+  };
+  await updateUserByIdService(userId, newUser);
 }

@@ -31,7 +31,9 @@ export const userSchema = new Schema<User>(
         sparks: { type: Number, required: true, default: 0 },
       },
       required: true,
+      _id: false,
     },
+    receiptUrls: { type: [String], required: true, default: [] },
   },
   { timestamps: true }
 );
