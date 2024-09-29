@@ -1,21 +1,21 @@
 import { WithId } from 'mongodb';
 import { z } from 'zod';
 
-import { ETier } from './ETiers';
 import { SubscriptionPlan } from './SubscriptionPlan';
 
 export const User = z.object({
   name: z.string(),
   email: z.string().email(),
-  imageUrl: z.string().url().optional(),
-  stripeCustomerId: z.string().optional(),
-  activeSubscription: z.boolean().default(false),
-  accountTier: z.nativeEnum(ETier).optional(),
-  subscriptionCancelDate: z.string().nullable().optional(),
-  stripeSubscriptionId: z.string().optional(),
+  imageUrl: z.string().optional(),
+  stripeCustomerId: z.string().optional(), // The Stripe customer ID
+  stripeSubscriptionId: z.string().optional(), // The Stripe subscription ID
+  activeSubscription: z.boolean().default(false), // Is the subscription active?
+  subscriptionCancelDate: z.string().nullable().optional(), // If set to cancel at the end of the period
+  subscriptionStartDate: z.date().optional(), // When the subscription started
+  currentPeriodEnd: z.date().optional(), // When the current billing period ends
+  currentPlan: SubscriptionPlan.nullable(), // Current subscription plan details
   isEmailVerified: z.boolean().default(false),
-  oneTimePurchases: z.array(z.string()).default([]), // stripe productIds
-  currentPlan: SubscriptionPlan.nullable(),
+  oneTimePurchases: z.array(z.string()).default([]), // IDs of purchased products
   sparksUsed: z.number().default(0),
   credits: z.object({
     sparks: z.number().default(0),

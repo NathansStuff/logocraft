@@ -1,26 +1,28 @@
 'use client';
 
+import React, { useState } from 'react';
+
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
-import { useState } from 'react';
+
 import CurrentPlan from './CurrentPlan';
 import SwitchMembership from './SwitchMembership';
 
-const ManageSubscription = () => {
+function ManageSubscription(): React.JSX.Element {
   const [showSwitchOptions, setShowSwitchOptions] = useState(false);
   const user = useAppSelector(selectUser);
   const [currentPlan, setCurrentPlan] = useState<SubscriptionPlan | null>(user.currentPlan);
 
-  const handleSwitchMembership = () => {
+  const handleSwitchMembership = ():void => {
     setShowSwitchOptions(true);
   };
 
-  const handleSwitchBack = () => {
+  const handleSwitchBack = (): void => {
     setShowSwitchOptions(false);
   };
 
-  const handleUpdatePlan = (newPlan: SubscriptionPlan) => {
+  const handleUpdatePlan = (newPlan: SubscriptionPlan): void => {
     setCurrentPlan(newPlan);
   };
 

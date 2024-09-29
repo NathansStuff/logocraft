@@ -1,9 +1,12 @@
 'use client';
 
+import React, { useEffect } from 'react';
+
+import { Loader2 } from 'lucide-react';
+
 import { useAppDispatch, useAppSelector } from '@/contexts/storeHooks';
 import { selectUser, setSubscriptionCancelDate, setUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
-import React, { useEffect } from 'react';
 
 interface CurrentPlanProps {
   currentPlan: SubscriptionPlan | null;
@@ -16,7 +19,7 @@ const CurrentPlan: React.FC<CurrentPlanProps> = ({ currentPlan, onSwitchMembersh
   const { stripeCustomerId, subscriptionCancelDate } = user;
 
   useEffect(() => {
-    const checkAndCancelSubscription = async () => {
+    const checkAndCancelSubscription = async (): Promise<void> => {
       if (subscriptionCancelDate && parseInt(subscriptionCancelDate) * 1000 < Date.now()) {
         try {
           const res = await fetch('/api/stripe/cancel-subscription-immediate', {
@@ -40,7 +43,7 @@ const CurrentPlan: React.FC<CurrentPlanProps> = ({ currentPlan, onSwitchMembersh
     checkAndCancelSubscription();
   }, [subscriptionCancelDate, stripeCustomerId, user._id, dispatch]);
 
-  const handleCancelSubscription = async () => {
+  const handleCancelSubscription = async (): Promise<void> => {
     try {
       const res = await fetch('/api/stripe/cancel-subscription', {
         method: 'POST',
@@ -59,7 +62,7 @@ const CurrentPlan: React.FC<CurrentPlanProps> = ({ currentPlan, onSwitchMembersh
     }
   };
 
-  const handleReEnableSubscription = async () => {
+  const handleReEnableSubscription = async (): Promise<void> => {
     try {
       const res = await fetch('/api/stripe/re-enable-subscription', {
         method: 'POST',
@@ -79,14 +82,14 @@ const CurrentPlan: React.FC<CurrentPlanProps> = ({ currentPlan, onSwitchMembersh
   };
 
   if (!currentPlan) {
-    return <p>Loading...</p>;
+    return <Loader2 className='size-8' />;
   }
 
   return (
     <div className='mb-4 text-center'>
       <p>
-        Current Plan: {currentPlan.name} ${parseFloat(currentPlan.amount) / 100}/
-        {currentPlan.annual ? 'Annual' : 'Monthly'}
+        Current Plan: {currentPlan.planName} - {currentPlan.planAmount} {currentPlan.currency}/
+        {currentPlan.billingInterval}
       </p>
       {subscriptionCancelDate ? (
         <>

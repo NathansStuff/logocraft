@@ -30,6 +30,13 @@ export async function getAllUsers(): Promise<UserWithId[]> {
   return result;
 }
 
+// Get a User by Stripe Customer ID
+export async function getUserByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
+  await connectMongo();
+  const result = await UserModel.findOne({ stripeCustomerId });
+  return result;
+}
+
 // Update a User
 export async function updateUserById(id: string, User: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
   await connectMongo();

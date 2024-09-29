@@ -4,46 +4,19 @@ import { env } from '@/constants';
 import { BadRequestError } from '@/exceptions';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
-import { getUserByEmailService, getUserByIdService, updateUserByIdService } from '@/features/user/server/userService';
-import { UserPartial, UserWithId } from '@/features/user/types/User';
+import {
+  getUserByEmailService,
+  getUserByIdService,
+  getUserByStripeCustomerIdService,
+  updateUserByIdService,
+} from '@/features/user/server/userService';
+import { UserPartial } from '@/features/user/types/User';
 import { stripe } from '@/lib/serverStripe';
 
-// Get customer by email
-export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {
-  const customers = await stripe.customers.list({
-    email: email,
-    limit: 1, // Assuming email is unique; adjust if needed
-  });
-
-  if (customers.data.length === 0) {
-    return null;
-  }
-
-  return customers.data[0];
-}
-
-// Get Successful Charges for a customer
-export async function getSuccessfulChargesForCustomer(customerId: string): Promise<Stripe.Charge[]> {
-  const charges = await stripe.charges.list({
-    customer: customerId,
-    limit: 100, // Adjust the limit as needed
-  });
-
-  return charges.data.filter((charge) => charge.status === 'succeeded');
-}
-
-// Get all successful charges for a customer by email
-export async function getSuccessfulChargesByEmail(email: string): Promise<Stripe.Charge[]> {
-  const customer = await getStripeCustomerByEmail(email);
-  if (!customer) {
-    return [];
-  }
-
-  return getSuccessfulChargesForCustomer(customer.id);
-}
+import { mapBillingInterval } from '../utils/mapBillingInterval';
 
 // Retrieve or create a customer
-export async function getOrCreateStripeCustomer(customerId: string | null, email: string): Promise<Stripe.Customer> {
+async function getOrCreateStripeCustomer(customerId: string | null, email: string): Promise<Stripe.Customer> {
   if (customerId) {
     const customer = await stripe.customers.retrieve(customerId);
     if (customer) return customer as Stripe.Customer;
@@ -156,153 +129,6 @@ export async function createSubscriptionIntent(
   throw new Error('Failed to retrieve the payment intent client secret.');
 }
 
-export async function cancelSubscription(userId: string, customerId: string): Promise<UserWithId> {
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    limit: 1,
-  });
-
-  if (subscriptions.data.length === 0) {
-    throw new Error('No subscription found');
-  }
-
-  const subscription = subscriptions.data[0];
-
-  const updatedSubscription = await stripe.subscriptions.update(subscription.id, {
-    cancel_at_period_end: true,
-  });
-
-  // Convert cancel_at to a string
-  const cancelAtString = updatedSubscription.cancel_at ? updatedSubscription.cancel_at.toString() : null;
-
-  // Update user in the database with the cancelation date
-  const updatedUser = await updateUserByIdService(userId, { subscriptionCancelDate: cancelAtString });
-
-  if (!updatedUser) {
-    throw new Error('Failed to update user');
-  }
-
-  return updatedUser;
-}
-
-export async function cancelSubscriptionImmediately(userId: string, customerId: string): Promise<UserWithId> {
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    limit: 1,
-  });
-
-  if (subscriptions.data.length === 0) {
-    throw new Error('No subscription found');
-  }
-
-  const subscription = subscriptions.data[0];
-
-  // Cancel the subscription immediately
-  await stripe.subscriptions.cancel(subscription.id);
-
-  // Update user in the database to clear the cancelation date
-  const updatedUser = await updateUserByIdService(userId, { subscriptionCancelDate: null });
-
-  if (!updatedUser) {
-    throw new Error('Failed to update user');
-  }
-
-  return updatedUser;
-}
-
-// todo: types
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getCurrentPlanService(customerId: string): Promise<any> {
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    limit: 1,
-  });
-
-  if (subscriptions.data.length === 0) {
-    return null;
-  }
-
-  const subscription = subscriptions.data[0];
-  const price = subscription.items.data[0].price;
-  const plan = {
-    name: price.nickname,
-    amount: price.unit_amount,
-    annual: price.recurring?.interval === 'year',
-    priceId: price.id, // Adding priceId to the plan object
-  };
-
-  return plan;
-}
-
-export async function getSubscruiptionIdService(customerId: string): Promise<string | null> {
-  // Retrieve the list of subscriptions for the given customer
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    limit: 1,
-  });
-
-  if (subscriptions.data.length === 0) {
-    return null;
-  }
-
-  // Return the subscription ID
-  const subscriptionId = subscriptions.data[0].id;
-
-  return subscriptionId;
-}
-
-export async function reenableSubscriptionIdService(customerId: string, userId: string): Promise<UserWithId> {
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customerId,
-    limit: 1,
-  });
-
-  if (subscriptions.data.length === 0) {
-    throw new Error('No subscription found');
-  }
-
-  const subscription = subscriptions.data[0];
-  await stripe.subscriptions.update(subscription.id, {
-    cancel_at_period_end: false,
-  });
-
-  // Update user in the database to remove the cancelation date
-  const updatedUser = await updateUserByIdService(userId, { subscriptionCancelDate: null });
-
-  if (!updatedUser) {
-    throw new Error('Failed to update user');
-  }
-
-  return updatedUser;
-}
-
-export async function updateSubscriptionService(
-  userId: string,
-  priceId: string,
-  subscriptionId: string
-): Promise<UserWithId> {
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId, { expand: ['items'] });
-  const subscriptionItemId = subscription.items.data[0].id;
-
-  const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
-    items: [
-      {
-        id: subscriptionItemId,
-        price: priceId,
-      },
-    ],
-  });
-
-  // Update user in the database with the subscription ID
-  const updatedUser = await updateUserByIdService(userId, { stripeSubscriptionId: updatedSubscription.id });
-
-  if (!updatedUser) {
-    throw new Error('Failed to update user');
-  }
-
-  return updatedUser;
-}
-
 export function getStripeEvent(signature: string | null, body: string): Stripe.Event {
   if (!signature) {
     throw new BadRequestError('Stripe signature is missing');
@@ -373,9 +199,7 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
       // ❌Product ✅ Subscription
       // Handle non-payment subscription updates, like plan changes or cancellations
       const subscription = event.data.object;
-      console.log(`Subscription updated: ${subscription.id}, new status: ${subscription.status}`);
-      // todo: Update DB if there are changes in plan, status, or similar
-      console.log('subscription', subscription);
+      handleSubscriptionUpdated(subscription);
       break;
     }
     case 'invoice.updated': {
@@ -402,6 +226,77 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
     default:
     // Unhandled event type
   }
+}
+
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
+  // Extract relevant fields from the subscription object
+  const {
+    id: subscriptionId,
+    status: newStatus,
+    customer: customerId, // Stripe customer ID
+    cancel_at_period_end: willCancelAtPeriodEnd,
+    current_period_end: periodEnd,
+    items,
+  } = subscription;
+  if (typeof customerId !== 'string') {
+    // todo: Log
+    throw new BadRequestError('Customer ID not found');
+  }
+
+  // 1. Retrieve the user by stripe customer ID
+  const user = await getUserByStripeCustomerIdService(customerId);
+  if (!user) {
+    // todo: Log
+    throw new BadRequestError('User not found');
+  }
+
+  // 2. Map the subscription status to the user's account status
+  let activeSubscription = false;
+  let subscriptionCancelDate: string | null = null;
+
+  switch (newStatus) {
+    case 'active':
+      activeSubscription = true;
+      break;
+    case 'canceled':
+    case 'unpaid':
+    case 'incomplete':
+    case 'past_due':
+      activeSubscription = false;
+      break;
+  }
+
+  if (willCancelAtPeriodEnd) {
+    // Subscription is set to cancel at the end of the current period
+    subscriptionCancelDate = new Date(periodEnd * 1000).toISOString(); // Convert Unix timestamp to ISO string
+  }
+
+  // 3. Update the user's account status in the database
+  const subscriptionItem = items.data[0]; // Assuming there is only one item in the subscription
+  const product = products.find((p) => p.priceId === subscriptionItem.price.id);
+  if (!product) {
+    // todo: Log
+    throw new BadRequestError('Product not found');
+  }
+
+  const updatedUser: UserPartial = {
+    activeSubscription,
+    stripeSubscriptionId: subscriptionId, // Store Stripe subscription ID
+    subscriptionCancelDate, // Store the cancel date if applicable
+    currentPeriodEnd: new Date(periodEnd * 1000), // Store the end date of the current billing period
+    currentPlan: {
+      planName: product?.name, // Store the plan name
+      planAmount: items.data[0].plan.amount || 0, // Store the plan amount in centss
+      currency: items.data[0].plan.currency, // Store the currency, e.g., 'USD'
+      billingInterval: mapBillingInterval(items.data[0].plan.interval),
+      plan: product.subscription || null, // Store the plan type
+    },
+  };
+
+  await updateUserByIdService(user._id.toString(), updatedUser);
+
+  // 4. Emails
+  // todo
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {

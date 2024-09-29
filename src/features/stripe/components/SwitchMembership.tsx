@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { useAppDispatch, useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
-import React from 'react';
+
 import { subscriptionPlans } from '../data/subscriptionPlans';
 
 interface SwitchMembershipProps {
@@ -14,34 +16,8 @@ const SwitchMembership: React.FC<SwitchMembershipProps> = ({ currentPlan, onSwit
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
 
-  const handlePlanSelect = async (plan: SubscriptionPlan) => {
-    if (currentPlan?.priceId === plan.priceId) return; // No need to update if the same plan is selected
-
-    try {
-      const res = await fetch('/api/stripe/update-subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId: user.stripeCustomerId,
-          priceId: plan.priceId,
-          userId: user._id,
-          subscriptionId: user.stripeSubscriptionId, // Pass subscription ID
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        // Update the user and current plan in the state
-        console.log(plan);
-        onUpdatePlan(plan);
-        alert('Subscription updated successfully');
-        onSwitchBack();
-      } else {
-        console.error('Error updating subscription');
-      }
-    } catch (error) {
-      console.error('Error updating subscription:', error);
-    }
+  const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
+    if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
   };
 
   if (!currentPlan) {
@@ -54,13 +30,14 @@ const SwitchMembership: React.FC<SwitchMembershipProps> = ({ currentPlan, onSwit
         <button
           key={index}
           className={`w-full rounded-md px-4 py-3 font-semibold text-white ${
-            currentPlan?.priceId === plan.priceId ? 'cursor-not-allowed bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'
+            currentPlan?.plan === plan.plan ? 'cursor-not-allowed bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'
           } relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
           onClick={() => handlePlanSelect(plan)}
-          disabled={currentPlan?.priceId === plan.priceId} // Disable button for the current plan
+          disabled={currentPlan?.plan === plan.plan} // Disable button for the current plan
         >
-          {plan.name} - ${parseFloat(plan.amount) / 100} ({plan.annual ? 'Annual' : 'Monthly'})
-          {currentPlan?.priceId === plan.priceId && (
+          Current Plan: {currentPlan.planName} - {currentPlan.planAmount} {currentPlan.currency}/
+          {currentPlan.billingInterval}
+          {currentPlan?.plan === plan.plan && (
             <span className='absolute right-1 top-1 rounded-full bg-yellow-500 px-2 py-1 text-xs text-white'>
               Current Plan
             </span>

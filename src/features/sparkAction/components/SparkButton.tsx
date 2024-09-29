@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import Confetti from 'react-confetti';
 
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription } from '@/components/ui/card';
 import { useAppDispatch, useAppSelector } from '@/contexts/storeHooks';
 import { selectUser, setSparkCredit } from '@/contexts/userSlice';
 
-import Link from 'next/link';
 import { useCreateSparkAction } from '../api/useCreateSparkAction';
 
 function SparkButton(): React.JSX.Element {
