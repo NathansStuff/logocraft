@@ -4,7 +4,7 @@ import { env } from '@/constants';
 import { BadRequestError } from '@/exceptions';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
-import { getUserByIdService, updateUserByIdService } from '@/features/user/server/userService';
+import { getUserByEmailService, getUserByIdService, updateUserByIdService } from '@/features/user/server/userService';
 import { UserPartial, UserWithId } from '@/features/user/types/User';
 import { stripe } from '@/lib/serverStripe';
 
@@ -375,6 +375,7 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
       const subscription = event.data.object;
       console.log(`Subscription updated: ${subscription.id}, new status: ${subscription.status}`);
       // todo: Update DB if there are changes in plan, status, or similar
+      console.log('subscription', subscription);
       break;
     }
     case 'invoice.updated': {
@@ -394,14 +395,39 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
       // Logic for successful invoice payment, updating the subscription status accordingly.
       // This is the place to handle subscription payments and update user status
       const invoice = event.data.object;
-      const { subscription, customer } = invoice;
-      console.log(`Invoice paid successfully for subscription ${subscription}, customer: ${customer}`);
+      handleInvoicePaymentSucceeded(invoice);
       break;
     }
 
     default:
     // Unhandled event type
   }
+}
+
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
+  const { subscription, customer_email } = invoice;
+  const chargeId = invoice.charge; // Get the charge ID associated with the invoice
+  let receiptUrl: string | null = null;
+  if (typeof chargeId === 'string') {
+    const charge = await stripe.charges.retrieve(chargeId);
+    receiptUrl = charge.receipt_url;
+    console.log('receiptUrl', receiptUrl);
+  }
+
+  if (!subscription || !customer_email || !receiptUrl) {
+    // todo: Log
+    throw new BadRequestError('Subscription or customer email or receiptUrl not found');
+  }
+  const user = await getUserByEmailService(customer_email);
+  if (!user) {
+    // todo: Log
+    throw new BadRequestError('User not found');
+  }
+
+  const newUser: UserPartial = {
+    receiptUrls: [...(user.receiptUrls || []), receiptUrl],
+  };
+  await updateUserByIdService(user._id.toString(), newUser);
 }
 
 async function handleProductPurchase(userId: string, productId: string, receiptUrl: string | null): Promise<void> {
