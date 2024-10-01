@@ -1,33 +1,38 @@
+import { EPaymentFrequency } from '@/features/user/types/EPaymentFrequency';
 import { ESubscriptionPlan } from '@/features/user/types/ESubscriptionPlan';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 
 export const subscriptionPlans: SubscriptionPlan[] = [
   {
-    name: 'Standard',
-    annual: false,
-    amount: '500',
+    planName: 'Standard',
+    planAmount: 500,
+    currency: 'AUD',
+    billingInterval: EPaymentFrequency.MONTHLY,
     priceId: 'price_1PhUQ9Jt0BdRfTXvlnTQRKWN',
     plan: ESubscriptionPlan.STANDARD_MONTHLY,
   },
   {
-    name: 'Standard',
-    annual: true,
-    amount: '5000',
+    planName: 'Standard',
+    planAmount: 5000,
+    currency: 'AUD',
     priceId: 'price_1PhUQ9Jt0BdRfTXv3EXUmwRI',
     plan: ESubscriptionPlan.STANDARD_ANNUAL,
+    billingInterval: EPaymentFrequency.ANNUAL,
   },
   {
-    name: 'Premium',
-    annual: false,
-    amount: '1000',
+    planName: 'Premium',
+    currency: 'AUD',
+    planAmount: 1000,
+    billingInterval: EPaymentFrequency.MONTHLY,
     priceId: 'price_1PhUQNJt0BdRfTXvgLspt35c',
     plan: ESubscriptionPlan.PREMIUM_MONTHLY,
   },
   {
-    name: 'Premium',
-    annual: true,
-    amount: '10000',
+    planName: 'Premium',
+    currency: 'AUD',
+    planAmount: 10000,
     priceId: 'price_1PhUQdJt0BdRfTXvmcB4Hhgw',
     plan: ESubscriptionPlan.PREMIUM_ANNUAL,
+    billingInterval: EPaymentFrequency.ANNUAL,
   },
 ];

@@ -9,6 +9,7 @@ export const SubscriptionPlan = z.object({
   currency: z.string(), // Currency code, e.g., USD
   billingInterval: z.nativeEnum(EPaymentFrequency), // Billing frequency
   plan: z.nativeEnum(ESubscriptionPlan).nullable(), // Enum representing the plan type
+  priceId: z.string(),
 });
 
 export type SubscriptionPlan = z.infer<typeof SubscriptionPlan>;
