@@ -22,6 +22,7 @@ export const userSchema = new Schema<User>(
         currency: { type: String, required: false },
         billingInterval: { type: String, required: false },
         plan: { type: String, required: false },
+        priceId: { type: String, required: false },
       },
       required: false,
       nullable: true,

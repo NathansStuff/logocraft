@@ -9,7 +9,8 @@ import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import UseConfirm from '@/hooks/UseConfirm';
 
-import { deleteSubscription } from '../api/deleteSubscription';
+import { cancelIncompleteSubscription } from '../api/cancelIncompleteSubscription';
+import { changeSubscription } from '../api/changeSubscription';
 import { reenableSubscription } from '../api/reenableSubscription';
 import { subscriptionPlans } from '../data/subscriptionPlans';
 import { formatPlanInfo } from '../utils/formatPlanInfo';
@@ -28,9 +29,9 @@ function ManageSubscription(): React.JSX.Element {
   const handleCancelSubscription = async (): Promise<void> => {
     const ok = await confirm();
     if (!ok) return;
-    if (!stripeSubscriptionId) return;
+    if (!stripeCustomerId) return;
 
-    const success = await deleteSubscription({ stripeSubscriptionId });
+    await cancelIncompleteSubscription({ stripeCustomerId });
 
     // todo: Redirect / success
   };
@@ -40,11 +41,14 @@ function ManageSubscription(): React.JSX.Element {
   };
 
   const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
+    if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
+
     if (subscriptionCancelDate) {
       await handleReEnableSubscription();
       return;
     }
-    if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
+    if (!stripeSubscriptionId || !currentPlan) return;
+    await changeSubscription({ stripeSubscriptionId, newPriceId: plan.priceId, oldPriceId: currentPlan.priceId });
   };
 
   return (

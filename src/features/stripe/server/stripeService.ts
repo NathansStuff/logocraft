@@ -4,6 +4,7 @@ import { env } from '@/constants';
 import { BadRequestError } from '@/exceptions';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
+import { isSubscriptionUpgrade } from '@/features/product/utils/isSubscriptionUpgrade';
 import {
   getUserByEmailService,
   getUserByIdService,
@@ -43,6 +44,52 @@ export async function reenableStripeSubscription(stripeSubscriptionId: string): 
     cancel_at_period_end: false, // This cancels the subscription at the end of the current period
   });
 }
+
+// Change a subscription
+export async function changeStripeSubscription(
+  stripeSubscriptionId: string,
+  newPriceId: string,
+  oldPriceId: string
+): Promise<void> {
+  console.log('changeStripeSubscription');
+  // Fetch the current subscription to get the subscription item ID
+  const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+  const oldProduct = products.find((p) => p.priceId === oldPriceId);
+  const newProduct = products.find((p) => p.priceId === newPriceId);
+  if (!oldProduct || !newProduct) {
+    throw new BadRequestError('Product not found');
+  }
+
+  // Determine proration behavior based on upgrade or downgrade
+  const isUpgrade = isSubscriptionUpgrade(oldProduct, newProduct);
+  const prorationBehavior = isUpgrade ? 'create_prorations' : 'none';
+  console.log('proration_behavior', prorationBehavior);
+
+  // Update the subscription with the new plan's price ID
+  await stripe.subscriptions.update(stripeSubscriptionId, {
+    items: [
+      {
+        id: subscription.items.data[0].id, // Subscription item ID (required for updates)
+        price: newPriceId, // The price ID of the new plan
+      },
+    ],
+    proration_behavior: prorationBehavior, // 'none' for downgrade, 'create_prorations' for upgrade
+    billing_cycle_anchor: 'unchanged', // Keep the billing cycle unchanged
+  });
+}
+
+// Cancel Incomplete subscription
+export async function cancelIncompleteSubscription(stripeCustomerId: string): Promise<void> {
+  const subscriptions = await stripe.subscriptions.list({ customer: stripeCustomerId });
+  // Filter for incomplete subscriptions
+  const incompleteSubscription = subscriptions.data.find((sub) => sub.status === 'incomplete');
+
+  if (incompleteSubscription) {
+    // Cancel the incomplete subscription
+    await stripe.subscriptions.cancel(incompleteSubscription.id);
+  }
+}
+
 // Create a PaymentIntent for a one-time purchase
 export async function createPaymentIntent(
   email: string,
@@ -233,6 +280,7 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
       // This is the place to handle subscription payments and update user status
       const invoice = event.data.object;
       handleInvoicePaymentSucceeded(invoice);
+      console.log('invoice.payment_succeeded');
       break;
     }
 

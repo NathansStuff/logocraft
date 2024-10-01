@@ -5,14 +5,17 @@ import React, { useEffect, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import Redirect from '@/components/container/Redirect';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { stripePromise } from '@/lib/clientStripe';
-import { convertToSubcurrency } from '@/utils/convertToSubcurrency';
 
+import { cancelIncompleteSubscription } from '../api/cancelIncompleteSubscription';
 import { createSubscription } from '../api/createSubscription';
 import { subscriptionPlans } from '../data/subscriptionPlans';
+import { formatPlanInfo } from '../utils/formatPlanInfo';
 
 import ProductPaymentForm from './ProductPaymentForm';
 
@@ -52,6 +55,13 @@ const CreateSubscription = (): React.JSX.Element => {
     setSelectedPlan(plan);
   };
 
+  const handleCancel = async (): Promise<void> => {
+    setSelectedPlan(null); // Clear selected plan and go back to plan selection
+    setClientSecret(''); // Clear clientSecret if a plan was selected before
+    if (!stripeCustomerId) return;
+    await cancelIncompleteSubscription({ stripeCustomerId });
+  };
+
   if (!email) {
     return (
       <Redirect
@@ -62,29 +72,32 @@ const CreateSubscription = (): React.JSX.Element => {
   }
 
   return (
-    <div className='flex w-full items-center justify-center bg-gray-100 p-4'>
-      <div className='w-full max-w-lg rounded-lg bg-white p-8 shadow-md'>
-        <h1 className='mb-4 text-center text-2xl font-bold text-gray-800'>
-          You do not have a subscripton. Choose a plan
-        </h1>
-        <div className='space-y-4'>
-          {subscriptionPlans.map((plan, index) => (
-            <button
-              key={index}
-              className='relative w-full rounded-md bg-blue-500 px-4 py-3 font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
-              onClick={() => handlePlanSelect(plan)}
-            >
-              {plan.name} - ${convertToSubcurrency(plan.amount)} ({plan.annual ? 'Annual' : 'Monthly'})
-            </button>
-          ))}
-        </div>
+    <Card>
+      <CardHeader className='text-center'>
+        <CardTitle className=''>Manage Your Plan</CardTitle>
+        <CardDescription>
+          {selectedPlan
+            ? `You have chosen: ${formatPlanInfo(selectedPlan)}`
+            : 'You do not have a subscripton. Choose a plan'}
+        </CardDescription>
+      </CardHeader>{' '}
+      <CardContent>
+        {!selectedPlan && !clientSecret && (
+          <div className='flex flex-col gap-2'>
+            {subscriptionPlans.map((plan, index) => (
+              <Button
+                key={index}
+                onClick={() => handlePlanSelect(plan)}
+                className='w-full'
+              >
+                {formatPlanInfo(plan)}
+              </Button>
+            ))}
+          </div>
+        )}
         {errorMessage && <div className='mb-4 text-center text-red-500'>{errorMessage}</div>}
         {selectedPlan && clientSecret && (
           <>
-            <h1>
-              You have chosen: {selectedPlan.name} - ${convertToSubcurrency(selectedPlan.amount)} /
-              {selectedPlan.annual ? 'Annual' : 'Monthly'}
-            </h1>
             <Elements
               stripe={stripePromise}
               options={{
@@ -94,10 +107,17 @@ const CreateSubscription = (): React.JSX.Element => {
             >
               <ProductPaymentForm clientSecret={clientSecret} />
             </Elements>
+            <Button
+              variant='secondary'
+              onClick={handleCancel}
+              className='w-full'
+            >
+              {selectedPlan ? 'Cancel' : 'Go Back'}
+            </Button>
           </>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

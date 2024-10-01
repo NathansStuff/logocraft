@@ -4,11 +4,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CreatePurchaseRequest } from '@/features/stripe/types/CreatePurchaseRequest';
 import { ResponseCode } from '@/types/ResponseCode';
 
+import { CancelIncompleteSubscriptionRequest } from '../types/CancelIncompleteSubscriptionRequest';
+import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';
 import { CreateSubscriptionRequest } from '../types/CreateSubscriptionRequest';
 import { DeleteSubscriptionRequest } from '../types/DeleteSubscriptionRequest';
 
 import {
+  cancelIncompleteSubscription,
   cancelStripeSubscription,
+  changeStripeSubscription,
   createPaymentIntent,
   createSubscriptionIntent,
   getStripeEvent,
@@ -59,5 +63,19 @@ export async function reenableSubscriptionHandler(req: NextRequest): Promise<Nex
   const data = await req.json();
   const safeBody = DeleteSubscriptionRequest.parse(data);
   await reenableStripeSubscription(safeBody.stripeSubscriptionId);
+  return NextResponse.json({ received: true }, { status: ResponseCode.OK });
+}
+
+export async function changeSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = ChangeSubscriptionRequest.parse(data);
+  await changeStripeSubscription(safeBody.stripeSubscriptionId, safeBody.newPriceId, safeBody.oldPriceId);
+  return NextResponse.json({ received: true }, { status: ResponseCode.OK });
+}
+
+export async function cancelIncompleteSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = CancelIncompleteSubscriptionRequest.parse(data);
+  await cancelIncompleteSubscription(safeBody.stripeCustomerId);
   return NextResponse.json({ received: true }, { status: ResponseCode.OK });
 }
