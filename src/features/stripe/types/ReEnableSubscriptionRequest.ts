@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
-export const ReEnableSubscriptionRequest = z.object({
-  userId: z.string(),
-  customerId: z.string(),
+export const ReenableSubscriptionRequest = z.object({
+  stripeSubscriptionId: z.string(),
 });
 
-export type ReEnableSubscriptionRequest = z.infer<typeof ReEnableSubscriptionRequest>;
+export type ReenableSubscriptionRequest = z.infer<typeof ReenableSubscriptionRequest>;

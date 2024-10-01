@@ -5,12 +5,15 @@ import { CreatePurchaseRequest } from '@/features/stripe/types/CreatePurchaseReq
 import { ResponseCode } from '@/types/ResponseCode';
 
 import { CreateSubscriptionRequest } from '../types/CreateSubscriptionRequest';
+import { DeleteSubscriptionRequest } from '../types/DeleteSubscriptionRequest';
 
 import {
+  cancelStripeSubscription,
   createPaymentIntent,
   createSubscriptionIntent,
   getStripeEvent,
   handleStripeEventService,
+  reenableStripeSubscription,
 } from './stripeService';
 
 export async function createOneTimePurchaseHandler(req: NextRequest): Promise<NextResponse> {
@@ -42,5 +45,19 @@ export async function stripeWebhookHandler(req: NextRequest): Promise<NextRespon
   const signature = headers().get('stripe-signature');
   const event = getStripeEvent(signature, body);
   await handleStripeEventService(event);
+  return NextResponse.json({ received: true }, { status: ResponseCode.OK });
+}
+
+export async function deleteSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = DeleteSubscriptionRequest.parse(data);
+  await cancelStripeSubscription(safeBody.stripeSubscriptionId);
+  return NextResponse.json({ received: true }, { status: ResponseCode.OK });
+}
+
+export async function reenableSubscriptionHandler(req: NextRequest): Promise<NextResponse> {
+  const data = await req.json();
+  const safeBody = DeleteSubscriptionRequest.parse(data);
+  await reenableStripeSubscription(safeBody.stripeSubscriptionId);
   return NextResponse.json({ received: true }, { status: ResponseCode.OK });
 }

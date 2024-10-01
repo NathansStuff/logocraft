@@ -30,6 +30,19 @@ async function getOrCreateStripeCustomer(customerId: string | null, email: strin
   return customer;
 }
 
+// Delete a subscription
+export async function cancelStripeSubscription(stripeSubscriptionId: string): Promise<void> {
+  await stripe.subscriptions.update(stripeSubscriptionId, {
+    cancel_at_period_end: true, // This cancels the subscription at the end of the current period
+  });
+}
+
+// Delete a subscription
+export async function reenableStripeSubscription(stripeSubscriptionId: string): Promise<void> {
+  await stripe.subscriptions.update(stripeSubscriptionId, {
+    cancel_at_period_end: false, // This cancels the subscription at the end of the current period
+  });
+}
 // Create a PaymentIntent for a one-time purchase
 export async function createPaymentIntent(
   email: string,
@@ -252,7 +265,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
 
   // 2. Map the subscription status to the user's account status
   let activeSubscription = false;
-  let subscriptionCancelDate: string | null = null;
+  let subscriptionCancelDate: Date | null = null;
 
   switch (newStatus) {
     case 'active':
@@ -268,7 +281,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
 
   if (willCancelAtPeriodEnd) {
     // Subscription is set to cancel at the end of the current period
-    subscriptionCancelDate = new Date(periodEnd * 1000).toISOString(); // Convert Unix timestamp to ISO string
+    subscriptionCancelDate = new Date(periodEnd * 1000); // Convert Unix timestamp to ISO string
   }
 
   // 3. Update the user's account status in the database
@@ -290,6 +303,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
       currency: items.data[0].plan.currency, // Store the currency, e.g., 'USD'
       billingInterval: mapBillingInterval(items.data[0].plan.interval),
       plan: product.subscription || null, // Store the plan type
+      priceId: product.priceId,
     },
   };
 

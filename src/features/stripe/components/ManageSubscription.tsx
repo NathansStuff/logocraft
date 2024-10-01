@@ -9,6 +9,8 @@ import { selectUser } from '@/contexts/userSlice';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import UseConfirm from '@/hooks/UseConfirm';
 
+import { deleteSubscription } from '../api/deleteSubscription';
+import { reenableSubscription } from '../api/reenableSubscription';
 import { subscriptionPlans } from '../data/subscriptionPlans';
 import { formatPlanInfo } from '../utils/formatPlanInfo';
 
@@ -17,6 +19,7 @@ function ManageSubscription(): React.JSX.Element {
   const [currentPlan, setCurrentPlan] = useState<SubscriptionPlan | null>(user.currentPlan);
   const [ConfirmDialog, confirm] = UseConfirm('Are you sure?', 'This will cancel your subscription');
   const { stripeCustomerId, subscriptionCancelDate } = user;
+  const stripeSubscriptionId = user.stripeSubscriptionId;
 
   const handleUpdatePlan = (newPlan: SubscriptionPlan): void => {
     setCurrentPlan(newPlan);
@@ -25,12 +28,22 @@ function ManageSubscription(): React.JSX.Element {
   const handleCancelSubscription = async (): Promise<void> => {
     const ok = await confirm();
     if (!ok) return;
+    if (!stripeSubscriptionId) return;
 
-    // await post request to delete this category
+    const success = await deleteSubscription({ stripeSubscriptionId });
+
+    // todo: Redirect / success
   };
-  const handleReEnableSubscription = async (): Promise<void> => {};
+  const handleReEnableSubscription = async (): Promise<void> => {
+    if (!stripeSubscriptionId) return;
+    const success = await reenableSubscription({ stripeSubscriptionId });
+  };
 
   const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
+    if (subscriptionCancelDate) {
+      await handleReEnableSubscription();
+      return;
+    }
     if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
   };
 
@@ -43,49 +56,40 @@ function ManageSubscription(): React.JSX.Element {
           <CardDescription>View and manage your subscription</CardDescription>
         </CardHeader>
         <CardContent>
-          {currentPlan && <p className='pb-4 text-center text-sm'>Current Plan: {formatPlanInfo(currentPlan)}</p>}
+          {currentPlan && !subscriptionCancelDate && (
+            <p className='pb-4 text-center text-sm'>Current Plan: {formatPlanInfo(currentPlan)}</p>
+          )}
+          {subscriptionCancelDate && (
+            <p className='pb-4 text-center text-lg'>
+              Your subscription will end on {new Date(parseInt(subscriptionCancelDate) * 1000).toLocaleDateString()}
+            </p>
+          )}
 
           <div className='flex flex-col gap-2'>
             {subscriptionPlans.map((plan, index) => (
               <Button
                 key={index}
                 onClick={() => handlePlanSelect(plan)}
-                disabled={currentPlan?.plan === plan.plan}
+                disabled={currentPlan?.plan === plan.plan && !subscriptionCancelDate}
                 className='relative w-full'
               >
+                {subscriptionCancelDate && 'Rejoin at '}
                 {formatPlanInfo(plan)}
                 {currentPlan?.plan === plan.plan && (
-                  <span className='absolute right-1 top-1 rounded-full bg-yellow-500 px-2 py-1 text-xs text-white'>
+                  <span className='absolute right-1 top-[6px] rounded-full bg-yellow-500 px-2 py-1 text-xs text-white'>
                     Current Plan
                   </span>
                 )}
               </Button>
             ))}
-            {currentPlan && (
-              <>
-                {subscriptionCancelDate ? (
-                  <>
-                    <button
-                      className='mt-2 w-full rounded-md bg-green-600 px-4 py-3 font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50'
-                      onClick={handleReEnableSubscription}
-                    >
-                      Re-enable Subscription
-                    </button>
-                    <p className='mt-2 text-sm text-gray-500'>
-                      Your subscription will end on{' '}
-                      {new Date(parseInt(subscriptionCancelDate) * 1000).toLocaleDateString()}
-                    </p>
-                  </>
-                ) : (
-                  <Button
-                    className='w-full rounded-md'
-                    variant={'destructive'}
-                    onClick={handleCancelSubscription}
-                  >
-                    Cancel Subscription
-                  </Button>
-                )}
-              </>
+            {currentPlan && !subscriptionCancelDate && (
+              <Button
+                className='w-full rounded-md'
+                variant={'destructive'}
+                onClick={handleCancelSubscription}
+              >
+                Cancel Subscription
+              </Button>
             )}
           </div>
         </CardContent>

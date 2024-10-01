@@ -10,7 +10,7 @@ export const User = z.object({
   stripeCustomerId: z.string().optional(), // The Stripe customer ID
   stripeSubscriptionId: z.string().optional(), // The Stripe subscription ID
   activeSubscription: z.boolean().default(false), // Is the subscription active?
-  subscriptionCancelDate: z.string().nullable().optional(), // If set to cancel at the end of the period
+  subscriptionCancelDate: z.date().nullable().optional(), // If set to cancel at the end of the period
   subscriptionStartDate: z.date().optional(), // When the subscription started
   currentPeriodEnd: z.date().optional(), // When the current billing period ends
   currentPlan: SubscriptionPlan.nullable(), // Current subscription plan details

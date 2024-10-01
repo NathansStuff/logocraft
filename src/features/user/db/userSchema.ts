@@ -10,7 +10,7 @@ export const userSchema = new Schema<User>(
     stripeCustomerId: { type: String, required: false },
     stripeSubscriptionId: { type: String, required: false },
     activeSubscription: { type: Boolean, required: true, default: false },
-    subscriptionCancelDate: { type: String, required: false },
+    subscriptionCancelDate: { type: Date, required: false },
     subscriptionStartDate: { type: Date, required: false },
     currentPeriodEnd: { type: Date, required: false },
     isEmailVerified: { type: Boolean, required: true, default: false },
