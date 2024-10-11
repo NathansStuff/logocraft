@@ -19,7 +19,9 @@ export async function getUser(id: string): Promise<any> {
   }
 }
 
-export async function loginUserAction(id: string): Promise<void> {
+// todo
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function loginUserAction(id: string): Promise<any> {
   try {
     const fetchedUser = await getUser(id);
     if (!fetchedUser) return;
@@ -32,6 +34,8 @@ export async function loginUserAction(id: string): Promise<void> {
         _id: fetchedUser._id.toString(),
       })
     );
+
+    return fetchedUser;
     // Check the user's Stripe purchases on login success
     // await updateStripeCustomer(fetchedUser.email);
   } catch (error) {

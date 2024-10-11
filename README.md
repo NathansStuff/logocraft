@@ -1,3 +1,15 @@
+Doing
+- Billing changing subscription tiers
+- No way to change billing intervals
+- Update credit card info
+- Notify user of upcoming expiry on credit card
+- Display invoices and receipts
+
+
+
+users/noddy
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+
 BG https://www.fffuel.co/mmmotif/
 
 
@@ -39,3 +51,4 @@ BG https://www.fffuel.co/mmmotif/
   - Analytics
   - Help / Contact email
   - FAQ?
+  -

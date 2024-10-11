@@ -39,14 +39,14 @@ function UseConfirm(title: string, message: string): [() => ReactNode, () => Pro
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{message}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className='pt-2'>
+          <DialogFooter className='flex flex-col gap-2 pt-2'>
+            <Button onClick={handleConfirm}>Confirm</Button>
             <Button
               onClick={handleCancel}
-              variant='outline'
+              variant='destructive'
             >
               Cancel
             </Button>
-            <Button onClick={handleConfirm}>Confirm</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
