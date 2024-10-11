@@ -27,6 +27,7 @@ function ManageSubscription(): React.JSX.Element {
   const [currentPlan, setCurrentPlan] = useState<SubscriptionPlan | null>(user.currentPlan);
   const [ConfirmDialog, confirm] = UseConfirm('Are you sure?', 'This will cancel your subscription');
   const [ConfirmResubDialog, confirmResub] = UseConfirm('Are you sure?', 'This will reactivate your plan.');
+  const [ConfirmChangePlanDialog, confirmChangePlan] = UseConfirm('Are you sure?', 'This will change your subscription plan.');
   const [loading, setLoading] = useState(false);
   const { subscriptionCancelDate } = user;
   const stripeSubscriptionId = user.stripeSubscriptionId;
@@ -54,8 +55,22 @@ function ManageSubscription(): React.JSX.Element {
   const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
     if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
 
-    if (!stripeSubscriptionId || !currentPlan) return;
-    await changeSubscription({ stripeSubscriptionId, newPriceId: plan.priceId, oldPriceId: currentPlan.priceId });
+    if (!stripeSubscriptionId || !currentPlan || !authUser?.id) return;
+
+    const ok = await confirmChangePlan();
+    if (!ok) return;
+
+    setLoading(true);
+    try {
+      await changeSubscription({ stripeSubscriptionId, newPriceId: plan.priceId, oldPriceId: currentPlan.priceId });
+      const updatedUser = await pollForUserUpdate(authUser.id, (user) => user.currentPlan?.plan === plan.plan);
+      setCurrentPlan(updatedUser.currentPlan);
+      toast.success('Subscription plan updated successfully.');
+    } catch (error) {
+      toast.error('Failed to change subscription plan. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   async function handleReactivate(): Promise<void> {
@@ -78,6 +93,7 @@ function ManageSubscription(): React.JSX.Element {
     <>
       <ConfirmDialog />
       <ConfirmResubDialog />
+      <ConfirmChangePlanDialog />
       <Card className='relative mx-auto max-w-md'>
         {loading && (
           <div className='absolute inset-0 z-10 flex items-center justify-center bg-white/50'>
