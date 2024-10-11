@@ -7,6 +7,19 @@ Doing
 
 
 
+- Change from standard to premium tier
+- Change from premium to standard tier
+- Change from standard monthly to standard annual
+- Change from standard monthly to premium annual
+- Change from premium monthly to standard annual
+
+- Update credit card / payment info
+
+- Notify user of upcoming expiry on payment info
+
+- Display receipts and invoices to user
+
+
 users/noddy
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 

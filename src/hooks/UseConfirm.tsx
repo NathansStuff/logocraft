@@ -31,17 +31,32 @@ function UseConfirm(title: string, message: string): [() => ReactNode, () => Pro
     handleClose();
   };
 
+  const handleCloseButton = (): void => {
+    promise?.resolve(false);
+    handleClose();
+  };
+
   function ConfirmationDialog(): ReactNode {
     return (
       <Dialog open={promise !== null}>
-        <DialogContent>
+        <DialogContent
+          onInteractOutside={handleCloseButton}
+          onEscapeKeyDown={handleCloseButton}
+          onClose={handleCloseButton}
+        >
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle className='text-xl font-semibold'>{title}</DialogTitle>
             <DialogDescription>{message}</DialogDescription>
           </DialogHeader>
           <DialogFooter className='flex flex-col gap-2 pt-2'>
-            <Button onClick={handleConfirm}>Confirm</Button>
             <Button
+              className='w-full'
+              onClick={handleConfirm}
+            >
+              Confirm
+            </Button>
+            <Button
+              className='w-full'
               onClick={handleCancel}
               variant='destructive'
             >

@@ -10,8 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
-import { loginUserAction } from '@/features/user/hooks/loginUserAction';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
+import { pollForUserUpdate } from '@/features/user/utils/pollForUserUpdate';
 import UseConfirm from '@/hooks/UseConfirm';
 
 import { changeSubscription } from '../api/changeSubscription';
@@ -37,31 +37,20 @@ function ManageSubscription(): React.JSX.Element {
 
   const handleCancelSubscription = async (): Promise<void> => {
     const ok = await confirm();
-    if (!ok) return;
-    if (!stripeSubscriptionId || !authUser?.id) return;
+    if (!ok || !stripeSubscriptionId || !authUser?.id) return;
 
     setLoading(true);
     try {
       await deleteSubscription({ stripeSubscriptionId });
-
-      // Poll for subscription update
-      const pollInterval = 500; // 0.5 seconds
-      const maxAttempts = 10; // 5 seconds total
-
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        await new Promise((resolve) => setTimeout(resolve, pollInterval));
-        const updatedUser = await loginUserAction(authUser.id);
-        if (updatedUser.subscriptionCancelDate) {
-          setCurrentPlan(null);
-          break;
-        }
-      }
+      await pollForUserUpdate(authUser.id, (user) => user.subscriptionCancelDate !== null);
+      setCurrentPlan(null);
     } catch (error) {
       toast.error('Failed to cancel subscription. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
   const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
     if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
 
@@ -76,19 +65,8 @@ function ManageSubscription(): React.JSX.Element {
     setLoading(true);
     try {
       await reenableSubscription({ stripeSubscriptionId });
-
-      // Poll for subscription update
-      const pollInterval = 500; // 0.5 seconds
-      const maxAttempts = 10; // 5 seconds total
-
-      for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        await new Promise((resolve) => setTimeout(resolve, pollInterval));
-        const user = await loginUserAction(authUser.id);
-        if (!user.subscriptionCancelDate) {
-          setCurrentPlan(user.currentPlan);
-          break;
-        }
-      }
+      const updatedUser = await pollForUserUpdate(authUser.id, (user) => user.subscriptionCancelDate === null);
+      setCurrentPlan(updatedUser.currentPlan);
     } catch (error) {
       toast.error('Failed to reactivate subscription. Please try again.');
     } finally {
