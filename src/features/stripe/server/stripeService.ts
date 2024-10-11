@@ -60,22 +60,32 @@ export async function changeStripeSubscription(
     throw new BadRequestError('Product not found');
   }
 
-  // Determine proration behavior based on upgrade or downgrade
+  // Determine if it's an upgrade
   const isUpgrade = isSubscriptionUpgrade(oldProduct, newProduct);
-  const prorationBehavior = isUpgrade ? 'create_prorations' : 'none';
-  console.log('proration_behavior', prorationBehavior);
 
   // Update the subscription with the new plan's price ID
   await stripe.subscriptions.update(stripeSubscriptionId, {
     items: [
       {
-        id: subscription.items.data[0].id, // Subscription item ID (required for updates)
-        price: newPriceId, // The price ID of the new plan
+        id: subscription.items.data[0].id,
+        price: newPriceId,
       },
     ],
-    proration_behavior: prorationBehavior, // 'none' for downgrade, 'create_prorations' for upgrade
-    billing_cycle_anchor: 'unchanged', // Keep the billing cycle unchanged
+    proration_behavior: 'always_invoice',
+    payment_behavior: isUpgrade ? 'pending_if_incomplete' : 'default_incomplete',
+    expand: ['latest_invoice'],
   });
+
+  // If it's an upgrade, immediately collect payment for the prorated amount
+  if (isUpgrade) {
+    console.log('isUpgrade!!!!');
+    const updatedSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId, {
+      expand: ['latest_invoice'],
+    });
+    if (updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
+      await stripe.invoices.pay(updatedSubscription.latest_invoice.id);
+    }
+  }
 }
 
 // Cancel Incomplete subscription
@@ -374,6 +384,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<v
 
   if (!subscription || !customer_email || !receiptUrl) {
     // todo: Log
+    console.log('subscription', subscription, 'customer_email', customer_email, 'receiptUrl', receiptUrl);
     throw new BadRequestError('Subscription or customer email or receiptUrl not found');
   }
   const user = await getUserByEmailService(customer_email);
