@@ -64,7 +64,7 @@ export async function changeStripeSubscription(
   const isUpgrade = isSubscriptionUpgrade(oldProduct, newProduct);
 
   // Update the subscription with the new plan's price ID
-  await stripe.subscriptions.update(stripeSubscriptionId, {
+  const updatedSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
     items: [
       {
         id: subscription.items.data[0].id,
@@ -76,14 +76,29 @@ export async function changeStripeSubscription(
     expand: ['latest_invoice'],
   });
 
+  // Get the invoice URL
+  if (updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
+    const invoiceUrl = updatedSubscription.latest_invoice.invoice_pdf;
+    console.log('Invoice URL:', invoiceUrl);
+    // You can now store this invoiceUrl or send it to the customer
+  }
+
   // If it's an upgrade, immediately collect payment for the prorated amount
-  if (isUpgrade) {
-    console.log('isUpgrade!!!!');
-    const updatedSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId, {
-      expand: ['latest_invoice'],
-    });
-    if (updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
-      await stripe.invoices.pay(updatedSubscription.latest_invoice.id);
+  if (isUpgrade && updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
+    try {
+      const invoice = updatedSubscription.latest_invoice;
+      if (invoice.status !== 'paid') {
+        await stripe.invoices.pay(invoice.id);
+      } else {
+        console.log('Invoice is already paid, no action needed');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error paying invoice:', error.message);
+      } else {
+        console.error('Unknown error paying invoice');
+      }
+      // Handle the error appropriately (e.g., notify the user, log it, etc.)
     }
   }
 }
@@ -374,29 +389,34 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
   const { subscription, customer_email } = invoice;
-  const chargeId = invoice.charge; // Get the charge ID associated with the invoice
-  let receiptUrl: string | null = null;
-  if (typeof chargeId === 'string') {
-    const charge = await stripe.charges.retrieve(chargeId);
-    receiptUrl = charge.receipt_url;
-    console.log('receiptUrl', receiptUrl);
+  const invoiceUrl = invoice.invoice_pdf;
+
+  console.log('Invoice URL:', invoiceUrl);
+
+  if (!subscription || !customer_email) {
+    console.log('subscription', subscription, 'customer_email', customer_email);
+    throw new BadRequestError('Subscription or customer email not found');
   }
 
-  if (!subscription || !customer_email || !receiptUrl) {
-    // todo: Log
-    console.log('subscription', subscription, 'customer_email', customer_email, 'receiptUrl', receiptUrl);
-    throw new BadRequestError('Subscription or customer email or receiptUrl not found');
-  }
   const user = await getUserByEmailService(customer_email);
   if (!user) {
-    // todo: Log
     throw new BadRequestError('User not found');
   }
 
+  if (!invoiceUrl) {
+    console.log('no invoice Url');
+    return;
+  }
   const newUser: UserPartial = {
-    receiptUrls: [...(user.receiptUrls || []), receiptUrl],
+    // Update invoiceUrls instead of receiptUrls
+    receiptUrls: [...(user.receiptUrls || []), invoiceUrl],
   };
+
+  // Always update the user
   await updateUserByIdService(user._id.toString(), newUser);
+
+  // Log the subscription update
+  console.log(`Subscription ${subscription} updated for user ${user._id}`);
 }
 
 async function handleProductPurchase(userId: string, productId: string, receiptUrl: string | null): Promise<void> {
