@@ -5,13 +5,13 @@ import { ResponseCode } from '@/types/ResponseCode';
 
 import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';
 
-export async function changeSubscription(request: ChangeSubscriptionRequest): Promise<boolean> {
+export async function changeSubscription(request: ChangeSubscriptionRequest): Promise<{ isDowngrade: boolean; effectiveDate: number }> {
   try {
     const url = '/api/stripe/change-subscription';
-    const response = await postRequest(url, request);
-    return response.status === ResponseCode.OK;
+    const response = await postRequest<{ isDowngrade: boolean; effectiveDate: number }>(url, request);
+    return response.data;
   } catch (error) {
     console.error('changeSubscription', error);
-    return false;
+    throw error;
   }
 }

@@ -7,10 +7,10 @@ Users need to be able to:
 1. Sign up for a plan - Done
 2. View their subscription status - Done
    1. Include the plan tier and billing cycle - Done
-   2. Include the next billing date
+   2. Include the next billing date - Done
    3. Include the next billing amount - Done
    4. Include if they are currently subscribed - Done
-   5. Include their renewal date or their cancellation date
+   5. Include their renewal date or their cancellation date - Done
 3. Cancel their subscription
    1. Cancel should occur at the next billing date - Done
    2. Should be able to uncancel before the next billing date - Done
@@ -18,6 +18,7 @@ Users need to be able to:
    1. Downgrade
       1. When downgrading, user should not be refunded! Keep until end of cycle..
       2. Downgrade should occur at the next billing date
+      3. 
    2. Upgrade
       1. Upgrade should occur immediately
       2. Upgrade should be prorated for the rest of the cycle

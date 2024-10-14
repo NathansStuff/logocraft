@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { format } from 'date-fns'; // Make sure to install date-fns if not already installed
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
@@ -10,16 +11,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectUser } from '@/contexts/userSlice';
+import { isSubscriptionUpgrade } from '@/features/product/utils/isSubscriptionUpgrade';
+import { subscriptionPlans } from '@/features/stripe/data/subscriptionPlans';
+import { EPaymentFrequency } from '@/features/user/types/EPaymentFrequency';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { pollForUserUpdate } from '@/features/user/utils/pollForUserUpdate';
 import UseConfirm from '@/hooks/UseConfirm';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 import { changeSubscription } from '../api/changeSubscription';
 import { deleteSubscription } from '../api/deleteSubscription';
 import { reenableSubscription } from '../api/reenableSubscription';
-import { subscriptionPlans } from '../data/subscriptionPlans';
-import { formatPlanInfo } from '../utils/formatPlanInfo';
-import { format } from 'date-fns'; // Make sure to install date-fns if not already installed
 
 function ManageSubscription(): React.JSX.Element {
   const user = useAppSelector(selectUser);
@@ -28,11 +30,15 @@ function ManageSubscription(): React.JSX.Element {
   const [currentPlan, setCurrentPlan] = useState<SubscriptionPlan | null>(user.currentPlan);
   const [ConfirmDialog, confirm] = UseConfirm('Are you sure?', 'This will cancel your subscription');
   const [ConfirmResubDialog, confirmResub] = UseConfirm('Are you sure?', 'This will reactivate your plan.');
-  const [ConfirmChangePlanDialog, confirmChangePlan] = UseConfirm('Are you sure?', 'This will change your subscription plan.');
+  const [ConfirmChangePlanDialog, confirmChangePlan] = UseConfirm(
+    'Are you sure?',
+    'This will change your subscription plan.'
+  );
   const [loading, setLoading] = useState(false);
   const { subscriptionCancelDate } = user;
   const stripeSubscriptionId = user.stripeSubscriptionId;
   const [nextBillingDate, setNextBillingDate] = useState<Date | null>(null);
+  const [pendingDowngrade, setPendingDowngrade] = useState<SubscriptionPlan | null>(null);
 
   useEffect(() => {
     const fetchNextBillingDate = async () => {
@@ -73,27 +79,52 @@ function ManageSubscription(): React.JSX.Element {
   };
 
   const handlePlanSelect = async (plan: SubscriptionPlan): Promise<void> => {
-    if (currentPlan?.plan === plan.plan) return; // No need to update if the same plan is selected
+    if (currentPlan?.plan === plan.plan) return;
 
     if (!stripeSubscriptionId || !currentPlan || !authUser?.id) return;
+
+    const isUpgrade = isSubscriptionUpgrade(currentPlan, plan);
+    const confirmMessage = isUpgrade
+      ? 'This will upgrade your plan immediately. Do you want to continue?'
+      : 'This will downgrade your plan at the end of your current billing cycle. Do you want to continue?';
 
     const ok = await confirmChangePlan();
     if (!ok) return;
 
     setLoading(true);
     try {
-      await changeSubscription({ stripeSubscriptionId, newPriceId: plan.priceId, oldPriceId: currentPlan.priceId });
-      const updatedUser = await pollForUserUpdate(authUser.id, (user) => user.currentPlan?.plan === plan.plan);
-      setCurrentPlan(updatedUser.currentPlan);
+      console.log('Changing subscription:', { currentPlan, newPlan: plan });
+      const { isDowngrade, effectiveDate } = await changeSubscription({
+        stripeSubscriptionId,
+        newPriceId: plan.priceId,
+        oldPriceId: currentPlan.priceId,
+      });
+      console.log('Change subscription result:', { isDowngrade, effectiveDate });
 
-      // Check if it's a change in billing interval
-      if (currentPlan.billingInterval !== plan.billingInterval) {
-        toast.success(`Subscription changed to ${plan.billingInterval} billing. Your next invoice will reflect this change.`);
+      if (isDowngrade) {
+        setPendingDowngrade(plan);
+        console.log('Setting pending downgrade:', plan);
+        toast.success(
+          `Your plan will be downgraded to ${plan.planName} on ${new Date(effectiveDate).toLocaleDateString()}.`
+        );
       } else {
-        toast.success('Subscription plan updated successfully.');
+        const updatedUser = await pollForUserUpdate(
+          authUser.id,
+          (user) => user.currentPlan?.plan === plan.plan || user.pendingPlan?.plan === plan.plan
+        );
+        console.log('Updated user after change:', updatedUser);
+        setCurrentPlan(updatedUser.currentPlan);
+        setPendingDowngrade(updatedUser.pendingPlan || null);
+        toast.success(
+          isUpgrade ? 'Subscription plan upgraded successfully.' : 'Subscription plan change scheduled successfully.'
+        );
       }
+
+      // Refresh the next billing date
+      setNextBillingDate(new Date(effectiveDate));
     } catch (error) {
-      toast.error('Failed to change subscription plan. Please try again.');
+      console.error('Error changing subscription:', error);
+      toast.error('Failed to change subscription. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -115,6 +146,10 @@ function ManageSubscription(): React.JSX.Element {
     }
   }
 
+  function formatPlanInfo(plan: SubscriptionPlan): string {
+    return `${plan.planName} Tier - ${formatCurrency(plan.planAmount, plan.currency)}/${plan.billingInterval === EPaymentFrequency.MONTHLY ? 'Monthly' : 'Annually'} ${plan.currency}`;
+  }
+
   return (
     <>
       <ConfirmDialog />
@@ -134,10 +169,13 @@ function ManageSubscription(): React.JSX.Element {
           {currentPlan && !subscriptionCancelDate && (
             <>
               <p className='pb-4 text-center text-sm'>Current Plan: {formatPlanInfo(currentPlan)}</p>
-              {nextBillingDate && (
-                <p className='pb-4 text-center text-sm'>
-                  Next Billing Date: {format(nextBillingDate, 'MMMM d, yyyy')}
+              {user.pendingPlan && (
+                <p className='pb-4 text-center text-sm text-yellow-600'>
+                  Pending change to {formatPlanInfo(user.pendingPlan)} on next billing cycle
                 </p>
+              )}
+              {nextBillingDate && (
+                <p className='pb-4 text-center text-sm'>Next Billing Date: {format(nextBillingDate, 'MMMM d, yyyy')}</p>
               )}
             </>
           )}
@@ -180,6 +218,13 @@ function ManageSubscription(): React.JSX.Element {
           )}
         </CardContent>
       </Card>
+      {pendingDowngrade && (
+        <div className='mt-4 rounded-md bg-yellow-100 p-4'>
+          <p className='text-sm text-yellow-700'>
+            Your plan will be downgraded to {pendingDowngrade.planName} on {nextBillingDate?.toLocaleDateString()}.
+          </p>
+        </div>
+      )}
     </>
   );
 }

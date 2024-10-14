@@ -14,6 +14,7 @@ export const User = z.object({
   subscriptionStartDate: z.date().optional(), // When the subscription started
   currentPeriodEnd: z.date().optional(), // When the current billing period ends
   currentPlan: SubscriptionPlan.nullable(), // Current subscription plan details
+  pendingPlan: SubscriptionPlan.nullable().optional(), // Pending subscription plan details (for downgrades)
   isEmailVerified: z.boolean().default(false),
   oneTimePurchases: z.array(z.string()).default([]), // IDs of purchased products
   sparksUsed: z.number().default(0),

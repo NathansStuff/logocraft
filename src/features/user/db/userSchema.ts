@@ -27,6 +27,18 @@ export const userSchema = new Schema<User>(
       required: false,
       nullable: true,
     },
+    pendingPlan: {
+      type: {
+        planName: { type: String, required: false },
+        planAmount: { type: Number, required: false },
+        currency: { type: String, required: false },
+        billingInterval: { type: String, required: false },
+        plan: { type: String, required: false },
+        priceId: { type: String, required: false },
+      },
+      required: false,
+      nullable: true,
+    },
     sparksUsed: { type: Number, required: true, default: 0 },
     credits: {
       type: {

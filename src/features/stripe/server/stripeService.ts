@@ -4,6 +4,7 @@ import { env } from '@/constants';
 import { BadRequestError } from '@/exceptions';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
+import { Product } from '@/features/product/types/Product';
 import { isSubscriptionUpgrade } from '@/features/product/utils/isSubscriptionUpgrade';
 import {
   getUserByEmailService,
@@ -11,10 +12,24 @@ import {
   getUserByStripeCustomerIdService,
   updateUserByIdService,
 } from '@/features/user/server/userService';
+import { EPaymentFrequency } from '@/features/user/types/EPaymentFrequency';
+import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { UserPartial } from '@/features/user/types/User';
 import { stripe } from '@/lib/serverStripe';
 
+import { subscriptionPlans } from '../data/subscriptionPlans';
 import { mapBillingInterval } from '../utils/mapBillingInterval';
+
+function mapProductToSubscriptionPlan(product: Product): SubscriptionPlan {
+  return {
+    planName: product.name,
+    planAmount: parseInt(product.amount),
+    currency: 'usd', // Assuming USD, adjust if needed
+    billingInterval: product.paymentFrequency || EPaymentFrequency.MONTHLY, // Provide a default value
+    plan: product.subscription || null, // Allow null
+    priceId: product.priceId,
+  };
+}
 
 // Retrieve or create a customer
 async function getOrCreateStripeCustomer(customerId: string | null, email: string): Promise<Stripe.Customer> {
@@ -46,81 +61,104 @@ export async function reenableStripeSubscription(stripeSubscriptionId: string): 
 }
 
 // Change a subscription
+
 export async function changeStripeSubscription(
   stripeSubscriptionId: string,
   newPriceId: string,
   oldPriceId: string
-): Promise<void> {
-  console.log('changeStripeSubscription');
-  // Fetch the current subscription to get the subscription item ID
+): Promise<{ isDowngrade: boolean; effectiveDate: number }> {
+  console.log('changeStripeSubscription started');
+  console.log(`Old Price ID: ${oldPriceId}, New Price ID: ${newPriceId}`);
+
   const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+  console.log('Current subscription:', JSON.stringify(subscription, null, 2));
+
   const oldProduct = products.find((p) => p.priceId === oldPriceId);
   const newProduct = products.find((p) => p.priceId === newPriceId);
   if (!oldProduct || !newProduct) {
     throw new BadRequestError('Product not found');
   }
 
-  // Determine if it's an upgrade
-  const isUpgrade = isSubscriptionUpgrade(oldProduct, newProduct);
+  const oldPlan = mapProductToSubscriptionPlan(oldProduct);
+  const newPlan = subscriptionPlans.find((plan) => plan.priceId === newPriceId);
+  if (!newPlan) {
+    throw new Error('New plan not found');
+  }
+  console.log('Old Plan:', oldPlan);
+  console.log('New Plan:', newPlan);
 
-  // Check if the billing interval is changing
-  const isIntervalChange = oldProduct.paymentFrequency !== newProduct.paymentFrequency;
+  const isUpgrade = isSubscriptionUpgrade(oldPlan, newPlan);
+  const isSameTier = oldPlan.planName === newPlan.planName;
+  const isIntervalChange = oldPlan.billingInterval !== newPlan.billingInterval;
+  console.log('Is Upgrade:', isUpgrade);
+  console.log('Is Same Tier:', isSameTier);
+  console.log('Is Interval Change:', isIntervalChange);
 
   let updatedSubscription;
+  let effectiveDate: number;
 
-  if (isIntervalChange) {
-    // If changing billing interval, create a new subscription
-    updatedSubscription = await stripe.subscriptions.create({
-      customer: subscription.customer as string,
-      items: [{ price: newPriceId }],
-      cancel_at_period_end: false,
-      proration_behavior: 'create_prorations',
-      expand: ['latest_invoice'],
-    });
+  try {
+    if (isUpgrade || (isSameTier && isIntervalChange)) {
+      // Handle upgrade or interval change (treat as immediate change)
+      updatedSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
+        items: [{ id: subscription.items.data[0].id, price: newPriceId }],
+        proration_behavior: 'create_prorations',
+        billing_cycle_anchor: 'now',
+        payment_behavior: 'pending_if_incomplete',
+      });
+      effectiveDate = Date.now();
 
-    // Cancel the old subscription at the end of its current period
-    await stripe.subscriptions.update(stripeSubscriptionId, {
-      cancel_at_period_end: true,
-    });
-  } else {
-    // If not changing billing interval, update the existing subscription
-    updatedSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
-      items: [
-        {
-          id: subscription.items.data[0].id,
-          price: newPriceId,
-        },
-      ],
-      proration_behavior: 'always_invoice',
-      payment_behavior: isUpgrade ? 'pending_if_incomplete' : 'default_incomplete',
-      expand: ['latest_invoice'],
-    });
-  }
-
-  // Get the invoice URL
-  if (updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
-    const invoiceUrl = updatedSubscription.latest_invoice.invoice_pdf;
-    console.log('Invoice URL:', invoiceUrl);
-    // You can now store this invoiceUrl or send it to the customer
-  }
-
-  // If it's an upgrade, immediately collect payment for the prorated amount
-  if (isUpgrade && updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
-    try {
-      const invoice = updatedSubscription.latest_invoice;
-      if (invoice.status !== 'paid') {
-        await stripe.invoices.pay(invoice.id);
-      } else {
-        console.log('Invoice is already paid, no action needed');
+      // Update user information in the database
+      const user = await getUserByStripeCustomerIdService(subscription.customer as string);
+      if (user) {
+        await updateUserByIdService(user._id.toString(), {
+          currentPlan: newPlan,
+          currentPeriodEnd: new Date(updatedSubscription.current_period_end * 1000),
+          pendingPlan: null,
+        });
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error paying invoice:', error.message);
-      } else {
-        console.error('Unknown error paying invoice');
+    } else {
+      // Handle downgrade using subscription schedules
+      const currentPhaseEndDate = subscription.current_period_end;
+
+      const schedule = await stripe.subscriptionSchedules.create({
+        from_subscription: stripeSubscriptionId,
+      });
+
+      updatedSubscription = await stripe.subscriptionSchedules.update(schedule.id, {
+        end_behavior: 'release',
+        phases: [
+          {
+            start_date: schedule.phases[0].start_date,
+            end_date: currentPhaseEndDate,
+            items: [{ price: oldPriceId, quantity: 1 }],
+          },
+          {
+            start_date: currentPhaseEndDate,
+            items: [{ price: newPriceId, quantity: 1 }],
+            iterations: 1,
+          },
+        ],
+      });
+
+      effectiveDate = currentPhaseEndDate * 1000; // Convert to milliseconds
+
+      // Update user information in the database
+      const user = await getUserByStripeCustomerIdService(subscription.customer as string);
+      if (user) {
+        await updateUserByIdService(user._id.toString(), {
+          pendingPlan: newPlan,
+          currentPeriodEnd: new Date(currentPhaseEndDate * 1000),
+        });
       }
-      // Handle the error appropriately (e.g., notify the user, log it, etc.)
     }
+
+    console.log('Effective Date:', new Date(effectiveDate).toISOString());
+
+    return { isDowngrade: !isUpgrade, effectiveDate };
+  } catch (error) {
+    console.error('Error updating subscription:', error);
+    throw new BadRequestError('Failed to update subscription');
   }
 }
 
@@ -330,6 +368,9 @@ export async function handleStripeEventService(event: Stripe.Event): Promise<voi
       console.log('invoice.payment_succeeded');
       break;
     }
+    case 'invoice.created':
+      await handleInvoiceCreated(event.data.object as Stripe.Invoice);
+      break;
 
     default:
     // Unhandled event type
@@ -389,18 +430,35 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
 
   const updatedUser: UserPartial = {
     activeSubscription,
-    stripeSubscriptionId: subscriptionId, // Store Stripe subscription ID
-    subscriptionCancelDate, // Store the cancel date if applicable
-    currentPeriodEnd: new Date(periodEnd * 1000), // Store the end date of the current billing period
+    stripeSubscriptionId: subscriptionId,
+    subscriptionCancelDate,
+    currentPeriodEnd: new Date(periodEnd * 1000),
     currentPlan: {
-      planName: product?.name, // Store the plan name
-      planAmount: items.data[0].plan.amount || 0, // Store the plan amount in centss
-      currency: items.data[0].plan.currency, // Store the currency, e.g., 'USD'
+      planName: product?.name,
+      planAmount: items.data[0].plan.amount || 0,
+      currency: items.data[0].plan.currency,
       billingInterval: mapBillingInterval(items.data[0].plan.interval),
-      plan: product.subscription || null, // Store the plan type
+      plan: product.subscription || null,
       priceId: product.priceId,
     },
+    pendingPlan: null, // Clear the pending plan when the subscription is updated
   };
+
+  // Check if this update is a downgrade taking effect
+  const isDowngrade = subscription.items.data.some((item) => item.price.id !== user.currentPlan?.priceId);
+  if (isDowngrade) {
+    // Update the user's plan in the database
+    updatedUser.currentPlan = {
+      planName: product?.name,
+      planAmount: items.data[0].plan.amount || 0,
+      currency: items.data[0].plan.currency,
+      billingInterval: mapBillingInterval(items.data[0].plan.interval),
+      plan: product.subscription || null,
+      priceId: product.priceId,
+    };
+
+    // You might want to send an email to the user here informing them that their downgrade has taken effect
+  }
 
   await updateUserByIdService(user._id.toString(), updatedUser);
 
@@ -471,4 +529,33 @@ async function handleProductPurchase(userId: string, productId: string, receiptU
 export async function getSubscriptionDetails(subscriptionId: string): Promise<Stripe.Subscription> {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
   return subscription;
+}
+
+async function handleInvoiceCreated(invoice: Stripe.Invoice): Promise<void> {
+  if (invoice.subscription) {
+    const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+
+    if (subscription.metadata.downgrade_scheduled === 'true') {
+      const newPriceId = subscription.metadata.new_price_id;
+
+      if (newPriceId) {
+        await stripe.subscriptions.update(subscription.id, {
+          items: [
+            {
+              id: subscription.items.data[0].id,
+              price: newPriceId,
+              quantity: 1,
+            },
+          ],
+          proration_behavior: 'none',
+          metadata: {
+            downgrade_scheduled: 'false',
+            new_price_id: '',
+          },
+        });
+
+        console.log(`Downgrade applied for subscription ${subscription.id}`);
+      }
+    }
+  }
 }

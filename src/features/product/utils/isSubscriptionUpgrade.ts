@@ -1,8 +1,7 @@
+import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { ESubscriptionPlan } from '@/features/user/types/ESubscriptionPlan';
 
-import { Product } from '../types/Product';
-
-const subscriptionOrder = [
+const planOrder = [
   ESubscriptionPlan.FREE,
   ESubscriptionPlan.STANDARD_MONTHLY,
   ESubscriptionPlan.STANDARD_ANNUAL,
@@ -10,27 +9,14 @@ const subscriptionOrder = [
   ESubscriptionPlan.PREMIUM_ANNUAL,
 ];
 
-export function isSubscriptionUpgrade(currentPlan: Product, newPlan: Product): boolean {
-  // If the new plan is a subscription and the current one is not, it's an upgrade
-  if (!currentPlan.subscription && newPlan.subscription) {
-    return true;
+export function isSubscriptionUpgrade(currentPlan: SubscriptionPlan, newPlan: SubscriptionPlan): boolean {
+  const currentPlanIndex = planOrder.indexOf(currentPlan.plan);
+  const newPlanIndex = planOrder.indexOf(newPlan.plan);
+
+  if (currentPlanIndex === -1 || newPlanIndex === -1) {
+    console.error('Invalid plan type:', currentPlan.plan, newPlan.plan);
+    return false;
   }
 
-  // If both are subscription plans, compare their levels
-  if (currentPlan.subscription && newPlan.subscription) {
-    const currentPlanIndex = subscriptionOrder.indexOf(currentPlan.subscription);
-    const newPlanIndex = subscriptionOrder.indexOf(newPlan.subscription);
-
-    if (newPlanIndex > currentPlanIndex) {
-      return true;
-    }
-  }
-
-  // Optionally, compare other fields like token count or other criteria
-  if ((newPlan.tokens ?? 0) > (currentPlan.tokens ?? 0)) {
-    return true;
-  }
-
-  // No upgrade found
-  return false;
+  return newPlanIndex > currentPlanIndex;
 }

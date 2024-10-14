@@ -26,6 +26,7 @@ export interface IUser {
   sid?: string;
   _id: string;
   currentPlan: SubscriptionPlan | null;
+  pendingPlan: SubscriptionPlan | null;
 }
 
 export interface IUserSlice extends IUser {
@@ -49,6 +50,7 @@ export const initialUserState: IUserSlice = {
     sparks: 0,
   },
   sparksUsed: 0,
+  pendingPlan: null,
 };
 
 export const userSlice = createSlice({
