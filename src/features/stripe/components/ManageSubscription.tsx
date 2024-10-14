@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -19,6 +19,7 @@ import { deleteSubscription } from '../api/deleteSubscription';
 import { reenableSubscription } from '../api/reenableSubscription';
 import { subscriptionPlans } from '../data/subscriptionPlans';
 import { formatPlanInfo } from '../utils/formatPlanInfo';
+import { format } from 'date-fns'; // Make sure to install date-fns if not already installed
 
 function ManageSubscription(): React.JSX.Element {
   const user = useAppSelector(selectUser);
@@ -31,6 +32,25 @@ function ManageSubscription(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const { subscriptionCancelDate } = user;
   const stripeSubscriptionId = user.stripeSubscriptionId;
+  const [nextBillingDate, setNextBillingDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const fetchNextBillingDate = async () => {
+      if (user.stripeSubscriptionId) {
+        try {
+          const response = await fetch(`/api/stripe/subscription-details?id=${user.stripeSubscriptionId}`);
+          const data = await response.json();
+          if (data.current_period_end) {
+            setNextBillingDate(new Date(data.current_period_end * 1000)); // Convert UNIX timestamp to Date
+          }
+        } catch (error) {
+          console.error('Error fetching next billing date:', error);
+        }
+      }
+    };
+
+    fetchNextBillingDate();
+  }, [user.stripeSubscriptionId]);
 
   const handleUpdatePlan = (newPlan: SubscriptionPlan): void => {
     setCurrentPlan(newPlan);
@@ -65,7 +85,13 @@ function ManageSubscription(): React.JSX.Element {
       await changeSubscription({ stripeSubscriptionId, newPriceId: plan.priceId, oldPriceId: currentPlan.priceId });
       const updatedUser = await pollForUserUpdate(authUser.id, (user) => user.currentPlan?.plan === plan.plan);
       setCurrentPlan(updatedUser.currentPlan);
-      toast.success('Subscription plan updated successfully.');
+
+      // Check if it's a change in billing interval
+      if (currentPlan.billingInterval !== plan.billingInterval) {
+        toast.success(`Subscription changed to ${plan.billingInterval} billing. Your next invoice will reflect this change.`);
+      } else {
+        toast.success('Subscription plan updated successfully.');
+      }
     } catch (error) {
       toast.error('Failed to change subscription plan. Please try again.');
     } finally {
@@ -106,7 +132,14 @@ function ManageSubscription(): React.JSX.Element {
         </CardHeader>
         <CardContent>
           {currentPlan && !subscriptionCancelDate && (
-            <p className='pb-4 text-center text-sm'>Current Plan: {formatPlanInfo(currentPlan)}</p>
+            <>
+              <p className='pb-4 text-center text-sm'>Current Plan: {formatPlanInfo(currentPlan)}</p>
+              {nextBillingDate && (
+                <p className='pb-4 text-center text-sm'>
+                  Next Billing Date: {format(nextBillingDate, 'MMMM d, yyyy')}
+                </p>
+              )}
+            </>
           )}
           {subscriptionCancelDate && (
             <div className='flex flex-col gap-2'>

@@ -1,14 +1,6 @@
 Doing
-- Billing changing subscription tiers
-- No way to change billing intervals
-- Update credit card info
-- Notify user of upcoming expiry on credit card
-- Display invoices and receipts
 
-
-
-- Change from standard to premium tier
-- Change from premium to standard tier
+- When downgrading, user should not be refunded! Keep until end of cycle..
 - Change from standard monthly to standard annual
 - Change from standard monthly to premium annual
 - Change from premium monthly to standard annual

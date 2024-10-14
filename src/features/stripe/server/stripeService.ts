@@ -63,18 +63,39 @@ export async function changeStripeSubscription(
   // Determine if it's an upgrade
   const isUpgrade = isSubscriptionUpgrade(oldProduct, newProduct);
 
-  // Update the subscription with the new plan's price ID
-  const updatedSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
-    items: [
-      {
-        id: subscription.items.data[0].id,
-        price: newPriceId,
-      },
-    ],
-    proration_behavior: 'always_invoice',
-    payment_behavior: isUpgrade ? 'pending_if_incomplete' : 'default_incomplete',
-    expand: ['latest_invoice'],
-  });
+  // Check if the billing interval is changing
+  const isIntervalChange = oldProduct.paymentFrequency !== newProduct.paymentFrequency;
+
+  let updatedSubscription;
+
+  if (isIntervalChange) {
+    // If changing billing interval, create a new subscription
+    updatedSubscription = await stripe.subscriptions.create({
+      customer: subscription.customer as string,
+      items: [{ price: newPriceId }],
+      cancel_at_period_end: false,
+      proration_behavior: 'create_prorations',
+      expand: ['latest_invoice'],
+    });
+
+    // Cancel the old subscription at the end of its current period
+    await stripe.subscriptions.update(stripeSubscriptionId, {
+      cancel_at_period_end: true,
+    });
+  } else {
+    // If not changing billing interval, update the existing subscription
+    updatedSubscription = await stripe.subscriptions.update(stripeSubscriptionId, {
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          price: newPriceId,
+        },
+      ],
+      proration_behavior: 'always_invoice',
+      payment_behavior: isUpgrade ? 'pending_if_incomplete' : 'default_incomplete',
+      expand: ['latest_invoice'],
+    });
+  }
 
   // Get the invoice URL
   if (updatedSubscription.latest_invoice && typeof updatedSubscription.latest_invoice !== 'string') {
@@ -445,4 +466,9 @@ async function handleProductPurchase(userId: string, productId: string, receiptU
     },
   };
   await updateUserByIdService(userId, newUser);
+}
+
+export async function getSubscriptionDetails(subscriptionId: string): Promise<Stripe.Subscription> {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  return subscription;
 }
