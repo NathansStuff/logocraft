@@ -6,7 +6,14 @@ import { verifyEmailTemplate } from '@/features/email/templates/verifyEmailTempl
 import { Email } from '@/features/email/types/Email';
 import { sendEmail } from '@/features/email/utils/sendEmail';
 import { products } from '@/features/product/products';
-import { createUser, deleteUserById, getUserByEmail, getUserById, getUserByStripeCustomerId, updateUserById } from '@/features/user/db/userDal';
+import {
+  createUser,
+  deleteUserById,
+  getUserByEmail,
+  getUserById,
+  getUserByStripeCustomerId,
+  updateUserById,
+} from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 
 // ***** Basic CRUD *****

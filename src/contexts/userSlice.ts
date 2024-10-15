@@ -89,7 +89,7 @@ export const {
   setNewTokens,
 } = userSlice.actions;
 
-export const selectUser = (state: RootState): IUserSlice => state.user;
+export const selectUser = (state: RootState): IUserSlice => state.user as IUserSlice;
 export const selectIsAuthenticated = (state: RootState): boolean => state.user.isAuthenticated;
 export const selectName = (state: RootState): string | undefined => state.user.name;
 export const selectProfilePicture = (state: RootState): string => state.user.profilePicture ?? '';

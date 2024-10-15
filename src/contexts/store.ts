@@ -1,59 +1,23 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
-import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-
-import { env } from '@/constants';
-
-import { displayReducer } from './displaySlice';
+import { createReduxStore } from '@operation-firefly/redux-toolbox'; // Use your package
 import { userReducer } from './userSlice';
+import { displayReducer } from './displaySlice';
+import { combineReducers } from '@reduxjs/toolkit'; // Application should handle combining reducers
 
-// Create the root reducer independently to obtain the RootState type
+// Step 1: Combine reducers in the application, where types are known
 export const rootReducer = combineReducers({
-  display: displayReducer,
   user: userReducer,
+  display: displayReducer,
 });
 
-// Define the persist config
-const persistConfig = {
-  key: 'root',
-  storage,
-};
+// Step 2: Use the redux-toolbox package to create the store
+const { store, persistor } = createReduxStore(
+  rootReducer, // Pass combined reducers from the app
+  [], // Optionally pass custom middleware
+  process.env.NODE_ENV === 'development' // Flag for dev mode
+);
 
-// Create a persisted reducer
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function setupStore() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const middleware: any[] = [];
-  if (env.NEXT_PUBLIC_ENVIRONMENT !== 'production' && env.NEXT_PUBLIC_ENVIRONMENT !== 'test') {
-    middleware.push(logger);
-  }
-
-  const store = configureStore({
-    reducer: persistedReducer,
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          // Ignore these action types
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }).concat(middleware),
-  });
-
-  const persistor = persistStore(store);
-
-  // Purge persisted state in development mode to avoid hydration issues
-  if (env.NEXT_PUBLIC_ENVIRONMENT === 'development') {
-    persistor.purge();
-  }
-
-  return { store, persistor };
-}
-
-export const { store, persistor } = setupStore();
-
-export type RootState = ReturnType<typeof rootReducer>;
-export type AppStore = ReturnType<typeof setupStore>;
+// Step 3: Correctly type RootState based on rootReducer
+export type RootState = ReturnType<typeof rootReducer>; // Use rootReducer to infer RootState
 export type AppDispatch = typeof store.dispatch;
+
+export { store, persistor };
