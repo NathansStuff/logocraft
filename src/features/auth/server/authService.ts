@@ -1,4 +1,4 @@
-import { BadRequestError } from '@/exceptions';
+import { BadRequestError } from '@operation-firefly/error-handling';
 import { createAccountService, getAccountByEmailService } from '@/features/account/server/accountService';
 import { createUserService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
@@ -24,6 +24,10 @@ export async function registerUserService(request: SignupFormRequest, ipAddress:
       isEmailVerified: false,
       oneTimePurchases: [],
       currentPlan: null,
+      sparksUsed: 0,
+      credits: {
+        sparks: 0,
+      },
     },
     ipAddress
   );

@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectIsAuthenticated } from '@/contexts/userSlice';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
+import { signOut } from 'next-auth/react';
 
 import { getHeaderLinks } from '../utils/getHeaderLinks';
 
@@ -66,10 +67,14 @@ function MobileNavigationSheet(): ReactNode {
                 <Link href='/profile'>Profile</Link>
               </Button>
               <Button
-                asChild
                 className='w-full'
+                onClick={() =>
+                  signOut({
+                    callbackUrl: '/',
+                  })
+                }
               >
-                <Link href='/logout'>Logout</Link>
+                Logout
               </Button>
             </>
           ) : (

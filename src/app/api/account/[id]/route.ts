@@ -5,7 +5,7 @@ import {
   getAccountHandler,
   updateAccountHandler,
 } from '@/features/account/server/accountController';
-import { TryCatchMiddleware } from '@/middleware/tryCatchMiddleware';
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 
 async function getHandler(req: NextRequest): Promise<NextResponse> {
   return await TryCatchMiddleware(() => getAccountHandler(req));

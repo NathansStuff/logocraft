@@ -1,7 +1,7 @@
 // services/stripeService.ts
 
 import { postRequest } from '@/lib/fetch';
-import { ResponseCode } from '@/types/ResponseCode';
+import { ResponseCode } from '@operation-firefly/error-handling';
 
 import { CancelIncompleteSubscriptionRequest } from '../types/CancelIncompleteSubscriptionRequest';
 

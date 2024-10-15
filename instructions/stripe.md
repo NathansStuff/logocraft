@@ -16,9 +16,10 @@ Users need to be able to:
    2. Should be able to uncancel before the next billing date - Done
 4. Change their plan
    1. Downgrade
-      1. When downgrading, user should not be refunded! Keep until end of cycle..
-      2. Downgrade should occur at the next billing date
-      3. 
+      1. When downgrading, user should not be refunded! Keep until end of cycle.. - Done
+      2. Downgrade should occur at the next billing date - Done
+      3. User should be able to cancel the pending downgrade
+      4. While there is a pending downgrade, they should not be able to change their plan again unless to cancel the downgrade
    2. Upgrade
       1. Upgrade should occur immediately
       2. Upgrade should be prorated for the rest of the cycle
@@ -33,5 +34,6 @@ Users need to be able to:
    5. Should be notified if their card is about to expire
 6. View their invoices
    1. Include the invoice date, amount, and any discounts
+7. ??? Managing overdue bills displaying status and automatically cancelling account etc
 
 Keep the current project structure as is.

@@ -10,6 +10,11 @@ const planOrder = [
 ];
 
 export function isSubscriptionUpgrade(currentPlan: SubscriptionPlan, newPlan: SubscriptionPlan): boolean {
+  if (currentPlan.plan === null || newPlan.plan === null) {
+    console.error('Invalid plan type: null plan encountered');
+    return false;
+  }
+
   const currentPlanIndex = planOrder.indexOf(currentPlan.plan);
   const newPlanIndex = planOrder.indexOf(newPlan.plan);
 

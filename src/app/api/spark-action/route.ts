@@ -4,8 +4,7 @@ import {
   createSparkActionHandler,
   getMostSparkActionsHandler,
 } from '@/features/sparkAction/server/sparkActionController';
-import { TryCatchMiddleware } from '@/middleware/tryCatchMiddleware';
-
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 export async function POST(req: NextRequest): Promise<NextResponse> {
   return await TryCatchMiddleware(() => createSparkActionHandler(req));
 }

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { BadRequestError } from '@/exceptions';
+import { BadRequestError } from '@operation-firefly/error-handling';
 import { getTopUsersWithSparks } from '@/features/user/db/userDal';
 import { getUserByIdService, updateUserSparkAction } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';

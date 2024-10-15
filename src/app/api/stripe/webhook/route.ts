@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleStripeEventService, getStripeEvent } from '@/features/stripe/server/stripeService';
-import { TryCatchMiddleware } from '@/middleware/tryCatchMiddleware';
-
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 export async function POST(req: NextRequest): Promise<NextResponse> {
   return await TryCatchMiddleware(async () => {
     const body = await req.text();

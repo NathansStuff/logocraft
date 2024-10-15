@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { RateLimiterRedis } from 'rate-limiter-flexible';
 
 import { getRedisClient } from '@/lib/redis';
-import { ResponseCode } from '@/types/ResponseCode';
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddressNullable } from '@/utils/getIpAddress';
 
 const redisClient = getRedisClient();

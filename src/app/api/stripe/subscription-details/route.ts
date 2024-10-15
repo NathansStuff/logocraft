@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getSubscriptionDetails } from '@/features/stripe/server/stripeService';
-import { TryCatchMiddleware } from '@/middleware/tryCatchMiddleware';
-
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 export async function GET(req: NextRequest): Promise<NextResponse> {
   return await TryCatchMiddleware(async () => {
     const { searchParams } = new URL(req.url);

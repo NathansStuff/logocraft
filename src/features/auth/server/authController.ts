@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { UserWithId } from '@/features/user/types/User';
-import { ResponseCode } from '@/types/ResponseCode';
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddress } from '@/utils/getIpAddress';
 
 import { SignupFormRequest } from '../types/SignupFormRequest';

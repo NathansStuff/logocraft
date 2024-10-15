@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { CreatePurchaseRequest } from '@/features/stripe/types/CreatePurchaseRequest';
-import { ResponseCode } from '@/types/ResponseCode';
+import { ResponseCode } from '@operation-firefly/error-handling';
 
 import { CancelIncompleteSubscriptionRequest } from '../types/CancelIncompleteSubscriptionRequest';
 import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';

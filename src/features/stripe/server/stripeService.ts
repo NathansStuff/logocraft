@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 
 import { env } from '@/constants';
-import { BadRequestError } from '@/exceptions';
+import { BadRequestError } from '@operation-firefly/error-handling';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
 import { Product } from '@/features/product/types/Product';

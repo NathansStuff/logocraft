@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { User, UserPartial } from '@/features/user/types/User';
-import { ResponseCode } from '@/types/ResponseCode';
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
 
