@@ -24,10 +24,10 @@ function GuestbookMessages({ messages }: Props): ReactNode {
           <CardHeader className='flex items-center justify-between p-4'>
             <div className='flex items-center gap-2'>
               <Avatar className='size-7'>
-                {entry.userId.imageUrl ? (
+                {entry.userId?.imageUrl ? (
                   <Image
-                    src={entry.userId.imageUrl || '/default-avatar.png'}
-                    alt={`${entry.userId.name}'s profile`}
+                    src={entry.userId?.imageUrl || '/default-avatar.png'}
+                    alt={`${entry.userId?.name}'s profile`}
                     width={28}
                     height={28}
                     className='rounded-full'
@@ -39,8 +39,8 @@ function GuestbookMessages({ messages }: Props): ReactNode {
                 )}
               </Avatar>
               <div className='flex flex-col justify-center'>
-                <h4 className='text-sm font-semibold text-gray-900 dark:text-gray-100'>{entry.userId.name}</h4>
-                <h5 className='text-xs text-gray-500 dark:text-gray-400'>{entry.userId.email}</h5>
+                <h4 className='text-sm font-semibold text-gray-900 dark:text-gray-100'>{entry.userId?.name}</h4>
+                <h5 className='text-xs text-gray-500 dark:text-gray-400'>{entry.userId?.email}</h5>
               </div>
             </div>
           </CardHeader>

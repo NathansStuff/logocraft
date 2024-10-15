@@ -1,16 +1,14 @@
 //todo
 
-import { env } from '@/constants';
 import { store } from '@/contexts/store';
 import { setUser } from '@/contexts/userSlice';
 import { UserWithId } from '@/features/user/types/User';
-import { getRequest } from '@/lib/fetch';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getUser(id: string): Promise<any> {
   try {
-    const url = `${env.NEXT_PUBLIC_BASE_URL}/api/user/${id}`;
-    const response = await getRequest<UserWithId>(url);
+    const url = `/api/user/${id}`;
+    const response = await BaseApiClient.get<UserWithId>(url);
 
     return response.data;
   } catch (error) {

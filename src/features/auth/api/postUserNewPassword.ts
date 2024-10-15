@@ -1,13 +1,11 @@
-import { env } from '@/constants';
-import { postRequest } from '@/lib/fetch';
-
 import { ResetPasswordRequest } from '../types/ResetPasswordRequest';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 export async function postUserNewPassword(form: ResetPasswordRequest): Promise<boolean> {
   try {
-    const url = `${env.NEXT_PUBLIC_BASE_URL}/api/auth/new-password`;
+    const url = `/api/auth/new-password`;
     return await (
-      await postRequest<boolean>(url, form)
+      await BaseApiClient.post<boolean>(url, form)
     ).data;
   } catch (error) {
     console.log('error', error);

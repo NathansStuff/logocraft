@@ -1,15 +1,12 @@
-// services/stripeService.ts
-
-import { postRequest } from '@/lib/fetch';
-
 import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 export async function changeSubscription(
   request: ChangeSubscriptionRequest
 ): Promise<{ isDowngrade: boolean; effectiveDate: number }> {
   try {
     const url = '/api/stripe/change-subscription';
-    const response = await postRequest<{ isDowngrade: boolean; effectiveDate: number }>(url, request);
+    const response = await BaseApiClient.post<{ isDowngrade: boolean; effectiveDate: number }>(url, request);
     return response.data;
   } catch (error) {
     console.error('changeSubscription', error);

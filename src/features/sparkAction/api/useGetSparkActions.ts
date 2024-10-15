@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { env } from '@/constants';
 import { UserWithId } from '@/features/user/types/User';
-import { getRequest } from '@/lib/fetch';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 type ResponseType = { users: UserWithId[] };
 
@@ -11,7 +10,7 @@ export function useGetSparkActions() {
   const query = useQuery({
     queryKey: ['sparkActions'],
     queryFn: async () => {
-      const response = await getRequest<ResponseType>(`${env.NEXT_PUBLIC_BASE_URL}/api/spark-action`);
+      const response = await BaseApiClient.get<ResponseType>(`/api/spark-action`);
       return response.data;
     },
   });

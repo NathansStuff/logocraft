@@ -1,15 +1,13 @@
-import { env } from '@/constants';
-import { postRequest } from '@/lib/fetch';
-
 import { ValidateTokenRequest } from '../types/ValidateTokenRequest';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 export async function validateToken(token: string): Promise<boolean> {
   try {
-    const url = `${env.NEXT_PUBLIC_BASE_URL}/api/auth/validate-token`;
+    const url = `/api/auth/validate-token`;
     const form: ValidateTokenRequest = {
       token,
     };
-    const response = await postRequest<{ isValid: boolean }>(url, form);
+    const response = await BaseApiClient.post<{ isValid: boolean }>(url, form);
 
     return response.data.isValid;
   } catch (error) {

@@ -1,9 +1,7 @@
 import { toast } from 'sonner';
 
-import { env } from '@/constants';
-import { postRequest } from '@/lib/fetch';
-
 import { ContactEmailRequest } from '../types/ContactEmailRequest';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 export async function sendContactForm(form: ContactEmailRequest): Promise<boolean> {
   const loading = toast.loading('Sending message...');
@@ -22,8 +20,8 @@ export async function sendContactForm(form: ContactEmailRequest): Promise<boolea
 
 async function postContactForm(form: ContactEmailRequest): Promise<boolean> {
   try {
-    const url = `${env.NEXT_PUBLIC_BASE_URL}/api/email/contact`;
-    const response = await postRequest<{ success: boolean }>(url, form);
+    const url = `/api/email/contact`;
+    const response = await BaseApiClient.post<{ success: boolean }>(url, form);
 
     return response.data.success;
   } catch (error) {
