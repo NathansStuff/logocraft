@@ -1,4 +1,4 @@
-import { ModelGenerator, wrapWithConnection } from '@operation-firefly/mongodb-package';
+import { ModelGenerator } from '@operation-firefly/mongodb-package';
 import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
@@ -8,12 +8,27 @@ import { UserPartial, UserWithId } from '@/features/user/types/User';
 import { MongoDB } from '@/lib/mongodb';
 import { BadRequestError } from '@operation-firefly/error-handling';
 
-import { ConvertZodToMongoose } from '@operation-firefly/mongodb-package';
+import { CreateSchema, WrapWithConnection } from '@operation-firefly/mongodb-package';
 
-const userSchema = ConvertZodToMongoose(User);
+const userSchema = CreateSchema(User);
 const UserModel = ModelGenerator<User>('User', userSchema);
 
 const baseUserDal = {
+  // Get a User by ID
+  async getById(id: string): Promise<UserWithId | null> {
+    const result = await UserModel.findById(id);
+    return result;
+  },
+
+  async create(user: User): Promise<UserWithId> {
+    const result = await UserModel.create(user);
+    return result;
+  },
+
+  async deleteById(id: string): Promise<void> {
+    await UserModel.findByIdAndDelete(id);
+  },
+
   // Get a User by Stripe Customer ID
   async getUserByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
     const result = await UserModel.findOne({ stripeCustomerId });
@@ -53,4 +68,4 @@ const baseUserDal = {
 };
 
 // Wrap the DAL with connection handling and export
-export const UserDal = wrapWithConnection<User, UserWithId>(baseUserDal, MongoDB, UserModel);
+export const UserDal = WrapWithConnection(baseUserDal, MongoDB);
