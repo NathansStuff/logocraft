@@ -1,4 +1,4 @@
-import { WithId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 import { z } from 'zod';
 
 import { SubscriptionPlan } from './SubscriptionPlan';
@@ -27,5 +27,7 @@ export const User = z.object({
 export const UserPartial = User.partial();
 
 export type User = z.infer<typeof User>;
-export type UserWithId = WithId<User>;
+export interface UserWithId extends User {
+  _id: ObjectId;
+}
 export type UserPartial = z.infer<typeof UserPartial>;

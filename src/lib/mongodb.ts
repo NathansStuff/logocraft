@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { env } from '@/constants';
+import { MongoDBConnector } from '@operation-firefly/mongodb-package';
 
 const MONGODB_URI = env.MONGODB_URI;
 const cached: { connection?: typeof mongoose; promise?: Promise<typeof mongoose> } = {};
@@ -26,3 +27,5 @@ async function connectMongo(): Promise<typeof mongoose> {
   return cached.connection;
 }
 export default connectMongo;
+
+export const MongoDB = new MongoDBConnector(env.MONGODB_URI);

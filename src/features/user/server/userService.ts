@@ -6,13 +6,14 @@ import { verifyEmailTemplate } from '@/features/email/templates/verifyEmailTempl
 import { Email } from '@/features/email/types/Email';
 import { sendEmail } from '@/features/email/utils/sendEmail';
 import { products } from '@/features/product/products';
-import { createUser, deleteUserById, getUserByEmail, getUserById, getUserByStripeCustomerId, updateUserById } from '@/features/user/db/userDal';
 import { User, UserPartial, UserWithId } from '@/features/user/types/User';
+import { UserDal } from '@/features/user/db/userDal';
+import { BadRequestError } from '@operation-firefly/error-handling';
 
 // ***** Basic CRUD *****
 // Service to create a user
 export async function createUserService(user: User, ipAddress: string): Promise<UserWithId> {
-  const newUser = await createUser(user);
+  const newUser = await UserDal.create(user);
   console.log(ipAddress);
   if (!user.isEmailVerified) {
     // Send verification email
@@ -32,12 +33,12 @@ export async function createUserService(user: User, ipAddress: string): Promise<
 
 // Service to get a user by ID
 export async function getUserByIdService(id: string): Promise<UserWithId | null> {
-  return await getUserById(id);
+  return await UserDal.getById(id);
 }
 
 // Service to get a user by Stripe Customer ID
 export async function getUserByStripeCustomerIdService(stripeCustomerId: string): Promise<UserWithId | null> {
-  return await getUserByStripeCustomerId(stripeCustomerId);
+  return await UserDal.getUserByStripeCustomerId(stripeCustomerId);
 }
 
 // Service to update a user by ID
@@ -45,50 +46,58 @@ export async function updateUserByIdService(
   id: string,
   user: UserPartial,
   ipAddress?: string | null
-): Promise<UserWithId | null> {
-  const existingUser = await getUserById(id);
-  if (!existingUser) {
-    return null;
-  }
+): Promise<UserWithId> {
+  try {
+    const updatedUser = await UserDal.updateUserById(id, user, ipAddress);
 
-  // Check if there are new one-time purchases
-  const newPurchases = user.oneTimePurchases?.filter((purchase) => !existingUser.oneTimePurchases.includes(purchase));
+    // Check if there are new one-time purchases
+    const existingUser = await getUserByIdService(id);
+    if (!existingUser) {
+      throw new BadRequestError('User not found');
+    }
 
-  const updatedUser = await updateUserById(id, user, ipAddress);
+    const newPurchases = user.oneTimePurchases?.filter((purchase) => !existingUser.oneTimePurchases.includes(purchase));
 
-  // If there are new purchases, send the confirmation email
-  if (newPurchases && newPurchases.length > 0) {
-    for (const purchase of newPurchases) {
-      const product = products.find((prod) => prod.productId === purchase);
-      if (product) {
-        const { subject, body } = purchaseConfirmationEmailTemplate(
-          existingUser.name,
-          product.name,
-          `${env.NEXT_PUBLIC_BASE_URL}/view-product/${product.productId}`
-        );
-        const emailTemplate: Email = {
-          to: existingUser.email,
-          subject,
-          body,
-          userId: updatedUser._id,
-          ipAddress: ipAddress ?? null,
-        };
-        await sendEmail(emailTemplate);
+    // If there are new purchases, send the confirmation email
+    if (newPurchases && newPurchases.length > 0) {
+      for (const purchase of newPurchases) {
+        const product = products.find((prod) => prod.productId === purchase);
+        if (product) {
+          const { subject, body } = purchaseConfirmationEmailTemplate(
+            existingUser.name,
+            product.name,
+            `${env.NEXT_PUBLIC_BASE_URL}/view-product/${product.productId}`
+          );
+          const emailTemplate: Email = {
+            to: existingUser.email,
+            subject,
+            body,
+            userId: updatedUser._id,
+            ipAddress: ipAddress ?? null,
+          };
+          await sendEmail(emailTemplate);
+        }
       }
     }
-  }
 
-  return updatedUser;
+    return updatedUser;
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      throw error;
+    }
+    throw new Error('Failed to update user');
+  }
 }
+
 // Service to delete a user by ID
 export async function deleteUserByIdService(id: string): Promise<void> {
-  return await deleteUserById(id);
+  return await UserDal.deleteById(id);
 }
 
 // ***** Additional Functions *****
 // Service to find or create a user by email
 export async function findOrCreateUserByEmail(email: string, user: User, ipAddress: string): Promise<UserWithId> {
-  let existingUser = await getUserByEmail(email);
+  let existingUser = await UserDal.getUserByEmail(email);
   if (!existingUser) {
     existingUser = await createUserService(user, ipAddress);
   }
@@ -97,7 +106,7 @@ export async function findOrCreateUserByEmail(email: string, user: User, ipAddre
 
 // Service to get a user by Email
 export async function getUserByEmailService(email: string): Promise<UserWithId | null> {
-  return await getUserByEmail(email);
+  return await UserDal.getUserByEmail(email);
 }
 
 // Service to delete a user and all linked accounts
@@ -111,7 +120,7 @@ export async function deleteUserAndAccounts(userId: string): Promise<void> {
   }
 
   // Delete the user
-  await deleteUserById(userId);
+  await UserDal.deleteById(userId);
 }
 
 // Service to validate a user's email
@@ -148,15 +157,20 @@ export async function resendEmailVerificationService(userId: string, ipAddress: 
 }
 
 export async function updateUserSparkAction(userId: string, sparksUsed: number): Promise<void> {
-  const user = await getUserByIdService(userId);
+  const user = await UserDal.getById(userId);
   if (!user) {
     return;
   }
 
-  await updateUserByIdService(userId, {
+  await UserDal.updateUserById(userId, {
     sparksUsed: user.sparksUsed + sparksUsed,
     credits: {
       sparks: user.credits.sparks - sparksUsed,
     },
   });
+}
+
+// New service to get top users with sparks
+export async function getTopUsersWithSparksService(): Promise<UserWithId[]> {
+  return await UserDal.getTopUsersWithSparks();
 }

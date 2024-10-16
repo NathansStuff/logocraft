@@ -1,76 +1,56 @@
-import { Account } from '@/features/account/types/Account';
+import { ModelGenerator, wrapWithConnection } from '@operation-firefly/mongodb-package';
 import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
+import { User } from '../types/User';
 import { Log } from '@/features/log/types/Log';
-import { User, UserPartial, UserWithId } from '@/features/user/types/User';
-import connectMongo from '@/lib/mongodb';
+import { UserPartial, UserWithId } from '@/features/user/types/User';
+import { MongoDB } from '@/lib/mongodb';
+import { BadRequestError } from '@operation-firefly/error-handling';
 
-import { UserModel } from './userModel';
+import { ConvertZodToMongoose } from '@operation-firefly/mongodb-package';
 
-// ***** Basic CRUD *****
-// Create a User
-export async function createUser(user: User): Promise<UserWithId> {
-  await connectMongo();
-  const result = await UserModel.create(user);
-  return result;
-}
+const userSchema = ConvertZodToMongoose(User);
+const UserModel = ModelGenerator<User>('User', userSchema);
 
-// Get a User by ID
-export async function getUserById(id: string): Promise<UserWithId> {
-  await connectMongo();
-  const result = await UserModel.findById(id);
-  return result;
-}
+const baseUserDal = {
+  // Get a User by Stripe Customer ID
+  async getUserByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
+    const result = await UserModel.findOne({ stripeCustomerId });
+    return result;
+  },
 
-// Get all Users
-export async function getAllUsers(): Promise<UserWithId[]> {
-  await connectMongo();
-  const result = await UserModel.find({});
-  return result;
-}
+  // Update a User
+  async updateUserById(id: string, user: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
+    const result = await UserModel.findByIdAndUpdate(id, user, { new: true });
+    if (!result) {
+      throw new BadRequestError('User not found');
+    }
+    const log: Log = {
+      userId: result._id,
+      action: ELogType.USER_UPDATE,
+      status: ELogStatus.SUCCESS,
+      additionalInfo: { updatedFields: Object.keys(user) },
+      ipAddress: ipAddress ?? null,
+    };
+    await createServerLogService(log);
+    return result;
+  },
 
-// Get a User by Stripe Customer ID
-export async function getUserByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
-  await connectMongo();
-  const result = await UserModel.findOne({ stripeCustomerId });
-  return result;
-}
+  // Get User by Email
+  async getUserByEmail(email: string): Promise<UserWithId | null> {
+    const result = await UserModel.findOne({ email });
+    return result ? result.toObject() : null;
+  },
 
-// Update a User
-export async function updateUserById(id: string, User: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
-  await connectMongo();
-  const result = await UserModel.findByIdAndUpdate(id, User, { new: true });
-  const log: Log = {
-    userId: result._id,
-    action: ELogType.USER_UPDATE,
-    status: ELogStatus.SUCCESS,
-    additionalInfo: { updatedFields: Object.keys(Account) },
-    ipAddress: ipAddress ?? null,
-  };
-  await createServerLogService(log);
-  return result;
-}
+  // Get Users With Most Sparks
+  async getTopUsersWithSparks(): Promise<UserWithId[]> {
+    const result = await UserModel.find({ sparksUsed: { $gt: 0 } })
+      .sort({ sparksUsed: -1 })
+      .limit(3);
+    return result;
+  },
+};
 
-// Delete a User
-export async function deleteUserById(id: string): Promise<void> {
-  await connectMongo();
-  await UserModel.findByIdAndDelete(id);
-}
-
-// ***** Additional Functions *****
-// Get User by Email
-export async function getUserByEmail(email: string): Promise<UserWithId | null> {
-  await connectMongo();
-  const result = await UserModel.findOne({ email });
-  return result ? result.toObject() : null;
-}
-
-// Get Users With Most Sparks
-export async function getTopUsersWithSparks(): Promise<UserWithId[]> {
-  await connectMongo();
-  const result = await UserModel.find({ sparksUsed: { $gt: 0 } })
-    .sort({ sparksUsed: -1 })
-    .limit(3);
-  return result;
-}
+// Wrap the DAL with connection handling and export
+export const UserDal = wrapWithConnection<User, UserWithId>(baseUserDal, MongoDB, UserModel);
