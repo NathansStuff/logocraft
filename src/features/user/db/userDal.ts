@@ -1,42 +1,31 @@
-import { ModelGenerator } from '@operation-firefly/mongodb-package';
+import { BadRequestError } from '@operation-firefly/error-handling';
+import { CreateBaseDal, ModelGenerator } from '@operation-firefly/mongodb-package';
+import { CreateSchema, WrapWithConnection } from '@operation-firefly/mongodb-package';
+
 import { createServerLogService } from '@/features/log/server/logService';
 import { ELogStatus } from '@/features/log/types/ELogStatus';
 import { ELogType } from '@/features/log/types/ELogType';
-import { User } from '../types/User';
 import { Log } from '@/features/log/types/Log';
 import { UserPartial, UserWithId } from '@/features/user/types/User';
 import { MongoDB } from '@/lib/mongodb';
-import { BadRequestError } from '@operation-firefly/error-handling';
 
-import { CreateSchema, WrapWithConnection } from '@operation-firefly/mongodb-package';
+import { User } from '../types/User';
 
 const userSchema = CreateSchema(User);
 const UserModel = ModelGenerator<User>('User', userSchema);
 
+const base = CreateBaseDal<User, UserPartial, UserWithId>(UserModel);
+
 const baseUserDal = {
-  // Get a User by ID
-  async getById(id: string): Promise<UserWithId | null> {
-    const result = await UserModel.findById(id);
-    return result;
-  },
-
-  async create(user: User): Promise<UserWithId> {
-    const result = await UserModel.create(user);
-    return result;
-  },
-
-  async deleteById(id: string): Promise<void> {
-    await UserModel.findByIdAndDelete(id);
-  },
-
+  ...base,
   // Get a User by Stripe Customer ID
-  async getUserByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
+  async getByStripeCustomerId(stripeCustomerId: string): Promise<UserWithId | null> {
     const result = await UserModel.findOne({ stripeCustomerId });
     return result;
   },
 
   // Update a User
-  async updateUserById(id: string, user: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
+  async updateById(id: string, user: UserPartial, ipAddress?: string | null): Promise<UserWithId> {
     const result = await UserModel.findByIdAndUpdate(id, user, { new: true });
     if (!result) {
       throw new BadRequestError('User not found');
@@ -53,13 +42,13 @@ const baseUserDal = {
   },
 
   // Get User by Email
-  async getUserByEmail(email: string): Promise<UserWithId | null> {
+  async getByEmail(email: string): Promise<UserWithId | null> {
     const result = await UserModel.findOne({ email });
     return result ? result.toObject() : null;
   },
 
   // Get Users With Most Sparks
-  async getTopUsersWithSparks(): Promise<UserWithId[]> {
+  async getTopSparksUsed(): Promise<UserWithId[]> {
     const result = await UserModel.find({ sparksUsed: { $gt: 0 } })
       .sort({ sparksUsed: -1 })
       .limit(3);

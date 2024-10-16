@@ -7,7 +7,7 @@ import { env } from '@/constants';
 import { getAccountByEmailService } from '@/features/account/server/accountService';
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { verifyPassword } from '@/features/auth/utils/auth';
-import { getUserByEmailService, updateUserByIdService } from '@/features/user/server/userService';
+import { UserService } from '@/features/user/server/userService';
 
 import { createStripeCustomer } from './serverStripe';
 
@@ -67,7 +67,7 @@ export const authOptions = {
           throw new Error('Password is incorrect');
         }
 
-        const user = await getUserByEmailService(account.email);
+        const user = await UserService.getByEmail(account.email);
         if (!user) {
           throw new Error('User not found');
         }
@@ -133,7 +133,7 @@ export const authOptions = {
           if (!stripeCustomer) {
             throw new Error('Stripe customer creation failed');
           }
-          await updateUserByIdService(user.id, {
+          await UserService.updateById(user.id, {
             stripeCustomerId: stripeCustomer.id,
           });
         }

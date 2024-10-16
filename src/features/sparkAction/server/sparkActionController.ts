@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-
 import { ResponseCode } from '@operation-firefly/error-handling';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { SparkActionRequest } from '../types/SparkActionRequest';
 

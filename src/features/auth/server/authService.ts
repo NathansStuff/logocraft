@@ -1,6 +1,7 @@
 import { BadRequestError } from '@operation-firefly/error-handling';
+
 import { createAccountService, getAccountByEmailService } from '@/features/account/server/accountService';
-import { createUserService } from '@/features/user/server/userService';
+import { UserService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 
 import { SignupFormRequest } from '../types/SignupFormRequest';
@@ -16,7 +17,7 @@ export async function registerUserService(request: SignupFormRequest, ipAddress:
 
   const username = 'username'; // Generate username
   // Create user first
-  const newUser = await createUserService(
+  const newUser = await UserService.create(
     {
       email,
       name: username,

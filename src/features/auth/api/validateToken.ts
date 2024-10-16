@@ -1,9 +1,10 @@
-import { ValidateTokenRequest } from '../types/ValidateTokenRequest';
 import { BaseApiClient } from '@/lib/BaseApiClient';
+
+import { ValidateTokenRequest } from '../types/ValidateTokenRequest';
 
 export async function validateToken(token: string): Promise<boolean> {
   try {
-    const url = `/api/auth/validate-token`;
+    const url = '/api/auth/validate-token';
     const form: ValidateTokenRequest = {
       token,
     };

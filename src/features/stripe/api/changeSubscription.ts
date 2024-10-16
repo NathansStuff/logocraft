@@ -1,5 +1,6 @@
-import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';
 import { BaseApiClient } from '@/lib/BaseApiClient';
+
+import { ChangeSubscriptionRequest } from '../types/ChangeSubscriptionRequest';
 
 export async function changeSubscription(
   request: ChangeSubscriptionRequest

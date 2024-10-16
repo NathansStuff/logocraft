@@ -1,5 +1,5 @@
-import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { ESubscriptionPlan } from '@/features/user/types/ESubscriptionPlan';
+import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 
 const planOrder = [
   ESubscriptionPlan.FREE,

@@ -1,17 +1,12 @@
+import { BadRequestError } from '@operation-firefly/error-handling';
 import Stripe from 'stripe';
 
 import { env } from '@/constants';
-import { BadRequestError } from '@operation-firefly/error-handling';
 import { products } from '@/features/product/products';
 import { EProductType } from '@/features/product/types/EProductType';
 import { Product } from '@/features/product/types/Product';
 import { isSubscriptionUpgrade } from '@/features/product/utils/isSubscriptionUpgrade';
-import {
-  getUserByEmailService,
-  getUserByIdService,
-  getUserByStripeCustomerIdService,
-  updateUserByIdService,
-} from '@/features/user/server/userService';
+import { UserService } from '@/features/user/server/userService';
 import { EPaymentFrequency } from '@/features/user/types/EPaymentFrequency';
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { UserPartial } from '@/features/user/types/User';
@@ -109,9 +104,9 @@ export async function changeStripeSubscription(
       effectiveDate = Date.now();
 
       // Update user information in the database
-      const user = await getUserByStripeCustomerIdService(subscription.customer as string);
+      const user = await UserService.getByStripeCustomerId(subscription.customer as string);
       if (user) {
-        await updateUserByIdService(user._id.toString(), {
+        await UserService.updateById(user._id.toString(), {
           currentPlan: newPlan,
           currentPeriodEnd: new Date(updatedSubscription.current_period_end * 1000),
           pendingPlan: null,
@@ -144,9 +139,9 @@ export async function changeStripeSubscription(
       effectiveDate = currentPhaseEndDate * 1000; // Convert to milliseconds
 
       // Update user information in the database
-      const user = await getUserByStripeCustomerIdService(subscription.customer as string);
+      const user = await UserService.getByStripeCustomerId(subscription.customer as string);
       if (user) {
-        await updateUserByIdService(user._id.toString(), {
+        await UserService.updateById(user._id.toString(), {
           pendingPlan: newPlan,
           currentPeriodEnd: new Date(currentPhaseEndDate * 1000),
         });
@@ -393,7 +388,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
   }
 
   // 1. Retrieve the user by stripe customer ID
-  const user = await getUserByStripeCustomerIdService(customerId);
+  const user = await UserService.getByStripeCustomerId(customerId);
   if (!user) {
     // todo: Log
     throw new BadRequestError('User not found');
@@ -460,7 +455,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription): Pro
     // You might want to send an email to the user here informing them that their downgrade has taken effect
   }
 
-  await updateUserByIdService(user._id.toString(), updatedUser);
+  await UserService.updateById(user._id.toString(), updatedUser);
 
   // 4. Emails
   // todo
@@ -477,7 +472,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<v
     throw new BadRequestError('Subscription or customer email not found');
   }
 
-  const user = await getUserByEmailService(customer_email);
+  const user = await UserService.getByEmail(customer_email);
   if (!user) {
     throw new BadRequestError('User not found');
   }
@@ -492,14 +487,14 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<v
   };
 
   // Always update the user
-  await updateUserByIdService(user._id.toString(), newUser);
+  await UserService.updateById(user._id.toString(), newUser);
 
   // Log the subscription update
   console.log(`Subscription ${subscription} updated for user ${user._id}`);
 }
 
 async function handleProductPurchase(userId: string, productId: string, receiptUrl: string | null): Promise<void> {
-  const user = await getUserByIdService(userId);
+  const user = await UserService.getById(userId);
   // Identify if new purchase includes tokens
   const product = products.find((prod) => prod.productId === productId);
   if (!user || !product) {
@@ -523,7 +518,7 @@ async function handleProductPurchase(userId: string, productId: string, receiptU
       sparks: newTokens,
     },
   };
-  await updateUserByIdService(userId, newUser);
+  await UserService.updateById(userId, newUser);
 }
 
 export async function getSubscriptionDetails(subscriptionId: string): Promise<Stripe.Subscription> {

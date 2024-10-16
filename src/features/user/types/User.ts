@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { z } from 'zod';
 
 import { SubscriptionPlan } from './SubscriptionPlan';

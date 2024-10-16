@@ -1,10 +1,10 @@
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 import { NextRequest, NextResponse } from 'next/server';
 
 import {
   createGuestbookMessageHandler,
   getAllGuestbookMessagesHandler,
 } from '@/features/guestbook/server/guestbookMessageController';
-import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 export async function POST(req: NextRequest): Promise<NextResponse> {
   return await TryCatchMiddleware(() => createGuestbookMessageHandler(req));
 }

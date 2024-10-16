@@ -1,3 +1,4 @@
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { AccountPartial } from '@/features/account/types/Account';
@@ -5,7 +6,6 @@ import { ValidateTokenRequest } from '@/features/account/types/ValidateTokenRequ
 import { LoginRequest } from '@/features/auth/types/LoginRequest';
 import { ResetPasswordFormRequest } from '@/features/auth/types/ResetPasswordFormRequest';
 import { ResetPasswordRequest } from '@/features/auth/types/ResetPasswordRequest';
-import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
 

@@ -1,20 +1,11 @@
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { User, UserPartial } from '@/features/user/types/User';
-import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddress } from '@/utils/getIpAddress';
 import { getLastSegment } from '@/utils/getLastSegment';
 
-import {
-  createUserService,
-  deleteUserAndAccounts,
-  deleteUserByIdService,
-  findOrCreateUserByEmail,
-  getUserByIdService,
-  resendEmailVerificationService,
-  updateUserByIdService,
-  validateUserEmailService,
-} from './userService';
+import { UserService } from './userService';
 
 // ***** Basic CRUD *****
 // Handler to create a new user
@@ -22,14 +13,14 @@ export async function createUserHandler(req: NextRequest): Promise<NextResponse>
   const data = await req.json();
   const safeBody = User.parse(data);
   const ipAddress = getIpAddress(req);
-  const result = await createUserService(safeBody, ipAddress);
+  const result = await UserService.create(safeBody, ipAddress);
   return NextResponse.json(result, { status: ResponseCode.CREATED });
 }
 
 // Handler to get a user by ID
 export async function getUserHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
-  const user = await getUserByIdService(id);
+  const user = await UserService.getById(id);
   if (!user) {
     return NextResponse.json({ message: 'User not found' }, { status: ResponseCode.NOT_FOUND });
   }
@@ -41,7 +32,7 @@ export async function updateUserHandler(req: NextRequest): Promise<NextResponse>
   const id = getLastSegment(req.nextUrl.pathname);
   const data = await req.json();
   const safeBody = UserPartial.parse(data);
-  const updatedUser = await updateUserByIdService(id, safeBody);
+  const updatedUser = await UserService.updateById(id, safeBody);
   if (!updatedUser) {
     return NextResponse.json({ message: 'User not found' }, { status: ResponseCode.NOT_FOUND });
   }
@@ -51,7 +42,7 @@ export async function updateUserHandler(req: NextRequest): Promise<NextResponse>
 // Handler to delete a user by ID
 export async function deleteUserHandler(req: NextRequest): Promise<NextResponse> {
   const id = getLastSegment(req.nextUrl.pathname);
-  await deleteUserByIdService(id);
+  await UserService.deleteById(id);
   return NextResponse.json({ message: 'User deleted successfully' }, { status: ResponseCode.OK });
 }
 
@@ -61,14 +52,14 @@ export async function findOrCreateUserHandler(req: NextRequest): Promise<NextRes
   const data = await req.json();
   const safeBody = User.parse(data);
   const ipAddress = getIpAddress(req);
-  const existingUser = await findOrCreateUserByEmail(safeBody.email, safeBody, ipAddress);
+  const existingUser = await UserService.findOrCreate(safeBody.email, safeBody, ipAddress);
   return NextResponse.json(existingUser, { status: 200 });
 }
 
 // Handler to delete a user and all linked accounts
 export async function deleteUserAndAccountsHandler(req: NextRequest): Promise<NextResponse> {
   const userId = getLastSegment(req.nextUrl.pathname);
-  await deleteUserAndAccounts(userId);
+  await UserService.deleteUserAndAccounts(userId);
   return NextResponse.json(
     { message: 'User and associated accounts deleted successfully' },
     { status: ResponseCode.OK }
@@ -79,7 +70,7 @@ export async function deleteUserAndAccountsHandler(req: NextRequest): Promise<Ne
 export async function validateUserEmailHandler(req: NextRequest): Promise<NextResponse> {
   const userId = getLastSegment(req.nextUrl.pathname);
   const ipAddress = getIpAddress(req);
-  const isValid = await validateUserEmailService(userId, ipAddress);
+  const isValid = await UserService.validateEmail(userId, ipAddress);
   return NextResponse.json({ isValid }, { status: ResponseCode.OK });
 }
 
@@ -87,6 +78,6 @@ export async function validateUserEmailHandler(req: NextRequest): Promise<NextRe
 export async function resendVerificationEmailHandler(req: NextRequest): Promise<NextResponse> {
   const userId = getLastSegment(req.nextUrl.pathname);
   const ipAddress = getIpAddress(req);
-  await resendEmailVerificationService(userId, ipAddress);
+  await UserService.resendEmailVerification(userId, ipAddress);
   return NextResponse.json({ message: 'Verification email sent' }, { status: ResponseCode.OK });
 }

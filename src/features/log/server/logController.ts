@@ -1,7 +1,7 @@
+import { ResponseCode } from '@operation-firefly/error-handling';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { CreateLogResponse } from '@/features/log/types/CreateLogResponse';
-import { ResponseCode } from '@operation-firefly/error-handling';
 import { getIpAddress } from '@/utils/getIpAddress';
 
 import { CreateLogRequest } from '../types/CreateLogRequest';

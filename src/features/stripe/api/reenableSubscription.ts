@@ -1,7 +1,8 @@
 import { ResponseCode } from '@operation-firefly/error-handling';
 
-import { ReenableSubscriptionRequest } from '../types/ReenableSubscriptionRequest';
 import { BaseApiClient } from '@/lib/BaseApiClient';
+
+import { ReenableSubscriptionRequest } from '../types/ReenableSubscriptionRequest';
 
 export async function reenableSubscription(request: ReenableSubscriptionRequest): Promise<boolean> {
   try {

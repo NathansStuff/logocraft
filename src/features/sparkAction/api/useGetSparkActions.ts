@@ -10,7 +10,7 @@ export function useGetSparkActions() {
   const query = useQuery({
     queryKey: ['sparkActions'],
     queryFn: async () => {
-      const response = await BaseApiClient.get<ResponseType>(`/api/spark-action`);
+      const response = await BaseApiClient.get<ResponseType>('/api/spark-action');
       return response.data;
     },
   });

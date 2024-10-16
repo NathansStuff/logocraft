@@ -1,7 +1,7 @@
+import { MongoDBConnector } from '@operation-firefly/mongodb-package';
 import mongoose from 'mongoose';
 
 import { env } from '@/constants';
-import { MongoDBConnector } from '@operation-firefly/mongodb-package';
 
 const MONGODB_URI = env.MONGODB_URI;
 const cached: { connection?: typeof mongoose; promise?: Promise<typeof mongoose> } = {};

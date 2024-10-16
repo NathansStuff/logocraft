@@ -1,4 +1,5 @@
 import { capitalizeString } from '@operation-firefly/capitalize-string';
+
 import { SubscriptionPlan } from '@/features/user/types/SubscriptionPlan';
 import { convertToSubcurrency } from '@/utils/convertToSubcurrency';
 

@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { BaseApiClient } from '@/lib/BaseApiClient';
+
 import { SparkActionRequest } from '../types/SparkActionRequest';
 import { SparkActionWithId } from '../types/SparkMeter';
-import { BaseApiClient } from '@/lib/BaseApiClient';
 
 type RequestType = SparkActionRequest;
 type ResponseType = SparkActionWithId;
@@ -13,7 +14,7 @@ export const useCreateSparkAction = () => {
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await BaseApiClient.post<ResponseType>(`/api/spark-action`, json);
+      const response = await BaseApiClient.post<ResponseType>('/api/spark-action', json);
       return response.data;
     },
     onSuccess: () => {

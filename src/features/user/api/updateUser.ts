@@ -1,7 +1,7 @@
 import { store } from '@/contexts/store';
+import { BaseApiClient } from '@/lib/BaseApiClient';
 
 import { UserPartial, UserWithId } from '../types/User';
-import { BaseApiClient } from '@/lib/BaseApiClient';
 
 export async function updateUser(data: UserPartial): Promise<UserWithId | null> {
   const userId = store.getState().user._id;

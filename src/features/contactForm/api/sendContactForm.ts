@@ -1,7 +1,8 @@
 import { toast } from 'sonner';
 
-import { ContactEmailRequest } from '../types/ContactEmailRequest';
 import { BaseApiClient } from '@/lib/BaseApiClient';
+
+import { ContactEmailRequest } from '../types/ContactEmailRequest';
 
 export async function sendContactForm(form: ContactEmailRequest): Promise<boolean> {
   const loading = toast.loading('Sending message...');
@@ -20,7 +21,7 @@ export async function sendContactForm(form: ContactEmailRequest): Promise<boolea
 
 async function postContactForm(form: ContactEmailRequest): Promise<boolean> {
   try {
-    const url = `/api/email/contact`;
+    const url = '/api/email/contact';
     const response = await BaseApiClient.post<{ success: boolean }>(url, form);
 
     return response.data.success;

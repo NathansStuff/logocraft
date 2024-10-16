@@ -1,8 +1,7 @@
+import { BadRequestError } from '@operation-firefly/error-handling';
 import { ObjectId } from 'mongodb';
 
-import { BadRequestError } from '@operation-firefly/error-handling';
-import { getTopUsersWithSparks } from '@/features/user/db/userDal';
-import { getUserByIdService, updateUserSparkAction } from '@/features/user/server/userService';
+import { UserService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 
 import { createSparkAction } from '../db/sparkActionDal';
@@ -19,7 +18,7 @@ export async function createSparkActionService(spark: SparkActionRequest): Promi
   const valid = SparkAction.parse(newSparkAction);
 
   // Check user has enough credit
-  const user = await getUserByIdService(spark.userId);
+  const user = await UserService.getById(spark.userId);
   if (!user) {
     throw new BadRequestError('User not found');
   }
@@ -31,12 +30,12 @@ export async function createSparkActionService(spark: SparkActionRequest): Promi
   const action = await createSparkAction(valid);
 
   // No need to await this
-  void updateUserSparkAction(user._id.toString(), spark.sparksUsed);
+  void UserService.updateById(user._id.toString(), spark.sparksUsed);
 
   return action;
 }
 
 // Service to get all Logs
 export async function getMostSparkActionsService(): Promise<UserWithId[]> {
-  return await getTopUsersWithSparks();
+  return await UserService.getTopUsersWithSparks();
 }

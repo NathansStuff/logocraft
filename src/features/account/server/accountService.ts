@@ -19,7 +19,7 @@ import { passwordResetConfirmationEmailTemplate } from '@/features/email/templat
 import { resetPasswordEmailTemplate } from '@/features/email/templates/resetPasswordEmailTemplate';
 import { Email } from '@/features/email/types/Email';
 import { sendEmail } from '@/features/email/utils/sendEmail';
-import { createUserService, getUserByEmailService, getUserByIdService } from '@/features/user/server/userService';
+import { UserService } from '@/features/user/server/userService';
 import { UserWithId } from '@/features/user/types/User';
 import connectMongo from '@/lib/mongodb';
 import { generateRandomToken } from '@/utils/generateRandomToken';
@@ -62,12 +62,12 @@ export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: 
 
   // If account exists, return associated user
   if (existingAccount) {
-    const user = await getUserByIdService(existingAccount.userId.toString());
+    const user = await UserService.getById(existingAccount.userId.toString());
     return user;
   }
 
   // If account does not exist, check if the user exists by email
-  const existingUser = await getUserByEmailService(email);
+  const existingUser = await UserService.getByEmail(email);
   console.log('existingUser', existingUser);
   // If user with same email exists but different provider, fail login
   if (existingUser) {
@@ -79,7 +79,7 @@ export async function handleUserLoginOrCreate(request: LoginRequest, ipAddress: 
   console.log('handleUserLoginOrCreate provider', provider);
 
   // If user does not exist, create new user and link account
-  const newUser = await createUserService(
+  const newUser = await UserService.create(
     {
       name,
       email,
@@ -134,7 +134,7 @@ export async function resetPasswordRequestAction(email: string, ipAddress: strin
   const token = generateRandomToken();
   await saveResetTokenToAccount(email, token);
 
-  const user = await getUserByEmailService(email);
+  const user = await UserService.getByEmail(email);
   if (!user) {
     return;
   }
@@ -195,7 +195,7 @@ export async function resetPasswordAction(token: string, password: string, ipAdd
     ipAddress
   );
 
-  const user = await getUserByEmailService(account.email);
+  const user = await UserService.getByEmail(account.email);
   if (!user) {
     return false;
   }

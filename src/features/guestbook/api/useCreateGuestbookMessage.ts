@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { BaseApiClient } from '@/lib/BaseApiClient';
+
 import { GuestbookMessageWithId } from '../types/GuestbookMessage';
 import { GuestbookMessageRequest } from '../types/GuestbookMessageRequest';
-import { BaseApiClient } from '@/lib/BaseApiClient';
 
 type RequestType = GuestbookMessageRequest;
 type ResponseType = GuestbookMessageWithId;

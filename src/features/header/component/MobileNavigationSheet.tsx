@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -16,7 +17,6 @@ import { Separator } from '@/components/ui/separator';
 import { useAppSelector } from '@/contexts/storeHooks';
 import { selectIsAuthenticated } from '@/contexts/userSlice';
 import { useMobileNavigation } from '@/features/header/hooks/useMobileNavigation';
-import { signOut } from 'next-auth/react';
 
 import { getHeaderLinks } from '../utils/getHeaderLinks';
 

@@ -1,3 +1,6 @@
+import { BadRequestError } from '@operation-firefly/error-handling';
+import { CreateBaseService, FunctionMap } from '@operation-firefly/mongodb-package';
+
 import { env } from '@/constants';
 import { deleteAccountByIdService, getAccountsByUserIdService } from '@/features/account/server/accountService';
 import { purchaseConfirmationEmailTemplate } from '@/features/email/templates/purchaseConfirmationEmailTemplate';
@@ -6,13 +9,14 @@ import { verifyEmailTemplate } from '@/features/email/templates/verifyEmailTempl
 import { Email } from '@/features/email/types/Email';
 import { sendEmail } from '@/features/email/utils/sendEmail';
 import { products } from '@/features/product/products';
-import { User, UserPartial, UserWithId } from '@/features/user/types/User';
 import { UserDal } from '@/features/user/db/userDal';
-import { BadRequestError } from '@operation-firefly/error-handling';
+import { User, UserPartial, UserWithId } from '@/features/user/types/User';
+interface UserService extends FunctionMap {
+  create(user: User, ipAddress: string): Promise<UserWithId>;
+}
 
-// ***** Basic CRUD *****
-// Service to create a user
-export async function createUserService(user: User, ipAddress: string): Promise<UserWithId> {
+const UserService = CreateBaseService(UserDal) as UserService;
+UserService.create = async (user: User, ipAddress: string): Promise<UserWithId> => {
   const newUser = await UserDal.create(user);
   console.log(ipAddress);
   if (!user.isEmailVerified) {
@@ -29,29 +33,13 @@ export async function createUserService(user: User, ipAddress: string): Promise<
   }
 
   return newUser;
-}
-
-// Service to get a user by ID
-export async function getUserByIdService(id: string): Promise<UserWithId | null> {
-  return await UserDal.getById(id);
-}
-
-// Service to get a user by Stripe Customer ID
-export async function getUserByStripeCustomerIdService(stripeCustomerId: string): Promise<UserWithId | null> {
-  return await UserDal.getUserByStripeCustomerId(stripeCustomerId);
-}
-
-// Service to update a user by ID
-export async function updateUserByIdService(
-  id: string,
-  user: UserPartial,
-  ipAddress?: string | null
-): Promise<UserWithId> {
+};
+UserService.updateById = async (id: string, user: UserPartial, ipAddress?: string | null): Promise<UserWithId> => {
   try {
-    const updatedUser = await UserDal.updateUserById(id, user, ipAddress);
+    const updatedUser = await UserDal.updateById(id, user, ipAddress);
 
     // Check if there are new one-time purchases
-    const existingUser = await getUserByIdService(id);
+    const existingUser = await UserService.getById(id);
     if (!existingUser) {
       throw new BadRequestError('User not found');
     }
@@ -87,32 +75,17 @@ export async function updateUserByIdService(
     }
     throw new Error('Failed to update user');
   }
-}
-
-// Service to delete a user by ID
-export async function deleteUserByIdService(id: string): Promise<void> {
-  return await UserDal.deleteById(id);
-}
-
-// ***** Additional Functions *****
-// Service to find or create a user by email
-export async function findOrCreateUserByEmail(email: string, user: User, ipAddress: string): Promise<UserWithId> {
-  let existingUser = await UserDal.getUserByEmail(email);
+};
+UserService.findOrCreateUserByEmail = async (email: string, user: User, ipAddress: string): Promise<UserWithId> => {
+  let existingUser = await UserDal.getByEmail(email);
   if (!existingUser) {
-    existingUser = await createUserService(user, ipAddress);
+    existingUser = await UserService.create(user, ipAddress);
   }
   return existingUser;
-}
-
-// Service to get a user by Email
-export async function getUserByEmailService(email: string): Promise<UserWithId | null> {
-  return await UserDal.getUserByEmail(email);
-}
-
-// Service to delete a user and all linked accounts
-export async function deleteUserAndAccounts(userId: string): Promise<void> {
+};
+UserService.deleteById = async (id: string): Promise<void> => {
   // Fetch all accounts linked to the user
-  const accounts = await getAccountsByUserIdService(userId);
+  const accounts = await getAccountsByUserIdService(id);
 
   // Delete all accounts
   for (const account of accounts) {
@@ -120,24 +93,20 @@ export async function deleteUserAndAccounts(userId: string): Promise<void> {
   }
 
   // Delete the user
-  await UserDal.deleteById(userId);
-}
-
-// Service to validate a user's email
-export async function validateUserEmailService(userId: string, ipAddress: string | null): Promise<boolean> {
-  const user = await getUserByIdService(userId);
+  await UserDal.deleteById(id);
+};
+UserService.validateUserEmail = async (userId: string, ipAddress: string | null): Promise<boolean> => {
+  const user = await UserService.getById(userId);
   if (!user) {
     return false;
   }
 
-  const updatedUser = await updateUserByIdService(userId, { isEmailVerified: true }, ipAddress);
+  const updatedUser = await UserService.updateById(userId, { isEmailVerified: true }, ipAddress);
 
   return !!updatedUser;
-}
-
-// Service to resend email verification
-export async function resendEmailVerificationService(userId: string, ipAddress: string): Promise<void> {
-  const user = await getUserByIdService(userId);
+};
+UserService.resendEmailVerification = async (userId: string, ipAddress: string): Promise<void> => {
+  const user = await UserService.getById(userId);
   if (!user) {
     return;
   }
@@ -154,23 +123,20 @@ export async function resendEmailVerificationService(userId: string, ipAddress: 
     ipAddress,
   };
   await sendEmail(emailTemplate);
-}
+};
 
-export async function updateUserSparkAction(userId: string, sparksUsed: number): Promise<void> {
+UserService.updateUserSpark = async (userId: string, sparksUsed: number): Promise<void> => {
   const user = await UserDal.getById(userId);
   if (!user) {
     return;
   }
 
-  await UserDal.updateUserById(userId, {
+  await UserDal.updateById(userId, {
     sparksUsed: user.sparksUsed + sparksUsed,
     credits: {
       sparks: user.credits.sparks - sparksUsed,
     },
   });
-}
+};
 
-// New service to get top users with sparks
-export async function getTopUsersWithSparksService(): Promise<UserWithId[]> {
-  return await UserDal.getTopUsersWithSparks();
-}
+export { UserService };

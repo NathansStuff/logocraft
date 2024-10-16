@@ -1,8 +1,8 @@
+import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { resendVerificationEmailHandler } from '@/features/user/server/userController';
 import { rateLimit } from '@/middleware/rateLimiterMiddleware';
-import { TryCatchMiddleware } from '@operation-firefly/error-handling';
 export async function GET(req: NextRequest): Promise<NextResponse> {
   // Apply rate limiting
   const rateLimitResponse = await rateLimit(req, 1, 3600); // 5 requests per hour
